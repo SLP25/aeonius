@@ -1,0 +1,100 @@
+"""Aeonius
+
+#definição de funções (pattern match, underscore)
+def f:
+    0 -> _ -> 0
+    x -> 0 -> 1000000
+         y -> x / y
+
+
+#guardas + pattern match
+def g: x ->
+    0 | x % 2 == 0 -> x + 1
+    n | x % 2 -> g (x + 1) (n - 1)
+      |-> g x (n - 1)
+    0 -> x
+
+
+#lambda
+h = x -> y -> x / y
+h = lambda x: lambda y: x / y
+
+
+#if else
+def i: x -> (_ -> 0) if x == 0 else (y -> 1000000 if y == 0 else x / y)
+
+
+#funções de ordem superior
+def while: cond -> f ->
+    x | cond x -> x
+      |-> while f cond (f x)
+
+
+#where
+def max: x -> y ->
+    z -> xy if xy > z else z
+    where xy = x if x > y else y
+          def f: x -> 2 * x
+
+
+#TODO: nested functions
+
+#listas por compreensao
+def doublePositives:
+    l -> 2 * x for x in l if x > 0
+
+
+#dicionários por compreensao
+def doublePositives:
+    l -> {x: 2 * x for x in l if x > 0}
+
+
+#operadores (TODO: associatividade à direita)
+op (*):
+    0 -> _ -> 0
+    x -> y | x < 0 -> (x + 1) * y - y
+           | x > 0 -> (x - 1) * y + y
+
+
+#pattern match de iterables
+def third:
+    _, _, x, *_ -> x
+    _ -> None
+
+def isThreeLong:
+    _, _, _ -> True
+    _ -> False          #TODO: pattern match de iteradores de tamanho 1 e 0
+
+#pattern match de tuplos (só apanha tuplos e mais nada)
+def third:
+    (_, _, x, *xs) -> x
+    _ -> None
+
+
+#pattern match de listas (exatamente igual a tuplos)
+def third:
+    [_, _, x, *_] -> x
+    _ -> None
+
+
+#pattern match de dicionarios
+def addTuple: (k, v) -> d -> {k: v, **d}
+def addIterable: k, v -> d -> {k: v, **d}
+
+"""
+
+
+"""Aeonius
+
+def valid:
+    "batata" -> True
+    x -> len(x) >= 8 and len({c for c in x}) > 3
+
+def display:
+    username -> password -> username + "/" + ("." * len(password))
+
+def choosePassword: username -> try 1
+    where try n -> do
+        x <- func (username, n)
+        (return x) if valid x else try (n + 1)
+"""
