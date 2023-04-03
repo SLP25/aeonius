@@ -48,8 +48,7 @@ tokens = [
     'CLOSECURLYBRAC',
     'COMMA',
     'KEYARGS',
-    'DOUBLEQUOTE',
-    'SINGLEQUOTE',
+    'STRING'
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -78,8 +77,7 @@ t_OPENSQUAREBRAC = r'\['
 t_CLOSESQUAREBRAC = r'\]'
 t_COMMA = r','
 t_KEYARGS = r'\*\*'
-t_DOUBLEQUOTE = r'"'
-t_SINGLEQUOTE = r"'"
+t_STRING = '(["\']).*?(["\'])'
 
 def t_IDENTIFIER(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
