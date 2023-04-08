@@ -1,5 +1,10 @@
 import ply.lex as lex
 
+states = (
+   ('python','exclusive'),
+   ('aeonius','inclusive'),
+)
+
 reserved = {
     "def": "DEF",
     "if": "IF",
@@ -49,6 +54,7 @@ tokens = [
     "COMMA",
     "KEYARGS",
     "STRING",
+    "PYTHONCODE"
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -78,6 +84,7 @@ t_CLOSESQUAREBRAC = r"\]"
 t_COMMA = r","
 t_KEYARGS = r"\*\*"
 t_STRING = "([\"']).*?([\"'])"
+t_python_PYTHONCODE = ".+"
 
 
 def t_IDENTIFIER(t):
@@ -86,13 +93,15 @@ def t_IDENTIFIER(t):
     return t
 
 
-def t_BEGIN(t):
+def t_python_BEGIN(t):
     r'"""Aeonius'
+    t.lexer.begin("aeonius")
     return t
 
 
-def t_END(t):
+def t_aeonius_END(t):
     r'"""'
+    t.lexer.begin("python")
     return t
 
 
@@ -109,17 +118,17 @@ def t_FLOAT(t):
 
 
 # Define a rule so we can track line numbers
-def t_newline(t):
+def t_ANY_newline(t):
     r"\n+"
     t.lexer.lineno += len(t.value)
 
 
 # A string containing ignored characters (spaces and tabs)
-t_ignore = " \t"
+t_aeonius_ignore = " \t"
 
 
 # Error handling rule
-def t_error(t):
+def t_ANY_error(t):
     print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
     t.lexer.skip(1)
 
@@ -127,7 +136,7 @@ def t_error(t):
 def tokenize(data):
     # Build the lexer
     lexer = lex.lex()
-
+    lexer.begin("python")
     # Give the lexer some input
     lexer.input(data)
 
@@ -143,7 +152,7 @@ def tokenize(data):
     return res
 
 
-with open("examples/aeonius_spec_no_python", "r") as f:
+with open("examples/aeonius_spec", "r") as f:
     data = f.read()
 
 
