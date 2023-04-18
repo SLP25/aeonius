@@ -156,4 +156,9 @@ with open("examples/aeonius_spec", "r") as f:
     data = f.read()
 
 
-print(tokenize(data))
+#print(tokenize(data))
+
+def get_lexer():
+    lexer = lex.lex()
+    lexer.begin("python")
+    return lexer

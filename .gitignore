@@ -1,2 +1,9 @@
 # Python venv
 aeonius/
+
+#Pycache
+__pycache__/
+
+#ply
+parser.out
+parsetab.py
