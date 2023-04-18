@@ -1,27 +1,86 @@
 from aeonius_parser import parse
 
-def tokenize(data):
-    # Build the lexer
-    lexer = Lexer().lexer
-    lexer.begin("python")
-    # Give the lexer some input
-    lexer.input(data)
+import sys
 
-    res = []
+def help():
+    print("                Aeonius                    ")
+    print("     A functional extension for Python     ")
+    print("===========================================")
+    print()
+    print("Valid arguments:")
+    print("-h: Get help")
+    print("-d: Whether to run on debug mode. In debug")
+    print("mode, the compiled python code is printed")
+    print("to stdout instead of to a file")
+    print("--input: The input Aeonius file")
+    print("--output: The python file to write the parsed")
+    print("program to")
 
-    # Tokenize
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break  # No more input
-        res = res + [tok]
+def parse_args(single_flags, valid_args):
 
-    return res
+    result = {}
+    
+    argv = []
+
+    # Remove flags that don't take any arguments
+    # and process them now
+    for str in sys.argv:
+        if str in single_flags:
+            # Remove initial '-' from string
+            result[str[1:]] = True
+        else:
+            argv = argv + [str]
+
+    # User provided arguments start at index 1 (0 is the process name)
+    # In this format arguments are passed as (note we have removed flags that
+    # take no arguments)
+    # program --flag1 value1 --flag2 value2 ...
+    # In this schema, the values are stored in odd positions and flags
+    # in even positions.
+    # As such, we iterate over the even indices of the argv list
+    for i in range(2, len(argv), 2):
+        if argv[i - 1] in valid_args:
+            # Remove first '--' chars from argv 
+            result[argv[i - 1][2:]] = argv[i]
+        else:
+            print(f"Invalid argument {argv[i - 1]}")
+            exit(1)
 
 
-with open("examples/test.txt", "r") as f:
-    data = f.read()
+    return result
 
-#print(data)
-#print(tokenize(data))
-print(parse(data))
+
+def main():
+    single = [
+        "-h",
+        "-d"
+    ]
+
+    valid_arguments = [
+        "--input",
+        "--output"
+    ]
+        
+
+    args = parse_args(single, valid_arguments)
+ 
+    if "h" in args:
+        help()
+        return
+    
+
+
+    with open(args["input"], "r") as f:
+        data = f.read()
+
+    parsed = parse(data)
+
+    if(args["d"]):
+        print(parsed)
+    else:
+        with open(args["output"], "w") as g:
+            g.write(parsed)
+
+
+if __name__ == "__main__":
+    main()

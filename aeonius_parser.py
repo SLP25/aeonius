@@ -149,7 +149,7 @@ def p_expression_if(v):
 
 def p_if(v):
     "if : expression IF expression ELSE expression"
-    v[0] = f"{v[1]} if ({v[3]}) else ({v[5]})"
+    v[0] = f"{v[1]} if ({v[3]}) else ({v[5     ]})"
 
 def p_error(v):
     print(v)
