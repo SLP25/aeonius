@@ -1,7 +1,5 @@
 # Aeonius grammar specification
 
-```
-
 grammar: ε
        | aeonius grammar
        | PYTHONCODE grammar
@@ -9,94 +7,93 @@ grammar: ε
 aeonius: BEGIN code END
 
 code: ε
-    | COMMENT code
-    | function code
-    | lambda code
+    | assignment code
 
-lambda: IDENTIFIER ASSIGN expression
+assignment: IDENTIFIER '=' exp
+	  | DEF IDENTIFIER ':' patternmatch
+	  | OP '(' IDENTIFIER ')' ':' patternmatch
 
-function: DEF IDENTIFIER COLON patternmatch
-operator: OP OPENROUNDPAR IDENTIFIER CLOSEROUNDPAR COLON patternmatch
+#TODO: allow indentation to do stuff
+patternmatch: match
+            | match patternmatch
 
-comment: ε
-       | COMMENT
-
-patternmatch: match RIGHTARROW expression comment
-            | match RIGHTARROW expression comment patternmatch
-
-match: matchitem
-     | matchitem RIGHTARROW match
-
-matchitem: INTEGER
-         | FLOAT
-         | UNDERSCORE
-         | STRING
-         | IDENTIFIER
-         | OPENROUNDPAR itermatch CLOSEROUNDPAR
-         | OPENSQUAREBRAC itermatch CLOSESQUAREBRAC
-         | OPENSQUAREBRAC CLOSESQUAREBRAC
-         | dictmatch
-         | itermatch
+match: pattern RIGHTARROW exp
+     | pattern RIGHTARROW match
 
 
-dictmatch: OPENCURLYBRAC CLOSECURLYBRAC
-         | OPENCURLYBRAC dictmatchid COLON dictmatchid CLOSECURLYBRAC
-         | OPENCURLYBRAC dictmatchid COLON dictmatchid COMMA KEYARGS dictmatchid CLOSECURLYBRAC
 
-dictmatchid: IDENTIFIER
-           | UNDERSCORE
+pattern: const
+       | '_'
+       | IDENTIFIER
+       | iterpattern
+       | '(' iterpattern ')'
+       | '[' iterpattern ']'
+       | '{' dictpattern '}'
+       
+iterpattern: ε
+	 | nonemptyiterpattern
+	
+nonemptyiterpattern: pattern
+		 | nonemptyiterpattern ',' pattern
 
-itermatch: matchitem
-         | KEYARGS IDENTIFIER
-         | KEYARGS UNDERSCORE
-         | matchitem COMMA itermatch
+dictpattern: ε
+	 | nonemptydictpattern
+	 
+nonemptydictpattern: pattern ':' pattern
+		 | nonemptydictpattern ',' pattern ':' pattern 
 
-expression: IDENTIFIER
-          | INTEGER
-          | FLOAT
-          | STRING
-          | IDENTIFIER arguments
-          | OPENROUNDPAR expression CLOSEROUNDPAR # Wrapped in brackets
-          | patternmatch
-          | expression PLUS expression
-          | expression MINUS expression
-          | expression TIMES expression
-          | expression DIV expression
-          | expression MOD expression
-          | expression EQUALS expression
-          | expression LESSTHANOREQUAL expression
-          | expression LESSTHAN expression
-          | expression GREATERTHANOREQUAL expression
-          | expression GREATERTHAN expression
-          | LAMBDA IDENTIFIER COLON expression
-          | expression IF expression ELSE expression
-          | expression IDENTIFIER expression #Operator
-          | expression FOR IDENTIFIER IN IDENTIFIER
-          | expression FOR IDENTIFIER IN INDENTIFIER IF expression
-          | OPENCURLYBRAC IDENTIFIER COLON expression FOR IDENTIFIER IN IDENTIFIER CLOSECURLYBRAC
-          | OPENCURLYBRAC IDENTIFIER COLON expression FOR IDENTIFIER IN IDENTIFIER IF expression CLOSECURLYBRAC
-          | expressionlist
-          | expressiontuple
-          | expressiondict
 
-expressionlist: OPENSQUAREBRAC CLOSESQUAREBRAC
-              | OPENSQUAREBRAC multiexpression CLOSESQUAREBRAC
 
-expressiontuple: OPENROUNDPAR multiexpression CLOSEROUNDPAR
+exp: IDENTIFIER
+   | const
+   | '(' iterexp ')'
+   | '[' iterexp ']'
+   | '{' dictexp '}'
+   | IDENTIFIER arguments		#function call
+   | '(' exp ')'	              #Wrapped in brackets
+   | match				#lambda
+   | LAMBDA IDENTIFIER ':' exp	#lambda but with python syntax
+   | exp IF exp ELSE exp
+   | exp IDENTIFIER exp 		#Operator
+   | exp FOR IDENTIFIER IN IDENTIFIER
+   | exp FOR IDENTIFIER IN IDENTIFIER IF exp
+   | '{' IDENTIFIER ':' exp FOR IDENTIFIER IN IDENTIFIER '}'
+   | '{' IDENTIFIER ':' exp FOR IDENTIFIER IN IDENTIFIER IF exp '}'
 
-expressiondict: OPENCURLYBRAC CLOSECURLYBRAC
-              | OPENCURLYBRAC multidictexp CLOSECURLYBRAC
 
-multidictexp: expression COLON expression
-            | expression COLON expression multidictexp
+iterexp: ε
+       | nonemptyiterexp
 
-multiexpression: expression
-               | expression COMMA multiexpression
+nonemptyiterexp: exp
+	       | iterexp ',' exp
+
+dictexp: ε
+       | nonemptydictexp
+	 
+nonemptydictexp: exp ':' exp
+	       | nonemptydictexp ',' exp ':' exp
 
 
 arguments: ε
-         | expression arguments
+         | exp arguments
 
-patternmatch: matchitem PIPE expression RIGHTARROW expression
-            | matchitem PIPE expression RIGHTARROW expression patternmatch
-```
+
+
+const: INTEGER
+     | FLOAT
+     | STRING
+     | '(' iterconst ')'
+     | '[' iterconst ']'
+     | '{' dictconst '}'
+	
+iterconst: ε
+	 | nonemptyiterconst
+	
+nonemptyiterconst: const
+		 | nonemptyiterconst ',' const
+
+dictconst: ε
+	 | nonemptydictconst
+	 
+nonemptydictconst: const ':' const
+		 | nonemptydictconst ',' const ':' const
