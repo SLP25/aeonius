@@ -4,41 +4,83 @@ grammar: ε
        | aeonius grammar
        | PYTHONCODE grammar
 
-aeonius: BEGIN code END
+aeonius: BEGIN EOL code END
 
 code: ε
     | assignment code
 
-assignment: IDENTIFIER '=' exp
-	  | DEF IDENTIFIER ':' patternmatch
-	  | OP '(' IDENTIFIER ')' ':' patternmatch
+assignment: pattern '=' exp EOL
+	   | DEF IDENTIFIER ':' patternmatch       #TODO: where
+          | OP '(' OPIDENTIFIER ')' ':' patternmatch
 
-#TODO: allow indentation to do stuff
-patternmatch: match
-            | match patternmatch
+#TODO: indentation
+patternmatch: match EOL
+            | match EOL patternmatch
 
 match: pattern RIGHTARROW exp
      | pattern RIGHTARROW match
+
+
+primitive: INTEGER
+         | FLOAT
+         | STRING
+
+
+const: primitive
+     | '(' const ')'
+     | '(' tupleconst ')'
+     | '[' iterconst ']'
+     | '{' dictconst '}'
+
+tupleconst: ε
+          | const ','
+          | nonsingletupleconst
+          | nonsingletupleconst ','
+
+nonsingletupleconst: const ',' const
+                   | nonsingletupleconst ',' const
+
+iterconst: ε
+	 | nonemptyiterconst
+        | nonemptyiterconst ','
+	
+nonemptyiterconst: const
+		 | nonemptyiterconst ',' const
+
+dictconst: ε
+	 | nonemptydictconst
+        | nonemptydictconst ','
+	 
+nonemptydictconst: const ':' const
+		 | nonemptydictconst ',' const ':' const
 
 
 
 pattern: const
        | '_'
        | IDENTIFIER
-       | iterpattern
-       | '(' iterpattern ')'
+#       | nonemptyiterpattern             #TODO
+       | '(' pattern ')'
+       | '(' tuplepattern ')'
        | '[' iterpattern ']'
        | '{' dictpattern '}'
-       
-iterpattern: ε
-	 | nonemptyiterpattern
-	
+
+tuplepattern: pattern ','
+            | nonsingletuplepattern
+            | nonsingletuplepattern ','
+
+nonsingletuplepattern: pattern ',' pattern
+                     | nonsingletuplepattern ',' pattern
+
+iterpattern: nonemptyiterpattern
+	    | nonemptyiterpattern ','
+
 nonemptyiterpattern: pattern
 		 | nonemptyiterpattern ',' pattern
 
-dictpattern: ε
-	 | nonemptydictpattern
-	 
+dictpattern: nonemptydictpattern
+	    | nonemptydictpattern ','
+
 nonemptydictpattern: pattern ':' pattern
 		 | nonemptydictpattern ',' pattern ':' pattern 
 
@@ -46,54 +88,39 @@ nonemptydictpattern: pattern ':' pattern
 
 exp: IDENTIFIER
    | const
-   | '(' iterexp ')'
+   | '(' tupleexp ')'
    | '[' iterexp ']'
    | '{' dictexp '}'
-   | IDENTIFIER arguments		#function call
+#   | IDENTIFIER arguments		#function call
    | '(' exp ')'	              #Wrapped in brackets
-   | match				#lambda
+#   | match				#lambda
    | LAMBDA IDENTIFIER ':' exp	#lambda but with python syntax
    | exp IF exp ELSE exp
-   | exp IDENTIFIER exp 		#Operator
-   | exp FOR IDENTIFIER IN IDENTIFIER
-   | exp FOR IDENTIFIER IN IDENTIFIER IF exp
-   | '{' IDENTIFIER ':' exp FOR IDENTIFIER IN IDENTIFIER '}'
-   | '{' IDENTIFIER ':' exp FOR IDENTIFIER IN IDENTIFIER IF exp '}'
+   | exp OPIDENTIFIER exp 		#Operator
+   | exp FOR pattern IN exp
+   | exp FOR pattern IN exp IF exp
+   | '{' IDENTIFIER ':' exp FOR pattern IN exp '}'
+   | '{' IDENTIFIER ':' exp FOR pattern IN exp IF exp '}'
 
+tupleexp: exp ','
+            | nonsingletupleexp
+            | nonsingletupleexp ','
 
-iterexp: ε
-       | nonemptyiterexp
+nonsingletupleexp: exp ',' exp
+                     | nonsingletupleexp ',' exp
+
+iterexp: nonemptyiterexp
+       | nonemptyiterexp ','
 
 nonemptyiterexp: exp
-	       | iterexp ',' exp
+	       | nonemptyiterexp ',' exp
 
-dictexp: ε
-       | nonemptydictexp
+dictexp: nonemptydictexp
+       | nonemptydictexp ','
 	 
 nonemptydictexp: exp ':' exp
 	       | nonemptydictexp ',' exp ':' exp
 
 
-arguments: ε
-         | exp arguments
-
-
-
-const: INTEGER
-     | FLOAT
-     | STRING
-     | '(' iterconst ')'
-     | '[' iterconst ']'
-     | '{' dictconst '}'
-	
-iterconst: ε
-	 | nonemptyiterconst
-	
-nonemptyiterconst: const
-		 | nonemptyiterconst ',' const
-
-dictconst: ε
-	 | nonemptydictconst
-	 
-nonemptydictconst: const ':' const
-		 | nonemptydictconst ',' const ':' const
+#arguments: ε
+#         | exp arguments

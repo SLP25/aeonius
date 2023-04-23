@@ -6,11 +6,15 @@ def ola(x,y):
     print("Batata")
 
 """Aeonius
-x = 5
-y = "Batata"
+(x, y) = (5, 6)               #comentario
+#x, y = (5, 6)
+[y, _] = ["Batata", "Cenoura"]
 z = (2 - 3) * 5 / 23 % 12
 
 a = x < 5 * 3 / 2
 
 b = 1 if 2 == 3 else 4
+
+#h = x -> y -> x / y
+h = lambda x: lambda y: x / y
 """

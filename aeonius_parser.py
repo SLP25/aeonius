@@ -3,12 +3,18 @@ import ply.yacc as yacc
 from tokenizer import get_lexer, tokens
 
 precedence = [
-    ("left", "IF", "ELSE"),
-    #("left", "LESSTHAN", "LESSTHANOREQUAL", "EQUALS", "GREATERTHAN", "GREATERTHANOREQUAL"),
-    #("left", "PLUS", "MINUS"),
-    #("left", "TIMES", "DIV", "MOD"),
+    ("nonassoc", "EOL"),
+    ("nonassoc", '=', "DEF", "OP"),
+    ("right", 'RIGHTARROW'),
+    #("left", '|'),
+    ("left", ','),
+    ("left", ':'),
+    ("left", "FOR", "IN", "IF", "ELSE"), #TODO: ?
+    ("left", "OPIDENTIFIER"),   #TODO: different precedences/associativitites
+    ("nonassoc", "IDENTIFIER", "INTEGER", "FLOAT", "STRING", "UNDERSCORE"),
+    ("left", '[', ']', '{', '}'),
     ("left", '(', ')'),
-    ("left", '[', ']', '{', '}')
+    
 ]
 
 from grammar_rules import *

@@ -31,12 +31,12 @@ tokens = [
     "LEFTARROW",
     "RIGHTARROW",
     "UNDERSCORE",
-    "KEYARGS",
+    #"KEYARGS",
     "STRING",
     "PYTHONCODE",
-    "COMMENT",
     "BEGIN",
     "END",
+    "EOL",
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -50,7 +50,12 @@ tokens = [
 #t_LESSTHANOREQUAL = r"<="
 #t_GREATERTHAN = r">"
 #t_GREATERTHANOREQUAL = r">="
-t_STRING = "([\"']).*?\1"
+
+def t_ANY_EOL(t):
+    r"(\n\s*(\#.*)?)+"
+    t.lexer.lineno += t.value.count('\n') #so we can track line numbers
+    if t.lexer.current_state() == 'aeonius':
+        return t
 
 def t_COMMENT(t):
     r"\#.*"
@@ -58,6 +63,7 @@ def t_COMMENT(t):
 def t_python_BEGIN(t):
     r'"""Aeonius'
     t.lexer.begin("aeonius")
+    return t
 
 def t_python_PYTHONCODE(t):
     r".+"
@@ -66,6 +72,7 @@ def t_python_PYTHONCODE(t):
 def t_aeonius_END(t):
     r'"""'
     t.lexer.begin("python")
+    return t
 
 def t_INTEGER(t):
     r"-?\d+"
@@ -77,10 +84,11 @@ def t_FLOAT(t):
     t.value = float(t.value)
     return t
 
-# Define a rule so we can track line numbers
-def t_ANY_newline(t):
-    r"\n+"
-    t.lexer.lineno += len(t.value)
+def t_STRING(t):
+    "(\"[^\"\\n]*\")|('[^'\\n]*')"
+    #"([\"']).*?\\2"
+    t.value = t.value.strip("\"'")
+    return t
 
 def t_LEFTARROW(t):
     r"<-"
@@ -140,10 +148,10 @@ def tokenize(data):
     return res
 
 
-with open("examples/aeonius_spec", "r") as f:
+with open("examples/test.txt", "r") as f:
     data = f.read()
 
-for x in tokenize(data):
-    print(x)
-    input()
+#for x in tokenize(data):
+#    print(x)
+#    input()
 

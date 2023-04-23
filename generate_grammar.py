@@ -1,6 +1,8 @@
 import sys
 import itertools
 from ply import yacc, lex
+import grammar_rules
+import inspect
 
 literals = ["|", "ε"]
 tokens = ['COMMENT', 'NAME', 'TEXT']
@@ -71,7 +73,7 @@ def p_error(v):
 
 parser = yacc.yacc()
 
-with f as open("grammar_specification.md", "r"):
+with open("grammar_specification.md", "r") as f:
     s = f.read()
 
 # Tokenize
@@ -80,12 +82,24 @@ with f as open("grammar_specification.md", "r"):
 #    print(tok)
 
 grammar = parser.parse(s)
+output = ""
 
-with f as open("grammar_rules.py", "w"):
-    for name, rules in grammar.items():
-        for i, rule in zip(itertools.count(1), rules):
-            f.write(f"""
-def p_{name}{i}(v):
-    "{name} : {rule}"
-    v[0] = "ok"
-""")
+for name, rules in grammar.items():
+    for i, rule in zip(itertools.count(1), rules):
+        funcname = f"p_{name}_{i}"
+        description = f'"{name} : {rule}"'
+        semantic = 'v[0] = "ok"'
+
+        if func := getattr(grammar_rules, funcname, None):
+            lines = inspect.getsource(func).split('\n', 2)
+            if description == lines[1].strip():
+                semantic = lines[2].strip()
+
+        output += f"""
+def {funcname}(v):
+    {description}
+    {semantic}
+"""
+
+with open("grammar_rules.py", "w") as f:
+    f.write(output)
