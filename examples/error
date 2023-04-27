@@ -1,0 +1,13 @@
+"""Aeonius
+y = lambda x: x + 2
+x = 5
+
+def third:
+[_, _, x, _] -> x
+
+op (*):
+0 -> _ -> 0
+"""
+
+def ola():
+    print("Ola")

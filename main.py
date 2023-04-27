@@ -1,4 +1,5 @@
 from aeonius_parser import parse
+from language.context import Context
 
 import sys
 
@@ -76,10 +77,10 @@ def main():
     parsed = parse(data)
 
     if(args["d"]):
-        print(parsed)
+        print(parsed.to_python(Context()))
     else:
         with open(args["output"], "w") as g:
-            g.write(parsed)
+            g.write(parsed.to_python(Context()))
 
 
 if __name__ == "__main__":

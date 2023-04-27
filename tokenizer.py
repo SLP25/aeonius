@@ -120,6 +120,7 @@ def t_IDENTIFIER(t):
 
 # A string containing ignored characters (spaces and tabs)
 t_aeonius_ignore = " \t"
+t_python_ignore = "\n"
 
 # Error handling rule
 def t_ANY_error(t):

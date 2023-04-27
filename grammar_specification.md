@@ -10,8 +10,8 @@ code: ε
     | assignment code
 
 assignment: pattern '=' exp EOL
-	   | DEF IDENTIFIER ':' patternmatch       #TODO: where
-          | OP '(' OPIDENTIFIER ')' ':' patternmatch
+	   | DEF IDENTIFIER ':' EOL patternmatch       #TODO: where
+          | OP '(' OPIDENTIFIER ')' ':' EOL patternmatch
 
 #TODO: indentation
 patternmatch: match EOL

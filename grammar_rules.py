@@ -16,7 +16,7 @@ def p_grammar_2(v):
 
 def p_grammar_3(v):
     "grammar : PYTHONCODE grammar"
-    v[0] = Grammar([v[1]] + v[2].snippets)
+    v[0] = Grammar([Python(v[1])] + v[2].snippets)
 
 def p_aeonius_1(v):
     "aeonius : BEGIN EOL code END"
@@ -35,12 +35,12 @@ def p_assignment_1(v):
     v[0] = AssignmentPattern(v[1], v[3])
 
 def p_assignment_2(v):
-    "assignment : DEF IDENTIFIER ':' patternmatch       "
-    v[0] = AssignmentDefinition(v[2], v[4])
+    "assignment : DEF IDENTIFIER ':' EOL patternmatch       "
+    v[0] = AssignmentDefinition(v[2], v[5])
 
 def p_assignment_3(v):
-    "assignment : OP '(' OPIDENTIFIER ')' ':' patternmatch"
-    v[0] = AssignmentOperator(v[3], v[6])
+    "assignment : OP '(' OPIDENTIFIER ')' ':' EOL patternmatch"
+    v[0] = AssignmentOperator(v[3], v[7])
 
 def p_patternmatch_1(v):
     "patternmatch : match EOL"
@@ -216,7 +216,7 @@ def p_nonemptyiterpattern_1(v):
 
 def p_nonemptyiterpattern_2(v):
     "nonemptyiterpattern : nonemptyiterpattern ',' pattern"
-    v[0] = NonEmptyListPatternContent([v[1].patterns + v[3]], False)
+    v[0] = NonEmptyListPatternContent(v[1].patterns + [v[3]], False)
 
 def p_dictpattern_1(v):
     "dictpattern : nonemptydictpattern"

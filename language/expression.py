@@ -1,6 +1,7 @@
 from .element import Element
 from .constant import Constant
 from .pattern import Pattern
+from .context import Context
 from typing import List, Tuple
 
 class Expression(Element):
@@ -13,7 +14,7 @@ class IdentifierExpression(Expression):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -29,7 +30,7 @@ class ConstantExpression(Expression):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -47,7 +48,7 @@ class LambdaExpression(Expression):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -66,7 +67,7 @@ class IfElseExpression(Expression):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -86,7 +87,7 @@ class ForLoopExpression(Expression):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -107,7 +108,7 @@ class DictionaryCompreensionExpression(Expression):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -125,7 +126,7 @@ class OperationExpression(Expression):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -143,7 +144,7 @@ class BracketExpression(Expression):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -163,7 +164,7 @@ class NonEmptyTupleExpressionContent(TupleExpressionContent):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -183,7 +184,7 @@ class TupleExpression(Expression):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -204,7 +205,7 @@ class NonEmptyListExpressionContent(ListExpressionContent):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -220,7 +221,7 @@ class ListExpression(Expression):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -241,7 +242,7 @@ class NonEmptyDictExpressionContent(DictExpressionContent):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -256,7 +257,7 @@ class DictExpression(Expression):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):

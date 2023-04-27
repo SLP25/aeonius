@@ -1,5 +1,6 @@
 from .element import Element
 from .constant import Constant
+from .context import Context
 from typing import List, Tuple
 
 class Pattern(Element):
@@ -12,7 +13,7 @@ class ConstantPattern(Pattern):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -28,7 +29,7 @@ class AnythingPattern(Pattern):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -41,7 +42,7 @@ class IdentifierPatttern(Pattern):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -58,7 +59,7 @@ class BracketPattern(Pattern):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -78,7 +79,7 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -98,7 +99,7 @@ class TuplePattern(Pattern):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -119,7 +120,7 @@ class NonEmptyListPatternContent(ListPatternContent):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -135,7 +136,7 @@ class ListPattern(Pattern):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -156,7 +157,7 @@ class NonEmptyDictPatternContent(DictPatternContent):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -171,7 +172,7 @@ class DictPattern(Pattern):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):

@@ -1,4 +1,5 @@
 from .element import Element
+from .context import Context
 from typing import List, Tuple
 
 class Constant(Element):
@@ -11,7 +12,7 @@ class PrimitiveConstant(Constant):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -27,7 +28,7 @@ class BracketConstant(Constant):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -46,7 +47,7 @@ class EmptyTupleConstantContent(TupleConstantContent):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -60,7 +61,7 @@ class NonEmptyTupleConstantContent(TupleConstantContent):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -80,7 +81,7 @@ class TupleConstant(Constant):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -99,7 +100,7 @@ class EmptyListConstantContent(ListConstantContent):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -113,7 +114,7 @@ class NonEmptyListConstantContent(ListConstantContent):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -129,7 +130,7 @@ class ListConstant(Constant):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -149,7 +150,7 @@ class EmptyDictConstantContent(DictConstantContent):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -163,7 +164,7 @@ class NonEmptyDictConstantContent(DictConstantContent):
     def validate(self, context):
         return True
     
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):
@@ -178,7 +179,7 @@ class DictConstant(Constant):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):

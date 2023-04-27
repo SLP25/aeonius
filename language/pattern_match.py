@@ -1,5 +1,6 @@
 from .element import Element
 from .match import Match
+from .context import Context
 from typing import List
 
 class PatternMatch(Element):
@@ -12,7 +13,7 @@ class PatternMatch(Element):
     def validate(self, context):
         return True
 
-    def __str__(self):
+    def to_python(self, context: Context):
         return "ok"
     
     def __eq__(self, obj):

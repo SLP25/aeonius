@@ -1,5 +1,6 @@
 from .element import Element
 from .assignment import Assignment
+from .context import Context
 from typing import List
 
 class Language(Element):
@@ -10,11 +11,11 @@ class Grammar(Element):
     def __init__(self, snippets: List[Language]):
         self.snippets = snippets
 
-    def validate(self, context):
+    def validate(self, context: Context):
         return True
     
-    def __str__(self):
-        return "ok"
+    def to_python(self, context: Context):
+        return "\n".join(map(lambda s: s.to_python(context), self.snippets))
     
     def __eq__(self, obj):
         return isinstance(obj, Grammar)
@@ -26,8 +27,8 @@ class Code(Element):
     def validate(self, context):
         return True
     
-    def __str__(self):
-        return "ok"
+    def to_python(self, context: Context):
+        return "\n".join(map(lambda s: s.to_python(context), self.assignments))
     
     def __eq__(self, obj):
         if not isinstance(obj, Code):
@@ -42,8 +43,8 @@ class Aeonius(Language):
     def validate(self, context):
         return True
     
-    def __str__(self):
-        return "ok"
+    def to_python(self, context: Context):
+        return self.code.to_python(context)
     
     def __eq__(self, obj):
         if not isinstance(obj, Aeonius):
@@ -58,8 +59,8 @@ class Python(Language):
     def validate(self, context):
         return True
     
-    def __str__(self):
-        return "ok"
+    def to_python(self, context: Context):
+        return self.code
     
     def __eq__(self, obj):
         if not isinstance(obj, Python):
