@@ -1,12 +1,6 @@
 """Aeonius
-y = lambda x: x + 2
-x = 5
-
-def third:
-[_, _, x, _] -> x
-
-op (*):
-0 -> _ -> 0
+x = 2 if j == [] else 0
+y = 2 * x for x in [1,2,3]
 """
 
 def ola():

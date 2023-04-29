@@ -15,7 +15,7 @@ class IdentifierExpression(Expression):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return self.identifier
     
     def __eq__(self, obj):
         if not isinstance(obj, IdentifierExpression):
@@ -31,7 +31,7 @@ class ConstantExpression(Expression):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return self.constant.to_python(context)
     
     def __eq__(self, obj):
         if not isinstance(obj, ConstantExpression):
@@ -49,7 +49,8 @@ class LambdaExpression(Expression):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        #TODO: Update symbol
+        return f"lambda {self.identifier}: {self.expression.to_python(context)}"
     
     def __eq__(self, obj):
         if not isinstance(obj, LambdaExpression):
@@ -68,7 +69,7 @@ class IfElseExpression(Expression):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return f"{self.true_expresion.to_python(context)} if {self.condition.to_python(context)} else {self.false_expression.to_python(context)}"
     
     def __eq__(self, obj):
         if not isinstance(obj, IfElseExpression):
@@ -88,7 +89,12 @@ class ForLoopExpression(Expression):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        result = f"{self.expression.to_python(context)} for {self.pattern.to_python(context)} in {self.set.to_python(context)}"
+
+        if self.condition is not None:
+            result += f" if {self.condition.to_python(context)}"
+
+        return result
     
     def __eq__(self, obj):
         if not isinstance(obj, ForLoopExpression):
@@ -109,7 +115,12 @@ class DictionaryCompreensionExpression(Expression):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        result = f"{{ {self.identifier} : {self.expression.to_python(context)} for {self.pattern.to_python(context)} in {self.set.to_python(context)}"
+
+        if self.condition is not None:
+            result += f" if {self.condition.to_python(context)}"
+        result += "}"
+        return result
     
     def __eq__(self, obj):
         if not isinstance(obj, DictionaryCompreensionExpression):
@@ -119,7 +130,8 @@ class DictionaryCompreensionExpression(Expression):
             and self.pattern == obj.pattern and self.set == obj.set and self.condition == obj.condititon
 
 class OperationExpression(Expression):
-    def __init__(self, left_expression: Expression, right_expression: Expression):
+    def __init__(self, identifier: str, left_expression: Expression, right_expression: Expression):
+        self.identifier = identifier
         self.left_expression = left_expression
         self.right_expression = right_expression
 
@@ -127,13 +139,13 @@ class OperationExpression(Expression):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return f"{self.identifier}({self.left_expression.to_python(context)}, {self.right_expression.to_python(context)})"
     
     def __eq__(self, obj):
         if not isinstance(obj, OperationExpression):
             return False
         
-        return self.left_expression == obj.left_expression and self.right_expression == obj.right_expression
+        return self.left_expression == obj.left_expression and self.right_expression == obj.right_expression  and self.identifier == obj.identifier
     
    
    
@@ -145,7 +157,7 @@ class BracketExpression(Expression):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"({self.expression.to_python(context)})"
     
     def __eq__(self, obj):
         if not isinstance(obj, BracketExpression):
@@ -165,7 +177,12 @@ class NonEmptyTupleExpressionContent(TupleExpressionContent):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        result = ",".join(map(lambda exp: exp.to_python(context), self.expressions))
+
+        if self.final_comma:
+            result += ","
+
+        return result
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyTupleExpressionContent):
@@ -185,7 +202,7 @@ class TupleExpression(Expression):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"({self.expression.to_python(context)})"
     
     def __eq__(self, obj):
         if not isinstance(obj, TupleExpression):
@@ -206,7 +223,12 @@ class NonEmptyListExpressionContent(ListExpressionContent):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        result = ",".join(map(lambda exp: exp.to_python(context), self.expressions))
+
+        if self.final_comma:
+            result += ","
+
+        return result
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyListExpressionContent):
@@ -222,7 +244,7 @@ class ListExpression(Expression):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"[{self.expressions.to_python(context)}]"
     
     def __eq__(self, obj):
         if not isinstance(obj, ListExpression):
@@ -243,7 +265,12 @@ class NonEmptyDictExpressionContent(DictExpressionContent):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        result = ",".join(map(lambda kv: f"{kv[0].to_python(context)} : {kv[1].to_python(context)}", self.key_value_pairs))
+
+        if self.final_comma:
+            result += ","
+
+        return result
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyDictExpressionContent):
@@ -258,7 +285,7 @@ class DictExpression(Expression):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"{self.expressions.to_python(context)}"
     
     def __eq__(self, obj):
         if not isinstance(obj, DictExpression):

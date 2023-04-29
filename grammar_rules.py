@@ -268,7 +268,7 @@ def p_exp_8(v):
 
 def p_exp_9(v):
     "exp : exp OPIDENTIFIER exp 		"
-    v[0] = OperationExpression(v[1], v[3])
+    v[0] = OperationExpression(v[2], v[1], v[3])
 
 def p_exp_10(v):
     "exp : exp FOR pattern IN exp"

@@ -13,7 +13,7 @@ class PrimitiveConstant(Constant):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return str(self.primitive)
     
     def __eq__(self, obj):
         if not isinstance(obj, PrimitiveConstant):
@@ -29,7 +29,7 @@ class BracketConstant(Constant):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"({self.constant.to_python(context)})"
     
     def __eq__(self, obj):
         if not isinstance(obj, BracketConstant):
@@ -48,7 +48,7 @@ class EmptyTupleConstantContent(TupleConstantContent):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return ""
     
     def __eq__(self, obj):
         return isinstance(obj, EmptyTupleConstantContent)
@@ -62,7 +62,7 @@ class NonEmptyTupleConstantContent(TupleConstantContent):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return ",".join(map(lambda elem: elem.to_python(context), self.constants))
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyTupleConstantContent):
@@ -82,7 +82,7 @@ class TupleConstant(Constant):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"({self.constant.to_python()})"
     
     def __eq__(self, obj):
         if not isinstance(obj, TupleConstant):
@@ -101,7 +101,7 @@ class EmptyListConstantContent(ListConstantContent):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return ""
     
     def __eq__(self, obj):
         return isinstance(obj, EmptyListConstantContent)
@@ -115,7 +115,7 @@ class NonEmptyListConstantContent(ListConstantContent):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return ",".join(map(lambda elem: elem.to_python(context), self.constants))
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyListConstantContent):
@@ -131,7 +131,7 @@ class ListConstant(Constant):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"[{self.constants.to_python(context)}]"
     
     def __eq__(self, obj):
         if not isinstance(obj, ListConstant):
@@ -151,7 +151,7 @@ class EmptyDictConstantContent(DictConstantContent):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return ""
     
     def __eq__(self, obj):
         return isinstance(obj, EmptyDictConstantContent)
@@ -165,7 +165,7 @@ class NonEmptyDictConstantContent(DictConstantContent):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return ",".join(map(lambda kv: f"{kv[0].to_python(context)}: {kv[1].to_python(context)}", self.key_value_pairs))
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyDictConstantContent):
@@ -176,11 +176,12 @@ class NonEmptyDictConstantContent(DictConstantContent):
 class DictConstant(Constant):
     def __init__(self, constants: DictConstantContent):
         self.constants = constants
+
     def validate(self, context):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"{{{self.constant.to_python(context)}}}"
     
     def __eq__(self, obj):
         if not isinstance(obj, DictConstant):
