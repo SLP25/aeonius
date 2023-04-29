@@ -64,7 +64,8 @@ class AssignmentOperator(Assignment):
             "=": "eq",
             ">": "gt",
             "$": "dollar",
-            "^": "power"
+            "^": "power",
+            ".": "dot"
         }
 
         for key in replacement_table.keys():

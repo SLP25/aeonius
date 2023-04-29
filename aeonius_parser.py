@@ -1,6 +1,6 @@
 import ply.yacc as yacc
 
-from tokenizer import get_lexer, tokens
+from tokenizer import MyLexer, tokens
 
 precedence = [
     ("nonassoc", "EOL"),
@@ -9,22 +9,19 @@ precedence = [
     #("left", '|'),
     ("left", ','),
     ("left", ':'),
-    ("left", "FOR", "IN", "IF", "ELSE"), #TODO: ?
+    ("nonassoc", "FOR", "IN", "IF", "ELSE"), #TODO: ?
     ("left", "OPIDENTIFIER"),   #TODO: different precedences/associativitites
     ("nonassoc", "IDENTIFIER", "INTEGER", "FLOAT", "STRING", "UNDERSCORE"),
     ("left", '[', ']', '{', '}'),
     ("left", '(', ')'),
-    
 ]
 
 from grammar_rules import *
 
 def p_error(v):
-    print(f"Erro sintático no input {v}")
+    print(f"Erro sintático no input '{v.type}' (linha {v.lineno}, coluna {v.columnno})")
 
 
 def parse(st):
-    lexer = get_lexer()
     parser = yacc.yacc(debug=True)
-
-    return parser.parse(st)
+    return parser.parse(st, lexer=MyLexer())

@@ -1,4 +1,4 @@
-"""Aeonius
+"""aeonius
 
 #definição de funções (pattern match, underscore)
 def f:
@@ -16,12 +16,11 @@ def g: x ->
 
 
 #lambda
-h = x -> y -> x / y
 h = lambda x: lambda y: x / y
 
 
 #if else
-def i: x -> (_ -> 0) if x == 0 else (y -> 1000000 if y == 0 else x / y)
+def i: x -> (lambda x: 0) if x == 0 else (lambda y: 1000000 if y == 0 else x / y)
 
 
 #funções de ordem superior
@@ -84,7 +83,7 @@ def addIterable: k, v -> d -> {k: v, **d}
 """
 
 
-"""Aeonius
+"""aeonius
 
 def valid:
     "batata" -> True

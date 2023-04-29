@@ -36,7 +36,7 @@ class Code(Element):
         
         return self.assignments == obj.assignments
 
-class Aeonius(Language):
+class aeonius(Language):
     def __init__(self, code: Code):
         self.code = code
     
@@ -47,7 +47,7 @@ class Aeonius(Language):
         return self.code.to_python(context)
     
     def __eq__(self, obj):
-        if not isinstance(obj, Aeonius):
+        if not isinstance(obj, aeonius):
             return False
         
         return self.code == obj.code

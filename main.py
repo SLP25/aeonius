@@ -4,7 +4,7 @@ from language.context import Context
 import sys
 
 def help():
-    print("                Aeonius                    ")
+    print("                aeonius                    ")
     print("     A functional extension for Python     ")
     print("===========================================")
     print()
@@ -13,7 +13,7 @@ def help():
     print("-d: Whether to run on debug mode. In debug")
     print("mode, the compiled python code is printed")
     print("to stdout instead of to a file")
-    print("--input: The input Aeonius file")
+    print("--input: The input aeonius file")
     print("--output: The python file to write the parsed")
     print("program to")
 

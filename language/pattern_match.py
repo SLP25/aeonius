@@ -4,10 +4,10 @@ from .context import Context
 from typing import List
 
 class PatternMatch(Element):
-    def __init__(self, match: Match, other_matches: List[Match] = None):
+    def __init__(self, match: Match, other_matches: 'PatternMatch' = None):
         self.matches = [match]
         if other_matches is not None:
-            for m in other_matches:
+            for m in other_matches.matches:
                 self.matches += [m]
                 
     def validate(self, context):

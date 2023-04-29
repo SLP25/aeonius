@@ -1,4 +1,4 @@
-# Aeonius grammar specification
+# aeonius grammar specification
 
 grammar: ε
        | aeonius grammar
@@ -9,21 +9,32 @@ aeonius: BEGIN EOL code END
 code: ε
     | assignment code
 
+#TODO: where
 assignment: pattern '=' exp EOL
-	   | DEF IDENTIFIER ':' EOL patternmatch       #TODO: where
-          | OP '(' OPIDENTIFIER ')' ':' EOL patternmatch
+	   | DEF IDENTIFIER ':' EOL INDENT multipatternmatch UNDENT
+          | DEF IDENTIFIER ':' pattern match
+          | OP '(' OPIDENTIFIER ')' ':' EOL INDENT multipatternmatch UNDENT
+          | OP '(' OPIDENTIFIER ')' ':' pattern match
 
-#TODO: indentation
-patternmatch: match EOL
-            | match EOL patternmatch
+multipatternmatch: pattern match
+                 | multipatternmatch pattern match
 
-match: pattern RIGHTARROW exp
-     | pattern RIGHTARROW match
+multicondmatch: exp match
+               | multicondmatch '|' exp match
+               | multicondmatch '|' match
+
+match: RIGHTARROW INDENT exp EOL UNDENT
+     | RIGHTARROW INDENT multipatternmatch UNDENT
+     | RIGHTARROW EOL INDENT multipatternmatch UNDENT
+     | '|' INDENT multicondmatch UNDENT
 
 
 primitive: INTEGER
          | FLOAT
          | STRING
+         | FALSE
+         | TRUE
+         | NONE
 
 
 const: primitive
@@ -56,45 +67,14 @@ nonemptydictconst: const ':' const
 
 
 
-pattern: const
-       | '_'
-       | IDENTIFIER
-#       | nonemptyiterpattern             #TODO
-       | '(' pattern ')'
-       | '(' tuplepattern ')'
-       | '[' iterpattern ']'
-       | '{' dictpattern '}'
-
-tuplepattern: pattern ','
-            | nonsingletuplepattern
-            | nonsingletuplepattern ','
-
-nonsingletuplepattern: pattern ',' pattern
-                     | nonsingletuplepattern ',' pattern
-
-iterpattern: nonemptyiterpattern
-	    | nonemptyiterpattern ','
-
-nonemptyiterpattern: pattern
-		 | nonemptyiterpattern ',' pattern
-
-dictpattern: nonemptydictpattern
-	    | nonemptydictpattern ','
-
-nonemptydictpattern: pattern ':' pattern
-		 | nonemptydictpattern ',' pattern ':' pattern 
-
-
-
 exp: IDENTIFIER
    | const
    | '(' tupleexp ')'
    | '[' iterexp ']'
    | '{' dictexp '}'
-#   | IDENTIFIER arguments		#function call
+   | IDENTIFIER arguments		#function call
    | '(' exp ')'	              #Wrapped in brackets
-#   | match				#lambda
-   | LAMBDA IDENTIFIER ':' exp	#lambda but with python syntax
+   | LAMBDA IDENTIFIER ':' exp
    | exp IF exp ELSE exp
    | exp OPIDENTIFIER exp 		#Operator
    | exp FOR pattern IN exp
@@ -122,5 +102,35 @@ nonemptydictexp: exp ':' exp
 	       | nonemptydictexp ',' exp ':' exp
 
 
-#arguments: ε
-#         | exp arguments
+arguments: exp
+         | exp arguments
+
+
+
+pattern: const
+       | '_'
+       | IDENTIFIER
+#       | nonemptyiterpattern             #TODO
+       | '(' pattern ')'
+       | '(' tuplepattern ')'
+       | '[' iterpattern ']'
+       | '{' dictpattern '}'
+
+tuplepattern: pattern ','
+            | nonsingletuplepattern
+            | nonsingletuplepattern ','
+
+nonsingletuplepattern: pattern ',' pattern
+                     | nonsingletuplepattern ',' pattern
+
+iterpattern: nonemptyiterpattern
+	    | nonemptyiterpattern ','
+
+nonemptyiterpattern: pattern
+		 | nonemptyiterpattern ',' pattern
+
+dictpattern: nonemptydictpattern
+	    | nonemptydictpattern ','
+
+nonemptydictpattern: pattern ':' pattern
+		 | nonemptydictpattern ',' pattern ':' pattern

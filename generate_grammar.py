@@ -82,7 +82,7 @@ with open("grammar_specification.md", "r") as f:
 #    print(tok)
 
 grammar = parser.parse(s)
-output = ""
+output = "from language import *\n"
 
 for name, rules in grammar.items():
     for i, rule in zip(itertools.count(1), rules):
