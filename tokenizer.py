@@ -17,7 +17,6 @@ reserved = {
     "True": "TRUE",
     "False": "FALSE",
     "None": "NONE",
-    "where": "WHERE",
     "do": "DO",
     "return": "RETURN",
 }
@@ -152,16 +151,16 @@ def add_indentation(tokens):
         if t.type == "EOL":
             line_start = True
             yield t
-        elif t.type == "RIGHTARROW":
+        elif t.type in ["RIGHTARROW"]:
             if open_scope:
                 raise ValueError(f"Repeated -> not allowed at line {t.lineno}, column {t.columnno}")
             if line_start:
                 raise ValueError(f"Illegal -> at beginning of line at line {t.lineno}, column {t.columnno}")
             open_scope = True
             yield t
-        elif t.type == "|" and not line_start:
+        elif t.type in ["|"] and not line_start:
             if open_scope:
-                raise ValueError(f"'|' not allowed after '->' at line {t.lineno}, column {t.columnno}")
+                raise ValueError(f"Illegal token after '->' at line {t.lineno}, column {t.columnno}")
             yield t
             indentation.append(t.columnno)
             yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
@@ -180,7 +179,6 @@ def add_indentation(tokens):
                         indentation.pop()
                         yield create_token("UNDENT", t.lexpos, t.lineno, t.columnno)
                     if indentation[-1] != t.columnno:
-                        print(indentation)
                         raise ValueError(f"Inconsistent indentation at line {t.lineno}, column {t.columnno}")
 
             line_start = False

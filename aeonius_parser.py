@@ -5,13 +5,12 @@ from tokenizer import MyLexer, tokens
 precedence = [
     ("nonassoc", "EOL"),
     ("nonassoc", '=', "DEF", "OP"),
-    ("right", 'RIGHTARROW'),
-    #("left", '|'),
+    ("right", 'RIGHTARROW', '|'),
     ("left", ','),
     ("left", ':'),
-    ("nonassoc", "FOR", "IN", "IF", "ELSE"), #TODO: ?
-    ("left", "OPIDENTIFIER"),   #TODO: different precedences/associativitites
-    ("nonassoc", "IDENTIFIER", "INTEGER", "FLOAT", "STRING", "UNDERSCORE"),
+    ("nonassoc", "FOR", "IN", "IF", "ELSE"),
+    ("left", "OPIDENTIFIER"),   #TODO: different precedences/associativities
+    ("nonassoc", "IDENTIFIER", "INTEGER", "FLOAT", "STRING", "UNDERSCORE", "TRUE", "FALSE", "NONE"),
     ("left", '[', ']', '{', '}'),
     ("left", '(', ')'),
 ]

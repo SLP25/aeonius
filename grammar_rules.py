@@ -21,8 +21,8 @@ def p_code_1(v):
     v[0] = Code([])
 
 def p_code_2(v):
-    "code : assignment code"
-    v[0] =  Code([v[1]] + v[2].assignments)
+    "code : code assignment"
+    v[0] = "ok"
 
 def p_assignment_1(v):
     "assignment : pattern '=' exp EOL"
@@ -45,11 +45,19 @@ def p_assignment_5(v):
     v[0] = "ok"
 
 def p_multipatternmatch_1(v):
-    "multipatternmatch : pattern match"
+    "multipatternmatch : assignment"
     v[0] = "ok"
 
 def p_multipatternmatch_2(v):
+    "multipatternmatch : pattern match"
+    v[0] = "ok"
+
+def p_multipatternmatch_3(v):
     "multipatternmatch : multipatternmatch pattern match"
+    v[0] = "ok"
+
+def p_multipatternmatch_4(v):
+    "multipatternmatch : multipatternmatch assignment "
     v[0] = "ok"
 
 def p_multicondmatch_1(v):
@@ -301,7 +309,7 @@ def p_arguments_1(v):
     v[0] = "ok"
 
 def p_arguments_2(v):
-    "arguments : exp arguments"
+    "arguments : arguments exp"
     v[0] = "ok"
 
 def p_pattern_1(v):

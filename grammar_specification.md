@@ -7,21 +7,22 @@ grammar: ε
 aeonius: BEGIN EOL code END
 
 code: ε
-    | assignment code
+    | code assignment
 
-#TODO: where
 assignment: pattern '=' exp EOL
 	   | DEF IDENTIFIER ':' EOL INDENT multipatternmatch UNDENT
           | DEF IDENTIFIER ':' pattern match
           | OP '(' OPIDENTIFIER ')' ':' EOL INDENT multipatternmatch UNDENT
           | OP '(' OPIDENTIFIER ')' ':' pattern match
 
-multipatternmatch: pattern match
+multipatternmatch: assignment
+                 | pattern match
                  | multipatternmatch pattern match
+                 | multipatternmatch assignment 
 
 multicondmatch: exp match
-               | multicondmatch '|' exp match
-               | multicondmatch '|' match
+              | multicondmatch '|' exp match
+              | multicondmatch '|' match
 
 match: RIGHTARROW INDENT exp EOL UNDENT
      | RIGHTARROW INDENT multipatternmatch UNDENT
@@ -52,18 +53,18 @@ nonsingletupleconst: const ',' const
                    | nonsingletupleconst ',' const
 
 iterconst: ε
-	 | nonemptyiterconst
-        | nonemptyiterconst ','
+	  | nonemptyiterconst
+         | nonemptyiterconst ','
 	
 nonemptyiterconst: const
-		 | nonemptyiterconst ',' const
+		   | nonemptyiterconst ',' const
 
 dictconst: ε
-	 | nonemptydictconst
-        | nonemptydictconst ','
+	  | nonemptydictconst
+         | nonemptydictconst ','
 	 
 nonemptydictconst: const ':' const
-		 | nonemptydictconst ',' const ':' const
+		   | nonemptydictconst ',' const ':' const
 
 
 
@@ -83,27 +84,27 @@ exp: IDENTIFIER
    | '{' IDENTIFIER ':' exp FOR pattern IN exp IF exp '}'
 
 tupleexp: exp ','
-            | nonsingletupleexp
-            | nonsingletupleexp ','
+        | nonsingletupleexp
+        | nonsingletupleexp ','
 
 nonsingletupleexp: exp ',' exp
-                     | nonsingletupleexp ',' exp
+                 | nonsingletupleexp ',' exp
 
 iterexp: nonemptyiterexp
        | nonemptyiterexp ','
 
 nonemptyiterexp: exp
-	       | nonemptyiterexp ',' exp
+	        | nonemptyiterexp ',' exp
 
 dictexp: nonemptydictexp
        | nonemptydictexp ','
 	 
 nonemptydictexp: exp ':' exp
-	       | nonemptydictexp ',' exp ':' exp
+	        | nonemptydictexp ',' exp ':' exp
 
 
 arguments: exp
-         | exp arguments
+         | arguments exp
 
 
 
@@ -127,10 +128,10 @@ iterpattern: nonemptyiterpattern
 	    | nonemptyiterpattern ','
 
 nonemptyiterpattern: pattern
-		 | nonemptyiterpattern ',' pattern
+		     | nonemptyiterpattern ',' pattern
 
 dictpattern: nonemptydictpattern
 	    | nonemptydictpattern ','
 
 nonemptydictpattern: pattern ':' pattern
-		 | nonemptydictpattern ',' pattern ':' pattern
+		     | nonemptydictpattern ',' pattern ':' pattern
