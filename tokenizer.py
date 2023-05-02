@@ -17,8 +17,7 @@ reserved = {
     "True": "TRUE",
     "False": "FALSE",
     "None": "NONE",
-    "do": "DO",
-    "return": "RETURN",
+    #"do": "DO",
 }
 
 literals = ":|=()[]{},_"
@@ -31,7 +30,8 @@ tokens = [
     "LEFTARROW",
     "RIGHTARROW",
     "UNDERSCORE",
-    #"KEYARGS",
+    "UNPACKITER",
+    "UNPACKDICT",
     "STRING",
     "PYTHONCODE",
     "BEGIN",
@@ -89,10 +89,13 @@ def t_RIGHTARROW(t):
     r"->"
     return t
 
-#TODO: unpacking (*args and **kargs)
-#def t_KEYARGS(t):
-#    r"\*\*"
-#    return t
+def t_UNPACKDICT(t):
+    r"\*\*"
+    return t
+
+def t_UNPACKITER(t):
+    r"\*"
+    return t
 
 def t_OPIDENTIFIER(t):
     r"[\+\-\*/%<=>\$\^\.]+"
@@ -115,9 +118,9 @@ def t_WS(t):
 # Error handling rule
 def t_ANY_error(t):
     if t.value[0] == '\t':
-        print(f"Illegal character '\\t' at line {t.lexer.lineno}. Please indent using spaces")
+        print(f"lex: '\\t' not expected at line {t.lexer.lineno}. Please indent using spaces")
     else:
-        print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno} (state is {t.lexer.current_state()})")
+        print(f"lex: '{t.value[0]}' not expected at line {t.lexer.lineno} (state is {t.lexer.current_state()})")
     t.lexer.skip(1)
 
 

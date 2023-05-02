@@ -28,6 +28,7 @@ def t_NAME(t):
 
 def t_TEXT(t):
     r'[^\#\n]+'
+    t.value = t.value.strip(" \t")
     return t
 
 def t_error(t):
@@ -86,17 +87,19 @@ output = "from language import *\n"
 
 for name, rules in grammar.items():
     for i, rule in zip(itertools.count(1), rules):
-        funcname = f"p_{name}_{i}"
-        description = f'"{name} : {rule}"'
-        semantic = 'v[0] = "ok"'
+        aux = {} #already existant rules for the symbol
+        for j in itertools.count(1):
+            if func := getattr(grammar_rules, f"p_{name}_{j}", None):
+                lines = inspect.getsource(func).split('\n', 2)
+                aux[lines[1].strip()] = lines[2].strip()
+            else:
+                break
 
-        if func := getattr(grammar_rules, funcname, None):
-            lines = inspect.getsource(func).split('\n', 2)
-            if description == lines[1].strip():
-                semantic = lines[2].strip()
+        description = f'"{name} : {rule}"'
+        semantic = aux.get(description, 'v[0] = "ok"')
 
         output += f"""
-def {funcname}(v):
+def p_{name}_{i}(v):
     {description}
     {semantic}
 """

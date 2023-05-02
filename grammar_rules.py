@@ -57,7 +57,7 @@ def p_multipatternmatch_3(v):
     v[0] = "ok"
 
 def p_multipatternmatch_4(v):
-    "multipatternmatch : multipatternmatch assignment "
+    "multipatternmatch : multipatternmatch assignment"
     v[0] = "ok"
 
 def p_multicondmatch_1(v):
@@ -88,47 +88,43 @@ def p_match_4(v):
     "match : '|' INDENT multicondmatch UNDENT"
     v[0] = "ok"
 
-def p_primitive_1(v):
-    "primitive : INTEGER"
-    v[0] = v[1]
-
-def p_primitive_2(v):
-    "primitive : FLOAT"
-    v[0] = v[1]
-
-def p_primitive_3(v):
-    "primitive : STRING"
-    v[0] = v[1]
-
-def p_primitive_4(v):
-    "primitive : FALSE"
-    v[0] = False
-
-def p_primitive_5(v):
-    "primitive : TRUE"
-    v[0] = True
-
-def p_primitive_6(v):
-    "primitive : NONE"
-    v[0] = None
-
 def p_const_1(v):
-    "const : primitive"
-    v[0] = PrimitiveConstant(v[1])
+    "const : INTEGER"
+    v[0] = "ok"
 
 def p_const_2(v):
+    "const : FLOAT"
+    v[0] = "ok"
+
+def p_const_3(v):
+    "const : STRING"
+    v[0] = "ok"
+
+def p_const_4(v):
+    "const : FALSE"
+    v[0] = "ok"
+
+def p_const_5(v):
+    "const : TRUE"
+    v[0] = "ok"
+
+def p_const_6(v):
+    "const : NONE"
+    v[0] = "ok"
+
+def p_const_7(v):
     "const : '(' const ')'"
     v[0] = BracketConstant(v[2])
 
-def p_const_3(v):
+def p_const_8(v):
     "const : '(' tupleconst ')'"
     v[0] = TupleConstant(v[2])
 
-def p_const_4(v):
+def p_const_9(v):
     "const : '[' iterconst ']'"
     v[0] = ListConstant(v[2])
 
-def p_const_5(v):
+def p_const_10(v):
     "const : '{' dictconst '}'"
     v[0] = DictConstant(v[2])
 
@@ -217,11 +213,11 @@ def p_exp_5(v):
     v[0] = DictExpression(v[2])
 
 def p_exp_6(v):
-    "exp : IDENTIFIER arguments		"
+    "exp : exp arguments %prec FUNC"
     v[0] = "ok"
 
 def p_exp_7(v):
-    "exp : '(' exp ')'	              "
+    "exp : '(' exp ')'"
     v[0] = BracketExpression(v[2])
 
 def p_exp_8(v):
@@ -233,28 +229,60 @@ def p_exp_9(v):
     v[0] = IfElseExpression(v[3], v[1], v[5])
 
 def p_exp_10(v):
-    "exp : exp OPIDENTIFIER exp 		"
-    v[0] = OperationExpression(v[2], v[1], v[3])
+    "exp : exp operator exp %prec OPIDENTIFIER"
+    v[0] = "ok"
 
 def p_exp_11(v):
+    "exp : '(' operator ')'"
+    v[0] = "ok"
+
+def p_exp_12(v):
     "exp : exp FOR pattern IN exp"
     v[0] = ForLoopExpression(v[1], v[3], v[5])
 
-def p_exp_12(v):
+def p_exp_13(v):
     "exp : exp FOR pattern IN exp IF exp"
     v[0] = ForLoopExpression(v[1], v[3], v[5], v[7])
 
-def p_exp_13(v):
+def p_exp_14(v):
     "exp : '{' IDENTIFIER ':' exp FOR pattern IN exp '}'"
     v[0] = DictionaryCompreensionExpression(v[2], v[4], v[6], v[8])
 
-def p_exp_14(v):
+def p_exp_15(v):
     "exp : '{' IDENTIFIER ':' exp FOR pattern IN exp IF exp '}'"
     v[0] = DictionaryCompreensionExpression(v[2], v[4], v[6], v[8], v[10])
 
+def p_arguments_1(v):
+    "arguments : exp %prec FUNC"
+    v[0] = "ok"
+
+def p_arguments_2(v):
+    "arguments : arguments exp %prec FUNC"
+    v[0] = "ok"
+
+def p_operator_1(v):
+    "operator : OPIDENTIFIER"
+    v[0] = "ok"
+
+def p_operator_2(v):
+    "operator : UNPACKITER"
+    v[0] = "ok"
+
+def p_operator_3(v):
+    "operator : UNPACKDICT"
+    v[0] = "ok"
+
+def p_elemexp_1(v):
+    "elemexp : exp"
+    v[0] = "ok"
+
+def p_elemexp_2(v):
+    "elemexp : UNPACKITER exp"
+    v[0] = "ok"
+
 def p_tupleexp_1(v):
-    "tupleexp : exp ','"
-    v[0] = NonEmptyTupleExpressionContent(v[1], True)
+    "tupleexp : elemexp ','"
+    v[0] = "ok"
 
 def p_tupleexp_2(v):
     "tupleexp : nonsingletupleexp"
@@ -265,12 +293,12 @@ def p_tupleexp_3(v):
     v[0] = NonEmptyTupleExpressionContent(v[1].expressions, True)
 
 def p_nonsingletupleexp_1(v):
-    "nonsingletupleexp : exp ',' exp"
-    v[0] = NonEmptyTupleExpressionContent([v[1],v[3]], False)
+    "nonsingletupleexp : elemexp ',' elemexp"
+    v[0] = "ok"
 
 def p_nonsingletupleexp_2(v):
-    "nonsingletupleexp : nonsingletupleexp ',' exp"
-    v[0] = NonEmptyTupleExpressionContent(v[1].expressions + [v[3]], False)
+    "nonsingletupleexp : nonsingletupleexp ',' elemexp"
+    v[0] = "ok"
 
 def p_iterexp_1(v):
     "iterexp : nonemptyiterexp"
@@ -281,12 +309,12 @@ def p_iterexp_2(v):
     v[0] = NonEmptyListExpressionContent(v[1], True)
 
 def p_nonemptyiterexp_1(v):
-    "nonemptyiterexp : exp"
-    v[0] = NonEmptyListExpressionContent([v[1]], False)
+    "nonemptyiterexp : elemexp"
+    v[0] = "ok"
 
 def p_nonemptyiterexp_2(v):
-    "nonemptyiterexp : nonemptyiterexp ',' exp"
-    v[0] = NonEmptyListExpressionContent(v[1].expressions + [v[3]], False)
+    "nonemptyiterexp : nonemptyiterexp ',' elemexp"
+    v[0] = "ok"
 
 def p_dictexp_1(v):
     "dictexp : nonemptydictexp"
@@ -301,15 +329,15 @@ def p_nonemptydictexp_1(v):
     v[0] = NonEmptyDictExpressionContent([(v[1], v[3])], True)
 
 def p_nonemptydictexp_2(v):
+    "nonemptydictexp : UNPACKDICT exp"
+    v[0] = "ok"
+
+def p_nonemptydictexp_3(v):
     "nonemptydictexp : nonemptydictexp ',' exp ':' exp"
     v[0] = NonEmptyDictExpressionContent(v[1].key_value_pairs + [(v[3], v[5])], True)
 
-def p_arguments_1(v):
-    "arguments : exp"
-    v[0] = "ok"
-
-def p_arguments_2(v):
-    "arguments : arguments exp"
+def p_nonemptydictexp_4(v):
+    "nonemptydictexp : nonemptydictexp ',' UNPACKDICT exp"
     v[0] = "ok"
 
 def p_pattern_1(v):
@@ -345,12 +373,20 @@ def p_tuplepattern_1(v):
     v[0] = NonEmptyTuplePatternContent(v[1].patterns, True)
 
 def p_tuplepattern_2(v):
+    "tuplepattern : pattern ',' UNPACKITER pattern"
+    v[0] = "ok"
+
+def p_tuplepattern_3(v):
     "tuplepattern : nonsingletuplepattern"
     v[0] = NonEmptyTuplePatternContent(v[1].patterns, False)
 
-def p_tuplepattern_3(v):
+def p_tuplepattern_4(v):
     "tuplepattern : nonsingletuplepattern ','"
     v[0] = NonEmptyTuplePatternContent(v[1].patterns, True)
+
+def p_tuplepattern_5(v):
+    "tuplepattern : nonsingletuplepattern ',' UNPACKITER pattern"
+    v[0] = "ok"
 
 def p_nonsingletuplepattern_1(v):
     "nonsingletuplepattern : pattern ',' pattern"
@@ -367,6 +403,10 @@ def p_iterpattern_1(v):
 def p_iterpattern_2(v):
     "iterpattern : nonemptyiterpattern ','"
     v[0] = NonEmptyListPatternContent(v[1].patterns, True)
+
+def p_iterpattern_3(v):
+    "iterpattern : nonemptyiterpattern ',' UNPACKITER pattern"
+    v[0] = "ok"
 
 def p_nonemptyiterpattern_1(v):
     "nonemptyiterpattern : pattern"

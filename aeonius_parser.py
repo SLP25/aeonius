@@ -2,6 +2,7 @@ import ply.yacc as yacc
 
 from tokenizer import MyLexer, tokens
 
+#TODO: INDENT, UNDENT, DO, LEFTARROW, PYTHONCODE, BEGIN, END
 precedence = [
     ("nonassoc", "EOL"),
     ("nonassoc", '=', "DEF", "OP"),
@@ -9,7 +10,8 @@ precedence = [
     ("left", ','),
     ("left", ':'),
     ("nonassoc", "FOR", "IN", "IF", "ELSE"),
-    ("left", "OPIDENTIFIER"),   #TODO: different precedences/associativities
+    ("left", "OPIDENTIFIER", "UNPACKITER", "UNPACKDICT"),   #TODO: different precedences/associativities
+    ("right", "FUNC"),
     ("nonassoc", "IDENTIFIER", "INTEGER", "FLOAT", "STRING", "UNDERSCORE", "TRUE", "FALSE", "NONE"),
     ("left", '[', ']', '{', '}'),
     ("left", '(', ')'),
@@ -18,7 +20,10 @@ precedence = [
 from grammar_rules import *
 
 def p_error(v):
-    print(f"Erro sintático no input '{v.type}' (linha {v.lineno}, coluna {v.columnno})")
+    if v == None:
+        print("yacc: unexpected end of file")
+    else:
+        print(f"yacc: '{v.type}' not expected at line {v.lineno}, column {v.columnno}")
 
 
 def parse(st):

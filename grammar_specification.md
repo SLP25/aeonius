@@ -30,15 +30,12 @@ match: RIGHTARROW INDENT exp EOL UNDENT
      | '|' INDENT multicondmatch UNDENT
 
 
-primitive: INTEGER
-         | FLOAT
-         | STRING
-         | FALSE
-         | TRUE
-         | NONE
-
-
-const: primitive
+const: INTEGER
+     | FLOAT
+     | STRING
+     | FALSE
+     | TRUE
+     | NONE
      | '(' const ')'
      | '(' tupleconst ')'
      | '[' iterconst ']'
@@ -73,38 +70,49 @@ exp: IDENTIFIER
    | '(' tupleexp ')'
    | '[' iterexp ']'
    | '{' dictexp '}'
-   | IDENTIFIER arguments		#function call
-   | '(' exp ')'	              #Wrapped in brackets
+   | exp arguments %prec FUNC         	#function call
+   | '(' exp ')'	                     #Wrapped in brackets
    | LAMBDA IDENTIFIER ':' exp
    | exp IF exp ELSE exp
-   | exp OPIDENTIFIER exp 		#Operator
+   | exp operator exp %prec OPIDENTIFIER 	#Operator call
+#   | operator exp		              #unary operator call
+   | '(' operator ')'                     #operator function
    | exp FOR pattern IN exp
    | exp FOR pattern IN exp IF exp
    | '{' IDENTIFIER ':' exp FOR pattern IN exp '}'
    | '{' IDENTIFIER ':' exp FOR pattern IN exp IF exp '}'
 
-tupleexp: exp ','
+arguments: exp %prec FUNC
+         | arguments exp %prec FUNC
+
+operator: OPIDENTIFIER
+        | UNPACKITER
+        | UNPACKDICT
+
+
+elemexp: exp
+       | UNPACKITER exp
+
+tupleexp: elemexp ','
         | nonsingletupleexp
         | nonsingletupleexp ','
 
-nonsingletupleexp: exp ',' exp
-                 | nonsingletupleexp ',' exp
+nonsingletupleexp: elemexp ',' elemexp
+                 | nonsingletupleexp ',' elemexp
 
 iterexp: nonemptyiterexp
        | nonemptyiterexp ','
 
-nonemptyiterexp: exp
-	        | nonemptyiterexp ',' exp
+nonemptyiterexp: elemexp
+	        | nonemptyiterexp ',' elemexp
 
 dictexp: nonemptydictexp
        | nonemptydictexp ','
 	 
 nonemptydictexp: exp ':' exp
+               | UNPACKDICT exp
 	        | nonemptydictexp ',' exp ':' exp
-
-
-arguments: exp
-         | arguments exp
+               | nonemptydictexp ',' UNPACKDICT exp
 
 
 
@@ -118,14 +126,17 @@ pattern: const
        | '{' dictpattern '}'
 
 tuplepattern: pattern ','
+            | pattern ',' UNPACKITER pattern
             | nonsingletuplepattern
             | nonsingletuplepattern ','
+            | nonsingletuplepattern ',' UNPACKITER pattern
 
 nonsingletuplepattern: pattern ',' pattern
                      | nonsingletuplepattern ',' pattern
 
 iterpattern: nonemptyiterpattern
 	    | nonemptyiterpattern ','
+           | nonemptyiterpattern ',' UNPACKITER pattern
 
 nonemptyiterpattern: pattern
 		     | nonemptyiterpattern ',' pattern
