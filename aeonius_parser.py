@@ -6,13 +6,14 @@ from tokenizer import MyLexer, tokens
 precedence = [
     ("nonassoc", "EOL"),
     ("nonassoc", '=', "DEF", "OP"),
-    ("right", 'RIGHTARROW', '|'),
+    ("right", "RIGHTARROW", '|'),
+    ("nonassoc", "RESULTARROW"),
     ("left", ','),
     ("left", ':'),
     ("nonassoc", "FOR", "IN", "IF", "ELSE"),
     ("left", "OPIDENTIFIER", "UNPACKITER", "UNPACKDICT"),   #TODO: different precedences/associativities
     ("right", "FUNC"),
-    ("nonassoc", "IDENTIFIER", "INTEGER", "FLOAT", "STRING", "UNDERSCORE", "TRUE", "FALSE", "NONE"),
+    ("nonassoc", "PRIMITIVE", "INTEGER", "FLOAT", "STRING", "TRUE", "FALSE", "NONE", "UNDERSCORE", "IDENTIFIER"),
     ("left", '[', ']', '{', '}'),
     ("left", '(', ')'),
 ]

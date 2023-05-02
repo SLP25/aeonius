@@ -29,7 +29,7 @@ def p_assignment_1(v):
     v[0] = AssignmentPattern(v[1], v[3])
 
 def p_assignment_2(v):
-    "assignment : DEF IDENTIFIER ':' EOL INDENT multipatternmatch UNDENT"
+    "assignment : DEF IDENTIFIER ':' EOL INDENT defbody UNDENT"
     v[0] = "ok"
 
 def p_assignment_3(v):
@@ -37,27 +37,23 @@ def p_assignment_3(v):
     v[0] = "ok"
 
 def p_assignment_4(v):
-    "assignment : OP '(' OPIDENTIFIER ')' ':' EOL INDENT multipatternmatch UNDENT"
+    "assignment : OP '(' OPIDENTIFIER ')' ':' EOL INDENT defbody UNDENT"
     v[0] = "ok"
 
 def p_assignment_5(v):
     "assignment : OP '(' OPIDENTIFIER ')' ':' pattern match"
     v[0] = "ok"
 
-def p_multipatternmatch_1(v):
-    "multipatternmatch : assignment"
+def p_defbody_1(v):
+    "defbody : code multipatternmatch"
     v[0] = "ok"
 
-def p_multipatternmatch_2(v):
+def p_multipatternmatch_1(v):
     "multipatternmatch : pattern match"
     v[0] = "ok"
 
-def p_multipatternmatch_3(v):
+def p_multipatternmatch_2(v):
     "multipatternmatch : multipatternmatch pattern match"
-    v[0] = "ok"
-
-def p_multipatternmatch_4(v):
-    "multipatternmatch : multipatternmatch assignment"
     v[0] = "ok"
 
 def p_multicondmatch_1(v):
@@ -73,132 +69,52 @@ def p_multicondmatch_3(v):
     v[0] = "ok"
 
 def p_match_1(v):
-    "match : RIGHTARROW INDENT exp EOL UNDENT"
+    "match : RESULTARROW exp EOL"
     v[0] = "ok"
 
 def p_match_2(v):
-    "match : RIGHTARROW INDENT multipatternmatch UNDENT"
+    "match : RIGHTARROW INDENT defbody UNDENT"
     v[0] = "ok"
 
 def p_match_3(v):
-    "match : RIGHTARROW EOL INDENT multipatternmatch UNDENT"
+    "match : RIGHTARROW EOL INDENT defbody UNDENT"
     v[0] = "ok"
 
 def p_match_4(v):
     "match : '|' INDENT multicondmatch UNDENT"
     v[0] = "ok"
 
-def p_const_1(v):
-    "const : INTEGER"
+def p_primitive_1(v):
+    "primitive : INTEGER"
     v[0] = "ok"
 
-def p_const_2(v):
-    "const : FLOAT"
+def p_primitive_2(v):
+    "primitive : FLOAT"
     v[0] = "ok"
 
-def p_const_3(v):
-    "const : STRING"
+def p_primitive_3(v):
+    "primitive : STRING"
     v[0] = "ok"
 
-def p_const_4(v):
-    "const : FALSE"
+def p_primitive_4(v):
+    "primitive : FALSE"
     v[0] = "ok"
 
-def p_const_5(v):
-    "const : TRUE"
+def p_primitive_5(v):
+    "primitive : TRUE"
     v[0] = "ok"
 
-def p_const_6(v):
-    "const : NONE"
+def p_primitive_6(v):
+    "primitive : NONE"
     v[0] = "ok"
-
-def p_const_7(v):
-    "const : '(' const ')'"
-    v[0] = BracketConstant(v[2])
-
-def p_const_8(v):
-    "const : '(' tupleconst ')'"
-    v[0] = TupleConstant(v[2])
-
-def p_const_9(v):
-    "const : '[' iterconst ']'"
-    v[0] = ListConstant(v[2])
-
-def p_const_10(v):
-    "const : '{' dictconst '}'"
-    v[0] = DictConstant(v[2])
-
-def p_tupleconst_1(v):
-    "tupleconst : "
-    v[0] = EmptyTupleConstantContent()
-
-def p_tupleconst_2(v):
-    "tupleconst : const ','"
-    v[0] = NonEmptyTupleConstantContent(v[1], True)
-
-def p_tupleconst_3(v):
-    "tupleconst : nonsingletupleconst"
-    v[0] = NonEmptyTupleConstantContent(v[1].constants, False)
-
-def p_tupleconst_4(v):
-    "tupleconst : nonsingletupleconst ','"
-    v[0] = NonEmptyTupleConstantContent(v[1].constants, True)
-
-def p_nonsingletupleconst_1(v):
-    "nonsingletupleconst : const ',' const"
-    v[0] = NonEmptyTupleConstantContent([v[1], v[3]], False)
-
-def p_nonsingletupleconst_2(v):
-    "nonsingletupleconst : nonsingletupleconst ',' const"
-    v[0] = NonEmptyTupleConstantContent(v[1].constants + [v[3]], False)
-
-def p_iterconst_1(v):
-    "iterconst : "
-    v[0] = EmptyListConstantContent()
-
-def p_iterconst_2(v):
-    "iterconst : nonemptyiterconst"
-    v[0] = NonEmptyListConstantContent(v[1].constants, False)
-
-def p_iterconst_3(v):
-    "iterconst : nonemptyiterconst ','"
-    v[0] = NonEmptyListConstantContent(v[1].constants, True)
-
-def p_nonemptyiterconst_1(v):
-    "nonemptyiterconst : const"
-    v[0] = NonEmptyListConstantContent([v[1]], False)
-
-def p_nonemptyiterconst_2(v):
-    "nonemptyiterconst : nonemptyiterconst ',' const"
-    v[0] = NonEmptyListConstantContent(v[1].constants + [v[3]], False)
-
-def p_dictconst_1(v):
-    "dictconst : "
-    v[0] = EmptyDictConstantContent()
-
-def p_dictconst_2(v):
-    "dictconst : nonemptydictconst"
-    v[0] = NonEmptyDictConstantContent(v[1], False)
-
-def p_dictconst_3(v):
-    "dictconst : nonemptydictconst ','"
-    v[0] = NonEmptyDictConstantContent(v[1], True)
-
-def p_nonemptydictconst_1(v):
-    "nonemptydictconst : const ':' const"
-    v[0] = NonEmptyDictConstantContent([(v[1], v[3])], False)
-
-def p_nonemptydictconst_2(v):
-    "nonemptydictconst : nonemptydictconst ',' const ':' const"
-    v[0] =  NonEmptyDictConstantContent(v[1] + [(v[3], v[5])], False)
 
 def p_exp_1(v):
     "exp : IDENTIFIER"
     v[0] = IdentifierExpression(v[1])
 
 def p_exp_2(v):
-    "exp : const"
-    v[0] = ConstantExpression(v[1])
+    "exp : primitive %prec PRIMITIVE"
+    v[0] = "ok"
 
 def p_exp_3(v):
     "exp : '(' tupleexp ')'"
@@ -286,19 +202,19 @@ def p_tupleexp_1(v):
 
 def p_tupleexp_2(v):
     "tupleexp : nonsingletupleexp"
-    v[0] = NonEmptyTupleExpressionContent(v[1].expressions, False)
+    v[0] = NonEmptyTupleExpressionContent(v[1], False)
 
 def p_tupleexp_3(v):
     "tupleexp : nonsingletupleexp ','"
-    v[0] = NonEmptyTupleExpressionContent(v[1].expressions, True)
+    v[0] = NonEmptyTupleExpressionContent(v[1], True)
 
 def p_nonsingletupleexp_1(v):
     "nonsingletupleexp : elemexp ',' elemexp"
-    v[0] = "ok"
+    v[0] = [v[1], v[3]]
 
 def p_nonsingletupleexp_2(v):
     "nonsingletupleexp : nonsingletupleexp ',' elemexp"
-    v[0] = "ok"
+    v[0] = v[1] + [v[3]]
 
 def p_iterexp_1(v):
     "iterexp : nonemptyiterexp"
@@ -341,8 +257,8 @@ def p_nonemptydictexp_4(v):
     v[0] = "ok"
 
 def p_pattern_1(v):
-    "pattern : const"
-    v[0] = ConstantPattern(v[1])
+    "pattern : primitive %prec PRIMITIVE"
+    v[0] = "ok"
 
 def p_pattern_2(v):
     "pattern : '_'"

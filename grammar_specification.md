@@ -10,63 +10,36 @@ code: ε
     | code assignment
 
 assignment: pattern '=' exp EOL
-	   | DEF IDENTIFIER ':' EOL INDENT multipatternmatch UNDENT
+	   | DEF IDENTIFIER ':' EOL INDENT defbody UNDENT
           | DEF IDENTIFIER ':' pattern match
-          | OP '(' OPIDENTIFIER ')' ':' EOL INDENT multipatternmatch UNDENT
+          | OP '(' OPIDENTIFIER ')' ':' EOL INDENT defbody UNDENT
           | OP '(' OPIDENTIFIER ')' ':' pattern match
 
-multipatternmatch: assignment
-                 | pattern match
+defbody: code multipatternmatch
+
+multipatternmatch: pattern match
                  | multipatternmatch pattern match
-                 | multipatternmatch assignment 
 
 multicondmatch: exp match
               | multicondmatch '|' exp match
               | multicondmatch '|' match
 
-match: RIGHTARROW INDENT exp EOL UNDENT
-     | RIGHTARROW INDENT multipatternmatch UNDENT
-     | RIGHTARROW EOL INDENT multipatternmatch UNDENT
+match: RESULTARROW exp EOL
+     | RIGHTARROW INDENT defbody UNDENT
+     | RIGHTARROW EOL INDENT defbody UNDENT
      | '|' INDENT multicondmatch UNDENT
 
 
-const: INTEGER
-     | FLOAT
-     | STRING
-     | FALSE
-     | TRUE
-     | NONE
-     | '(' const ')'
-     | '(' tupleconst ')'
-     | '[' iterconst ']'
-     | '{' dictconst '}'
-
-tupleconst: ε
-          | const ','
-          | nonsingletupleconst
-          | nonsingletupleconst ','
-
-nonsingletupleconst: const ',' const
-                   | nonsingletupleconst ',' const
-
-iterconst: ε
-	  | nonemptyiterconst
-         | nonemptyiterconst ','
-	
-nonemptyiterconst: const
-		   | nonemptyiterconst ',' const
-
-dictconst: ε
-	  | nonemptydictconst
-         | nonemptydictconst ','
-	 
-nonemptydictconst: const ':' const
-		   | nonemptydictconst ',' const ':' const
-
+primitive: INTEGER
+         | FLOAT
+         | STRING
+         | FALSE
+         | TRUE
+         | NONE
 
 
 exp: IDENTIFIER
-   | const
+   | primitive %prec PRIMITIVE
    | '(' tupleexp ')'
    | '[' iterexp ']'
    | '{' dictexp '}'
@@ -116,7 +89,7 @@ nonemptydictexp: exp ':' exp
 
 
 
-pattern: const
+pattern: primitive %prec PRIMITIVE
        | '_'
        | IDENTIFIER
 #       | nonemptyiterpattern             #TODO

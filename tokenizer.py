@@ -29,6 +29,7 @@ tokens = [
     "FLOAT",
     "LEFTARROW",
     "RIGHTARROW",
+    "RESULTARROW",
     "UNDERSCORE",
     "UNPACKITER",
     "UNPACKDICT",
@@ -87,6 +88,10 @@ def t_LEFTARROW(t):
 
 def t_RIGHTARROW(t):
     r"->"
+    return t
+
+def t_RESULTARROW(t):
+    r"=>"
     return t
 
 def t_UNPACKDICT(t):
@@ -160,6 +165,7 @@ def add_indentation(tokens):
             if line_start:
                 raise ValueError(f"Illegal -> at beginning of line at line {t.lineno}, column {t.columnno}")
             open_scope = True
+            #line_start = False
             yield t
         elif t.type in ["|"] and not line_start:
             if open_scope:
