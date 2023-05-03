@@ -20,3 +20,16 @@ class MultiPatternMatch(Element):
             return False
 
         return self.matches == obj.matches
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        graph.node(id,"MultiPatternMatch")
+        for i in self.matches:
+            idg = GraphVizId.getId()
+            with g.subgraph(name=idg) as c:
+                c.attr(color="blue")
+                c.attr(label="")
+                j=i[0].append_to_graph(c)
+                k=i[1].append_to_graph(c)
+            graph.edge(id,idg)
+        return id

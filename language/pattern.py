@@ -3,6 +3,7 @@ from .element import Element
 from .constant import Constant, PrimitiveConstant
 from .context import Context
 from typing import List, Tuple
+from .graphviz_data import GraphVizId
 
 
 class Pattern(Element):
@@ -24,6 +25,9 @@ class ConstantPattern(Pattern):
             return False
 
         return self.constant == obj.constant
+    
+    def append_to_graph(self, graph):
+        return self.constant.append_to_graph(graph)
 
 
 class AnythingPattern(Pattern):
@@ -38,6 +42,12 @@ class AnythingPattern(Pattern):
 
     def __eq__(self, obj):
         return isinstance(obj, AnythingPattern)
+    
+    def append_to_graph(self, graph):
+        id = GraphVizId.getId()
+        graph.node(id,"AnythingPattern")
+        return id
+        
 
 
 class IdentifierPatttern(Pattern):
@@ -55,6 +65,11 @@ class IdentifierPatttern(Pattern):
             return False
 
         return self.identifier == obj.identifier
+    
+    def append_to_graph(self, graph):
+        id = GraphVizId.getId()
+        graph.node(id,self.identifier)
+        return id
 
 
 class BracketPattern(Pattern):
@@ -72,6 +87,8 @@ class BracketPattern(Pattern):
             return False
 
         return self.pattern == obj.pattern
+    def append_to_graph(self, graph):
+        return self.pattern.append_to_graph(graph)
 
 
 class TuplePatternContent(Element):
@@ -94,6 +111,18 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
             return False
 
         return self.patterns == obj.patterns and self.final_comma == obj.final_comma
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        graph.node(id,"NonEmptyTuplePatternContent")
+        for i in self.patterns:
+            j=i.append_to_graph(graph)
+            graph.edge(id,j)
+        if self.final_comma:
+            idg = GraphVizId.getId()
+            graph.node(idg,',')
+            graph.edge(id,idg)
+        return id
 
 
 class TuplePattern(Pattern):
@@ -111,6 +140,9 @@ class TuplePattern(Pattern):
             return False
 
         return self.pattern == obj.pattern
+    
+    def append_to_graph(self, graph):
+        return self.pattern.append_to_graph(graph)
 
 
 class ListPatternContent(Pattern):
@@ -133,6 +165,18 @@ class NonEmptyListPatternContent(ListPatternContent):
             return False
 
         return self.patterns == obj.patterns and self.final_comma == obj.final_comma
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        graph.node(id,"NonEmptyListPatternContent")
+        for i in self.patterns:
+            j=i.append_to_graph(graph)
+            graph.edge(id,j)
+        if self.final_comma:
+            idg = GraphVizId.getId()
+            graph.node(idg,',')
+            graph.edge(id,idg)
+        return id
 
 
 class PrimitivePattern(Pattern):
@@ -150,6 +194,9 @@ class PrimitivePattern(Pattern):
             return False
 
         return True
+    
+    def append_to_graph(self, graph):
+        return self.primitive.append_to_graph(graph)
 
 
 class UnpackPattern(Pattern):
@@ -167,6 +214,12 @@ class UnpackPattern(Pattern):
             return False
 
         return self.pattern == obj.pattern
+    def append_to_graph(self, graph):
+        id=GraphVizId.getId()
+        graph.node(id,"**")
+        k=self.pattern.append_to_graph(graph)
+        graph.edge(id,k)
+        return id
 
 
 class ListPattern(Pattern):
@@ -184,6 +237,9 @@ class ListPattern(Pattern):
             return False
 
         return self.patterns == obj.patterns
+    
+    def append_to_graph(self, graph):
+        return self.patterns.append_to_graph(graph)
 
 
 class DictPatternContent(Element):
@@ -213,6 +269,26 @@ class NonEmptyDictPatternContent(DictPatternContent):
 
         return self.key_value_pairs == obj.key_value_pairs and self.final_comma == obj.final_comma and self.tail == obj.tail
 
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        graph.node(id,"NonEmptyDictPatternContent")
+        for i in self.key_value_pairs:
+            idg = GraphVizId.getId()
+            with g.subgraph(name=idg) as c:
+                c.attr(color="blue")
+                c.attr(label="")
+                j=i[0].append_to_graph(c)
+                k=i[1].append_to_graph(c)
+            graph.edge(id,idg)
+        if self.final_comma:
+            idg = GraphVizId.getId()
+            graph.node(idg,',')
+            graph.edge(id,idg)
+        if self.tail:
+            tail=self.tail.append_to_graph(graph)
+            graph.edge(id,tail)
+        return id
+    
 
 class DictPattern(Pattern):
     def __init__(self, patterns: DictPatternContent):
@@ -229,3 +305,6 @@ class DictPattern(Pattern):
             return False
 
         return self.patterns == obj.patterns
+    
+    def append_to_graph(self, graph):
+        return self.patterns.append_to_graph(graph)

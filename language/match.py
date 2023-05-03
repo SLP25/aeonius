@@ -23,6 +23,19 @@ class MultiCondMatch(Match):
             return False
 
         return self.matches == obj.matches
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        graph.node(id,"MultiCondMatch")
+        for i in self.matches:
+            idg = GraphVizId.getId()
+            with g.subgraph(name=idg) as c:
+                c.attr(color="blue")
+                c.attr(label="")
+                j=i[0].append_to_graph(c)
+                k=i[1].append_to_graph(c)
+            graph.edge(id,idg)
+        return id
 
 
 class MatchFunctionBody(Match):
@@ -40,6 +53,10 @@ class MatchFunctionBody(Match):
             return False
 
         return self.body == obj.body
+    
+    def append_to_graph(self, graph):
+        #como n sei o q isto representa vou so usar o body
+        return self.body.append_to_graph(graph)
 
 
 class MatchExpression(Match):
@@ -57,6 +74,9 @@ class MatchExpression(Match):
             return False
 
         return self.body == obj.body
+    def append_to_graph(self, graph):
+        #como n sei o q isto representa vou so usar o body
+        return self.body.append_to_graph(graph)
 
 
 class MatchCondition(Match):
@@ -74,3 +94,6 @@ class MatchCondition(Match):
             return False
 
         return self.body == obj.body
+    def append_to_graph(self, graph):
+        #como n sei o q isto representa vou so usar o body
+        return self.body.append_to_graph(graph)

@@ -1,6 +1,7 @@
 from .element import Element
 from .context import Context
 from typing import List
+from .graphviz_data import GraphVizId
 
 
 class Language(Element):
@@ -19,6 +20,14 @@ class Grammar(Element):
 
     def __eq__(self, obj):
         return isinstance(obj, Grammar)
+    def append_to_graph(self, graph):
+        id = GraphVizId.getId()
+        graph.node(id,"Grammar")
+        for i in self.snippets:
+            j=i.append_to_graph(graph)
+            graph.edge(id,j)
+        return id
+        
 
 
 class Code(Element):
@@ -36,6 +45,13 @@ class Code(Element):
             return False
 
         return self.assignments == obj.assignments
+    def append_to_graph(self, graph):
+        id = GraphVizId.getId()
+        graph.node(id,"Code")
+        for i in self.assignments:
+            j=i.append_to_graph(graph)
+            graph.edge(id,j)
+        return id
 
 
 class Aeonius(Language):
@@ -53,6 +69,8 @@ class Aeonius(Language):
             return False
 
         return self.code == obj.code
+    def append_to_graph(self, graph):
+        return self.code.append_to_graph(graph)
 
 
 class Python(Language):
@@ -70,3 +88,8 @@ class Python(Language):
             return False
 
         return self.code == obj.code
+    
+    def append_to_graph(self, graph):
+        id = GraphVizId.getId()
+        graph.node(id,f"Python")
+        return id

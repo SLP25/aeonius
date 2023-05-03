@@ -6,6 +6,7 @@ from .utils import ident_str
 from .context import Context
 from .grammar import Code
 from .pattern_match import MultiPatternMatch
+from .graphviz_data import GraphVizId
 from abc import ABC
 
 
@@ -29,6 +30,17 @@ class AssignmentPattern(Assignment):
             return False
 
         return self.pattern == obj.pattern and self.expression == obj.expression
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        with g.subgraph(name=id) as c:
+            c.attr(color="red")
+            c.attr(label="AssignmentPattern")
+            f1=self.pattern.append_to_graph(c)
+            f2=self.expression.append_to_graph(c)
+        return id
+    
+        
 
 
 class FunctionBody(Element):
@@ -47,6 +59,16 @@ class FunctionBody(Element):
             return False
 
         return self.code == obj.code and self.multiPattern == obj.multiPattern
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        graph.node(id,"FunctionBody")
+        f1=self.code.append_to_graph(graph)
+        f2=self.multiPattern.append_to_graph(graph)
+        graph.edge(id,f1)
+        graph.edge(id,f2)
+        return id
+
 
 
 class AssignmentDefinition(Assignment):
@@ -67,7 +89,16 @@ class AssignmentDefinition(Assignment):
             return False
 
         return self.identifier == obj.identifier and self.patternMatch == obj.patternMatch
-
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        with g.subgraph(name=id) as c:
+            c.attr(color="red")
+            c.attr(label=f"AssignmentDefinition -> {self.identifier}")
+            f2=self.functionBody.append_to_graph(c)
+        return id
+    
+    
 
 class AssignmentOperator(Assignment):
     def __init__(self, identifier: str, functionBody: FunctionBody):
@@ -109,3 +140,12 @@ class AssignmentOperator(Assignment):
             return False
 
         return self.identifier == obj.identifier and self.functionBody == obj.functionBody
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.getId()
+        with g.subgraph(name=id) as c:
+            c.attr(color="red")
+            c.attr(label=f"AssignmentOperator -> {self.identifier}")
+            f2=self.functionBody.append_to_graph(c)
+        return id
+    
