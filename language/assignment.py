@@ -8,8 +8,10 @@ from .grammar import Code
 from .pattern_match import MultiPatternMatch
 from abc import ABC
 
+
 class Assignment(Element, ABC):
     pass
+
 
 class AssignmentPattern(Assignment):
     def __init__(self, pattern: Pattern, expression: Expression):
@@ -21,13 +23,13 @@ class AssignmentPattern(Assignment):
 
     def to_python(self, context: Context):
         return f"{self.pattern.to_python(context)} = {self.expression.to_python(context)}\n"
-    
+
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentPattern):
             return False
-        
+
         return self.pattern == obj.pattern and self.expression == obj.expression
-    
+
 
 class FunctionBody(Element):
     def __init__(self, code: Code, multiPattern: MultiPatternMatch):
@@ -36,15 +38,17 @@ class FunctionBody(Element):
 
     def validate(self, context):
         return True
-    
+
     def to_python(self, context: Context) -> str:
         return "ok"
-    
+
     def __eq__(self, obj):
         if not isinstance(obj, FunctionBody):
             return False
-        
+
         return self.code == obj.code and self.multiPattern == obj.multiPattern
+
+
 class AssignmentDefinition(Assignment):
     def __init__(self, identifier: str, functionBody: FunctionBody):
         self.identifier = identifier
@@ -52,18 +56,18 @@ class AssignmentDefinition(Assignment):
 
     def validate(self, context):
         return True
-    
+
     def to_python(self, context: Context):
         identifier = self.identifier if context.in_global_scope() else context.next_variable()
         new_context = Context(context)
         return f"def {identifier}:\n{ident_str(self.functionBody.to_python(new_context))}"
-    
+
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentDefinition):
             return False
-        
+
         return self.identifier == obj.identifier and self.patternMatch == obj.patternMatch
-    
+
 
 class AssignmentOperator(Assignment):
     def __init__(self, identifier: str, functionBody: FunctionBody):
@@ -88,19 +92,20 @@ class AssignmentOperator(Assignment):
 
         for key in replacement_table.keys():
             identifier = identifier.replace(key, replacement_table[key])
-        
+
         return identifier
 
     def validate(self, context):
         return True
-    
+
     def to_python(self, context: Context):
-        identifier = AssignmentOperator.clean_identifier(self.identifier) if context.in_global_scope() else context.next_variable()
-        
+        identifier = AssignmentOperator.clean_identifier(
+            self.identifier) if context.in_global_scope() else context.next_variable()
+
         return f"def {identifier}({context.next_variable()}):\n{ident_str(self.functionBody.to_python(Context(context)))}"
-    
+
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentOperator):
             return False
-        
+
         return self.identifier == obj.identifier and self.functionBody == obj.functionBody
