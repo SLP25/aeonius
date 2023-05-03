@@ -36,6 +36,8 @@ primitive: INTEGER
          | FALSE
          | TRUE
          | NONE
+         | '[' ']'
+         | '{' '}'
 
 
 exp: IDENTIFIER
@@ -83,7 +85,6 @@ dictexp: nonemptydictexp
        | nonemptydictexp ','
 	 
 nonemptydictexp: exp ':' exp
-               | UNPACKDICT exp
 	        | nonemptydictexp ',' exp ':' exp
                | nonemptydictexp ',' UNPACKDICT exp
 
@@ -119,3 +120,4 @@ dictpattern: nonemptydictpattern
 
 nonemptydictpattern: pattern ':' pattern
 		     | nonemptydictpattern ',' pattern ':' pattern
+                   | nonemptydictpattern ',' UNPACKDICT pattern

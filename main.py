@@ -78,6 +78,7 @@ def main():
 
     if(args["d"]):
         print(parsed.to_python(Context()))
+
     else:
         with open(args["output"], "w") as g:
             g.write(parsed.to_python(Context()))

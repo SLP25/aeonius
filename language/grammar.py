@@ -1,5 +1,4 @@
 from .element import Element
-from .assignment import Assignment
 from .context import Context
 from typing import List
 
@@ -21,7 +20,7 @@ class Grammar(Element):
         return isinstance(obj, Grammar)
     
 class Code(Element):
-    def __init__(self, assignments: List[Assignment]):
+    def __init__(self, assignments):
         self.assignments = assignments
 
     def validate(self, context):
@@ -36,7 +35,7 @@ class Code(Element):
         
         return self.assignments == obj.assignments
 
-class aeonius(Language):
+class Aeonius(Language):
     def __init__(self, code: Code):
         self.code = code
     
@@ -47,7 +46,7 @@ class aeonius(Language):
         return self.code.to_python(context)
     
     def __eq__(self, obj):
-        if not isinstance(obj, aeonius):
+        if not isinstance(obj, Aeonius):
             return False
         
         return self.code == obj.code

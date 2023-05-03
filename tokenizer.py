@@ -217,7 +217,7 @@ class MyLexer:
 if __name__ == "__main__":
     lexer = MyLexer()
     
-    with open("examples/test.txt", "r") as f:
+    with open("examples/error", "r") as f:
         lexer.input(f.read())
 
     while t := lexer.token():

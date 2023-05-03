@@ -1,9 +1,11 @@
+from language.context import Context
 from .element import Element
 from .pattern import Pattern
 from .expression import Expression
-from .pattern_match import PatternMatch
 from .utils import ident_str
 from .context import Context
+from .grammar import Code
+from .pattern_match import MultiPatternMatch
 from abc import ABC
 
 class Assignment(Element, ABC):
@@ -27,10 +29,26 @@ class AssignmentPattern(Assignment):
         return self.pattern == obj.pattern and self.expression == obj.expression
     
 
+class FunctionBody(Element):
+    def __init__(self, code: Code, multiPattern: MultiPatternMatch):
+        self.code = code
+        self.multiPattern = multiPattern
+
+    def validate(self, context):
+        return True
+    
+    def to_python(self, context: Context) -> str:
+        return "ok"
+    
+    def __eq__(self, obj):
+        if not isinstance(obj, FunctionBody):
+            return False
+        
+        return self.code == obj.code and self.multiPattern == obj.multiPattern
 class AssignmentDefinition(Assignment):
-    def __init__(self, identifier: str, patternMatch: PatternMatch):
+    def __init__(self, identifier: str, functionBody: FunctionBody):
         self.identifier = identifier
-        self.patternMatch = patternMatch
+        self.functionBody = functionBody
 
     def validate(self, context):
         return True
@@ -38,7 +56,7 @@ class AssignmentDefinition(Assignment):
     def to_python(self, context: Context):
         identifier = self.identifier if context.in_global_scope() else context.next_variable()
         new_context = Context(context)
-        return f"def {identifier}:\n{ident_str(self.patternMatch.to_python(new_context))}"
+        return f"def {identifier}:\n{ident_str(self.functionBody.to_python(new_context))}"
     
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentDefinition):
@@ -48,9 +66,9 @@ class AssignmentDefinition(Assignment):
     
 
 class AssignmentOperator(Assignment):
-    def __init__(self, identifier: str, patternMatch: PatternMatch):
+    def __init__(self, identifier: str, functionBody: FunctionBody):
         self.identifier = identifier
-        self.patternMatch = patternMatch
+        self.functionBody = functionBody
 
     @staticmethod
     def clean_identifier(identifier: str):
@@ -79,10 +97,10 @@ class AssignmentOperator(Assignment):
     def to_python(self, context: Context):
         identifier = AssignmentOperator.clean_identifier(self.identifier) if context.in_global_scope() else context.next_variable()
         
-        return f"def {identifier}({context.next_variable()}):\n{ident_str(self.patternMatch.to_python(Context(context)))}"
+        return f"def {identifier}({context.next_variable()}):\n{ident_str(self.functionBody.to_python(Context(context)))}"
     
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentOperator):
             return False
         
-        return self.identifier == obj.identifier and self.patternMatch == obj.patternMatch
+        return self.identifier == obj.identifier and self.functionBody == obj.functionBody

@@ -1,3 +1,4 @@
+from language.context import Context
 from .element import Element
 from .constant import Constant
 from .pattern import Pattern
@@ -39,6 +40,63 @@ class ConstantExpression(Expression):
         
         return self.constant == obj.constant
     
+class OperatorApplication(Expression):
+    def __init__(self, operator: str):
+        self.operator = operator
+
+
+    def validate(self, context) -> bool:
+        return True
+    
+    @staticmethod
+    def clean_identifier(identifier: str):
+        replacement_table = {
+            "*": "times",
+            "+": "plus",
+            "-": "minus",
+            "/": "div",
+            "%": "mod",
+            "<": "lt",
+            "=": "eq",
+            ">": "gt",
+            "$": "dollar",
+            "^": "power",
+            ".": "dot"
+        }
+
+        for key in replacement_table.keys():
+            identifier = identifier.replace(key, replacement_table[key])
+        
+        return identifier
+
+    def to_python(self, context: Context) -> str:
+        return OperatorApplication.clean_identifier(self.operator)
+    
+    def __eq__(self, obj):
+        if not isinstance(obj, OperatorApplication):
+            return False
+        
+        return self.operator == obj.operator
+
+class FunctionApplicationExpression(Expression):
+    def __init__(self, function: Expression, arguments: List[Expression]):
+        self.function = function
+        self.arguments = arguments
+
+    def validate(self, context):
+        return True
+    
+    def to_python(self, context: Context) -> str:
+        res = self.function.to_python(context)
+        for arg in self.arguments:
+            res += f" {arg.to_python(context)}" 
+        return res
+    
+    def __eq__(self, obj):
+        if not isinstance(obj, FunctionApplicationExpression):
+            return False
+        
+        return self.function == obj.function and self.arguments == obj.arguments
 
 class LambdaExpression(Expression):
     def __init__(self, identifier: str, expression: Expression):
@@ -168,6 +226,22 @@ class BracketExpression(Expression):
 class TupleExpressionContent(Element):
     pass
     
+
+class UnpackExpression(Expression):
+    def __init__(self, expression: Expression):
+        self.expression = expression
+
+    def validate(self, context):
+        return True
+    
+    def to_python(self, context: Context) -> str:
+        return "ok"
+    
+    def __eq__(self, obj):
+        if not isinstance(obj, UnpackExpression):
+            return False
+        
+        return self.expression == obj.expression
 class NonEmptyTupleExpressionContent(TupleExpressionContent):
     def __init__(self, expressions: TupleExpressionContent, final_comma: bool = False):
         self.expressions = expressions
@@ -223,6 +297,7 @@ class NonEmptyListExpressionContent(ListExpressionContent):
         return True
     
     def to_python(self, context: Context):
+        print(self.expressions)
         result = ",".join(map(lambda exp: exp.to_python(context), self.expressions))
 
         if self.final_comma:
@@ -257,9 +332,10 @@ class DictExpressionContent(Element):
     pass
     
 class NonEmptyDictExpressionContent(DictExpressionContent):
-    def __init__(self, key_value_pairs: List[Tuple[Expression, Expression]], final_comma:bool = False):
+    def __init__(self, key_value_pairs: List[Tuple[Expression, Expression]], final_comma:bool = False, tail: Expression = None):
         self.key_value_pairs = key_value_pairs
         self.final_comma = final_comma
+        self.tail = tail
 
     def validate(self, context):
         return True
@@ -270,13 +346,16 @@ class NonEmptyDictExpressionContent(DictExpressionContent):
         if self.final_comma:
             result += ","
 
+        if self.tail is not None:
+            result += f"**{self.tail.to_python(context)}"
+
         return result
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyDictExpressionContent):
             return False
         
-        return self.key_value_pairs == obj.key_value_pairs and self.final_comma == obj.final_comma
+        return self.key_value_pairs == obj.key_value_pairs and self.final_comma == obj.final_comma and self.tail == obj.tail
 
 class DictExpression(Expression):
     def __init__(self, expressions: DictExpressionContent):
@@ -285,7 +364,7 @@ class DictExpression(Expression):
         return True
 
     def to_python(self, context: Context):
-        return f"{self.expressions.to_python(context)}"
+        return f"{{ {self.expressions.to_python(context)}}}"
     
     def __eq__(self, obj):
         if not isinstance(obj, DictExpression):

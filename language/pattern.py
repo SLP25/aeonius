@@ -1,5 +1,6 @@
+from language.context import Context
 from .element import Element
-from .constant import Constant
+from .constant import Constant, PrimitiveConstant
 from .context import Context
 from typing import List, Tuple
 
@@ -43,7 +44,7 @@ class IdentifierPatttern(Pattern):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return self.identifier
     
     def __eq__(self, obj):
         if not isinstance(obj, IdentifierPatttern):
@@ -60,7 +61,7 @@ class BracketPattern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"({self.pattern.to_python(context)})"
     
     def __eq__(self, obj):
         if not isinstance(obj, BracketPattern):
@@ -80,7 +81,7 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return ",".join(map(lambda p: p.to_python(context), self.patterns)) + ("," if self.final_comma else "")
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyTuplePatternContent):
@@ -100,7 +101,7 @@ class TuplePattern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"({self.pattern.to_python(context)})"
     
     def __eq__(self, obj):
         if not isinstance(obj, TuplePattern):
@@ -121,13 +122,45 @@ class NonEmptyListPatternContent(ListPatternContent):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        return ",".join(map(lambda p: p.to_python(context), self.patterns)) + ("," if self.final_comma else "")
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyListPatternContent):
             return False
         
         return self.patterns == obj.patterns and self.final_comma == obj.final_comma
+
+class PrimitivePattern(Pattern):
+    def __init__(self, primitive: PrimitiveConstant):
+        self.primitive = primitive
+
+    def validate(self, context):
+        return True
+    
+    def to_python(self, context):
+        return self.primitive.to_python(context)
+    
+    def __eq__(self, obj):
+        if not isinstance(obj, PrimitivePattern):
+            return False
+        
+        return True
+
+class UnpackPattern(Pattern):
+    def __init__(self, pattern: Pattern):
+        self.pattern = pattern
+
+    def validate(self, context):
+        return True
+    
+    def to_python(self, context: Context) -> str:
+        return f"*{self.pattern.to_python(context)}"
+    
+    def __eq__(self, obj):
+        if not isinstance(obj, UnpackPattern):
+            return False
+        
+        return self.pattern == obj.pattern
 
 class ListPattern(Pattern):
     def __init__(self, patterns: ListPatternContent):
@@ -137,7 +170,7 @@ class ListPattern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"[{self.patterns.to_python(context)}]"
     
     def __eq__(self, obj):
         if not isinstance(obj, ListPattern):
@@ -150,21 +183,26 @@ class DictPatternContent(Element):
     pass
     
 class NonEmptyDictPatternContent(DictPatternContent):
-    def __init__(self, key_value_pairs: List[Tuple[Pattern, Pattern]], final_comma:bool = False):
+    def __init__(self, key_value_pairs: List[Tuple[Pattern, Pattern]], final_comma:bool = False, tail:Pattern = None):
         self.key_value_pairs = key_value_pairs
         self.final_comma = final_comma
+        self.tail = tail
 
     def validate(self, context):
         return True
     
     def to_python(self, context: Context):
-        return "ok"
+        content = map(lambda kv: f"{kv[0].to_python(context)}:{kv[1].to_python(context)}", self.key_value_pairs)
+        base = ",".join(content)
+        base += ("," if self.final_comma else "") 
+        base += f",**{self.tail.to_python(context)}" if self.tail else ""
+        return base
     
     def __eq__(self, obj):
         if not isinstance(obj, NonEmptyDictPatternContent):
             return False
         
-        return self.key_value_pairs == obj.key_value_pairs and self.final_comma == obj.final_comma
+        return self.key_value_pairs == obj.key_value_pairs and self.final_comma == obj.final_comma and self.tail == obj.tail
 
 class DictPattern(Pattern):
     def __init__(self, patterns: DictPatternContent):
@@ -173,7 +211,7 @@ class DictPattern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"{{ {self.patterns.to_python(self.patterns)} }}"
     
     def __eq__(self, obj):
         if not isinstance(obj, DictPattern):

@@ -1,15 +1,13 @@
 from .element import Element
 from .match import Match
 from .context import Context
-from typing import List
+from .pattern import Pattern
+from typing import Tuple
 
-class PatternMatch(Element):
-    def __init__(self, match: Match, other_matches: 'PatternMatch' = None):
-        self.matches = [match]
-        if other_matches is not None:
-            for m in other_matches.matches:
-                self.matches += [m]
-                
+class MultiPatternMatch(Element):
+    def __init__(self, matches: Tuple[Pattern, Match]):
+        self.matches = matches
+
     def validate(self, context):
         return True
 
@@ -17,7 +15,8 @@ class PatternMatch(Element):
         return "ok"
     
     def __eq__(self, obj):
-        if not isinstance(obj, PatternMatch):
+        if not isinstance(obj, MultiPatternMatch):
             return False
         
         return self.matches == obj.matches
+    
