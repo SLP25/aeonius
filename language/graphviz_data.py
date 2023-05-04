@@ -26,17 +26,17 @@ class GraphVizId():
     @staticmethod
     def content(graph,nextList,tail=False):
         id = GraphVizId.getId()
-        s=""
-        for p in len(nextList):
+        s="<i>List|"
+        for p in range(len(nextList)):
             s+=f"<{p}>|,|"
         if not tail:
             s=s[:-3]
         else:
             s=s[:-1]
-        graph.node(id,nohtml(s))
+        graph.node(id,nohtml(s),shape="record")
         for p,i in enumerate(nextList):
             graph.edge(id+f":{p}",i)
-        return id
+        return id+":i"
     
     @staticmethod
     def pairToGraph(graph,e1,e2,l1,l2):
@@ -73,7 +73,7 @@ class GraphVizId():
     def encapsulate(graph,next,initial='[',end=']'):
         id = GraphVizId.getId()
         s=f"{initial}|<0>|{end}"
-        graph.node(id,nohtml(s))
+        graph.node(id,nohtml(s),shape="record")
         if next is not None:
             graph.edge(id+f":0",next)
         return id

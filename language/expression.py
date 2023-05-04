@@ -138,39 +138,36 @@ class LambdaExpression(Expression):
         return self.identifier == obj.identifier and self.expression == obj.identifier
     
     def append_to_graph(self, graph):
-        id=GraphVizId.createNode(graph,f"LambdaExpression -> {self.identifier}")
+        id=GraphVizId.createNode(graph,nohtml(f"<f0>LambdaExpression|{self.identifier}|:|<f1>"),shape="record")
         expression =self.expression.append_to_graph(graph)
-        graph.edge(id,expression)
-        return id
+        graph.edge(id+":f1",expression)
+        return id+":f0"
         
 
 
 class IfElseExpression(Expression):
     def __init__(self, condition: Expression, true_expression: Expression, false_expression: Expression):
         self.condition = condition
-        self.true_expresion = true_expression
+        self.true_expression = true_expression
         self.false_expression = false_expression
 
     def validate(self, context):
         return True
 
     def to_python(self, context: Context):
-        return f"{self.true_expresion.to_python(context)} if {self.condition.to_python(context)} else {self.false_expression.to_python(context)}"
+        return f"{self.true_expression.to_python(context)} if {self.condition.to_python(context)} else {self.false_expression.to_python(context)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, IfElseExpression):
             return False
 
-        return self.condition == obj.condition and self.true_expresion == obj.true_expresion and self.false_expression == obj.false_expression
+        return self.condition == obj.condition and self.true_expression == obj.true_expresion and self.false_expression == obj.false_expression
 
     def append_to_graph(self, graph):
-        id=GraphVizId.createNode(graph,nohtml('<f0> IF|<f1> Then|<f2> Else'))
-        expression = self.expression.append_to_graph(graph)
-        then = self.condition.append_to_graph(graph)
-        elsee = self.false_expression.append_to_graph(graph)
-        graph.edge(id+":f0",expression)
-        graph.edge(id+":f1",then)
-        graph.edge(id+":f2",elsee)
+        id=GraphVizId.createNode(graph,nohtml('<f0> IF|<f1> Then|<f2> Else'),shape="record")
+        graph.edge(id+":f0",self.condition.append_to_graph(graph))
+        graph.edge(id+":f1",self.true_expression.append_to_graph(graph))
+        graph.edge(id+":f2",self.false_expression.append_to_graph(graph))
         return id
 
 class ForLoopExpression(Expression):
@@ -199,10 +196,10 @@ class ForLoopExpression(Expression):
     
     def append_to_graph(self, graph):
         if self.condition is not None:
-            id=GraphVizId.createNode(graph,nohtml('<f0> FOR|<f1> VALUE|<f2> IN|<f3>IF'))
+            id=GraphVizId.createNode(graph,nohtml('<f0> FOR|<f1> VALUE|<f2> IN|<f3>IF'),shape="record")
             graph.edge(id+":f3",self.condition.append_to_graph(graph))
         else:
-            id=GraphVizId.createNode(graph,nohtml('<f0> FOR|<f1> VALUE|<f2> IN'))
+            id=GraphVizId.createNode(graph,nohtml('<f0> FOR|<f1> VALUE|<f2> IN'),shape="record")
         graph.edge(id+":f0",self.expression.append_to_graph(graph))
         graph.edge(id+":f1",self.pattern.append_to_graph(graph))
         graph.edge(id+":f2",self.set.append_to_graph(graph))
@@ -236,10 +233,10 @@ class DictionaryCompreensionExpression(Expression):
     
     def append_to_graph(self, graph):
         if self.condition is not None:
-            id=GraphVizId.createNode(graph, nohtml('<f0> KEY|<f1> VALUE|<f2> FOR VALUE|<f3>IN|<f4>IF'))
+            id=GraphVizId.createNode(graph, nohtml('<f0> KEY|<f1> VALUE|<f2> FOR VALUE|<f3>IN|<f4>IF'),shape="record")
             graph.edge(id+":f4",self.condition.append_to_graph(graph))
         else:
-            id=GraphVizId.createNode(graph, nohtml('<f0> KEY|<f1> VALUE|<f2> FOR VALUE|<f3>IN'))
+            id=GraphVizId.createNode(graph, nohtml('<f0> KEY|<f1> VALUE|<f2> FOR VALUE|<f3>IN'),shape="record")
         graph.edge(id+":f0",GraphVizId.createNode(graph,self.identifier))
         graph.edge(id+":f1",self.expression.append_to_graph(graph))
         graph.edge(id+":f2",self.pattern.append_to_graph(graph))
@@ -266,10 +263,10 @@ class OperationExpression(Expression):
         return self.left_expression == obj.left_expression and self.right_expression == obj.right_expression and self.identifier == obj.identifier
     
     def append_to_graph(self, graph):
-        id=GraphVizId.createNode(graph, nohtml(f'Operation|{self.identifier}|(|<f1>Left|,|<f2> Right|)'))
-        graph.edge(id+":f1",self.expression.append_to_graph(graph))
-        graph.edge(id+":f2",self.condition.append_to_graph(graph))
-        return id
+        id=GraphVizId.createNode(graph, nohtml(f'<f0>Operation|\\{self.identifier}|<f1>Left|<f2> Right'),shape="record")
+        graph.edge(id+":f1",self.left_expression.append_to_graph(graph))
+        graph.edge(id+":f2",self.right_expression.append_to_graph(graph))
+        return id+":f0"
 
 class BracketExpression(Expression):
     def __init__(self, expression: Expression):
@@ -337,7 +334,7 @@ class NonEmptyTupleExpressionContent(TupleExpressionContent):
         return self.expressions == obj.expressions and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions),self.final_comma))
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions)),self.final_comma)
 
 
 class TupleExpression(Expression):
@@ -389,7 +386,7 @@ class NonEmptyListExpressionContent(ListExpressionContent):
         return self.expressions == obj.expressions and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions),self.final_comma))
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions)),self.final_comma)
 
 
 
