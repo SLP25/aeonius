@@ -62,11 +62,9 @@ class FunctionBody(Element):
     
     def append_to_graph(self,graph):
         id = GraphVizId.getId()
-        graph.node(id,"FunctionBody")
-        f1=self.code.append_to_graph(graph)
-        f2=self.multiPattern.append_to_graph(graph)
-        graph.edge(id,f1)
-        graph.edge(id,f2)
+        id=GraphVizId.createNode(graph,"FunctionBody")
+        graph.edge(id,self.code.append_to_graph(graph))
+        graph.edge(id,self.multiPattern.append_to_graph(graph))
         return id
 
 

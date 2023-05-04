@@ -1,7 +1,7 @@
 from .element import Element
 from .context import Context
 from typing import List, Tuple
-
+from .graphviz_data import GraphVizId
 
 class Constant(Element):
     pass
@@ -24,9 +24,7 @@ class PrimitiveConstant(Constant):
         return type(self.primitive) == type(obj.primitive) and self.primitive == obj.primitive
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"Primitive: "+str(self.primitive))
-        return id
+        return GraphVizId.createNode(graph,"Primitive: "+str(self.primitive))
 
 
 class BracketConstant(Constant):
@@ -46,7 +44,7 @@ class BracketConstant(Constant):
         return self.constant == obj.constant
     
     def append_to_graph(self,graph):
-        return self.constant.append_to_graph(graph)
+        return GraphVizId.encapsulate(graph,self.constant.append_to_graph(graph),initial='(',end=')')
 
 
 class TupleConstantContent(Element):
@@ -67,9 +65,7 @@ class EmptyTupleConstantContent(TupleConstantContent):
         return isinstance(obj, EmptyTupleConstantContent)
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"EmptyTupleConstantContent")
-        return id
+        return GraphVizId.createNode(graph,"EmptyTupleConstantContent")
 
 
 class NonEmptyTupleConstantContent(TupleConstantContent):
@@ -90,12 +86,7 @@ class NonEmptyTupleConstantContent(TupleConstantContent):
         return self.constants == obj.constants and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"NonEmptyTupleConstantContent")
-        for i in self.constants:
-            j=i.append_to_graph(graph)
-            graph.edge(id,j)
-        return id
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.constants)))
 
 
 class TupleConstant(Constant):
@@ -115,8 +106,7 @@ class TupleConstant(Constant):
         return self.constant == obj.constant
     
     def append_to_graph(self,graph):
-        return self.constant.append_to_graph(graph)
-
+        return GraphVizId.encapsulate(graph,self.constant.append_to_graph(graph),initial='(',end=')')
 
 class ListConstantContent(Constant):
     pass
@@ -136,9 +126,7 @@ class EmptyListConstantContent(ListConstantContent):
         return isinstance(obj, EmptyListConstantContent)
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"EmptyListConstantContent+")
-        return id
+        return GraphVizId.createNode(graph,"EmptyListConstantContent")
 
 
 class NonEmptyListConstantContent(ListConstantContent):
@@ -159,12 +147,7 @@ class NonEmptyListConstantContent(ListConstantContent):
         return self.constants == obj.constants and self.final_comma == obj.final_comma
 
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"NonEmptyListConstantContent")
-        for i in self.constants:
-            j=i.append_to_graph(graph)
-            graph.edge(id,j)
-        return id
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.constants)),self.final_comma)
 
 
 
@@ -206,9 +189,7 @@ class EmptyDictConstantContent(DictConstantContent):
         return isinstance(obj, EmptyDictConstantContent)
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"EmptyDictConstantContent+")
-        return id
+        return GraphVizId.createNode(graph,"EmptyDictConstantContent")
 
 
 class NonEmptyDictConstantContent(DictConstantContent):
@@ -229,17 +210,7 @@ class NonEmptyDictConstantContent(DictConstantContent):
         return self.key_value_pairs == obj.key_value_pairs and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"NonEmptyDictConstantContent")
-        for i in self.key_value_pairs:
-            idg = GraphVizId.getId()
-            with g.subgraph(name=idg) as c:
-                c.attr(color="blue")
-                c.attr(label="")
-                j=i[0].append_to_graph(c)
-                k=i[1].append_to_graph(c)
-            graph.edge(id,idg)
-        return id
+        return GraphVizId.content(graph, map(lambda xy: GraphVizId.pairToGraph(graph, xy[0].append_to_graph(graph), xy[1].append_to_graph(graph),"KEY","VALUE"),self.key_value_pairs),self.final_comma)
 
 
 class DictConstant(Constant):
@@ -259,4 +230,4 @@ class DictConstant(Constant):
         return self.constants == obj.constants
     
     def append_to_graph(self,graph):
-        return self.constants.append_to_graph(graph)
+        return GraphVizId.encapsulate(graph, self.constants.append_to_graph(graph),initial='{',end='}')

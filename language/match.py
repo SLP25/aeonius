@@ -2,6 +2,7 @@ from .element import Element
 from .context import Context
 from .expression import Expression
 from typing import List, Tuple
+from .graphviz_data import GraphVizId
 
 
 class Match(Element):
@@ -25,16 +26,9 @@ class MultiCondMatch(Match):
         return self.matches == obj.matches
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"MultiCondMatch")
+        id = GraphVizId.createNode(graph,"MultiCondMatch")
         for i in self.matches:
-            idg = GraphVizId.getId()
-            with g.subgraph(name=idg) as c:
-                c.attr(color="blue")
-                c.attr(label="")
-                j=i[0].append_to_graph(c)
-                k=i[1].append_to_graph(c)
-            graph.edge(id,idg)
+            graph.edge(id,GraphVizId.pairToGraph(graph, i[0].append_to_graph(graph), i[1].append_to_graph(graph),"Expression","Match"))
         return id
 
 

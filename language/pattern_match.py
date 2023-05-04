@@ -3,6 +3,7 @@ from .match import Match
 from .context import Context
 from .pattern import Pattern
 from typing import Tuple
+from .graphviz_data import GraphVizId
 
 
 class MultiPatternMatch(Element):
@@ -22,14 +23,9 @@ class MultiPatternMatch(Element):
         return self.matches == obj.matches
     
     def append_to_graph(self,graph):
-        id = GraphVizId.getId()
-        graph.node(id,"MultiPatternMatch")
+        id = GraphVizId.createNode(graph,"MultiPatternMatch")
         for i in self.matches:
             idg = GraphVizId.getId()
-            with g.subgraph(name=idg) as c:
-                c.attr(color="blue")
-                c.attr(label="")
-                j=i[0].append_to_graph(c)
-                k=i[1].append_to_graph(c)
+            GraphVizId.pairToGraph(graph, i[0].append_to_graph(graph), i[1].append_to_graph(graph),"PATTERN","MATCH")
             graph.edge(id,idg)
         return id
