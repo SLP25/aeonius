@@ -27,7 +27,7 @@ class GraphVizId():
     def content(graph,nextList,tail=False):
         id = GraphVizId.getId()
         s=""
-        for p in len(nextList):
+        for p in range(len(nextList)):
             s+=f"<{p}>|,|"
         if not tail:
             s=s[:-3]

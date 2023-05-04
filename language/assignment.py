@@ -33,7 +33,7 @@ class AssignmentPattern(Assignment):
     
     def append_to_graph(self,graph):
         id = GraphVizId.getId()
-        with g.subgraph(name=id) as c:
+        with graph.subgraph(name=id) as c:
             c.attr(color="red")
             c.attr(label="AssignmentPattern")
             f1=self.pattern.append_to_graph(c)
@@ -90,7 +90,7 @@ class AssignmentDefinition(Assignment):
     
     def append_to_graph(self,graph):
         id = GraphVizId.getId()
-        with g.subgraph(name=id) as c:
+        with graph.subgraph(name=id) as c:
             c.attr(color="red")
             c.attr(label=f"AssignmentDefinition -> {self.identifier}")
             f2=self.functionBody.append_to_graph(c)
@@ -141,7 +141,7 @@ class AssignmentOperator(Assignment):
     
     def append_to_graph(self,graph):
         id = GraphVizId.getId()
-        with g.subgraph(name=id) as c:
+        with graph.subgraph(name=id) as c:
             c.attr(color="red")
             c.attr(label=f"AssignmentOperator -> {self.identifier}")
             f2=self.functionBody.append_to_graph(c)

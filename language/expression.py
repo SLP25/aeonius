@@ -165,8 +165,8 @@ class IfElseExpression(Expression):
 
     def append_to_graph(self, graph):
         id=GraphVizId.createNode(graph,nohtml('<f0> IF|<f1> Then|<f2> Else'))
-        expression = self.expression.append_to_graph(graph)
-        then = self.condition.append_to_graph(graph)
+        expression = self.condition.append_to_graph(graph)
+        then = self.true_expresion.append_to_graph(graph)
         elsee = self.false_expression.append_to_graph(graph)
         graph.edge(id+":f0",expression)
         graph.edge(id+":f1",then)
@@ -267,8 +267,8 @@ class OperationExpression(Expression):
     
     def append_to_graph(self, graph):
         id=GraphVizId.createNode(graph, nohtml(f'Operation|{self.identifier}|(|<f1>Left|,|<f2> Right|)'))
-        graph.edge(id+":f1",self.expression.append_to_graph(graph))
-        graph.edge(id+":f2",self.condition.append_to_graph(graph))
+        graph.edge(id+":f1",self.left_expression.append_to_graph(graph))
+        graph.edge(id+":f2",self.right_expression.append_to_graph(graph))
         return id
 
 class BracketExpression(Expression):
@@ -337,7 +337,7 @@ class NonEmptyTupleExpressionContent(TupleExpressionContent):
         return self.expressions == obj.expressions and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions),self.final_comma))
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions)),self.final_comma)
 
 
 class TupleExpression(Expression):
@@ -389,7 +389,7 @@ class NonEmptyListExpressionContent(ListExpressionContent):
         return self.expressions == obj.expressions and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions),self.final_comma))
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.expressions)),self.final_comma)
 
 
 

@@ -5,7 +5,7 @@ import graphviz
 
 def test(file):
     
-    with open(f"tests/input/{file}") as f:
+    with open(f"examples/test.txt") as f:
         input = f.read()
     dot = graphviz.Digraph() 
 

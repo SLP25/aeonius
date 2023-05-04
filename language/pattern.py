@@ -109,9 +109,10 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
 
         return self.patterns == obj.patterns and self.final_comma == obj.final_comma
     
+    #def append_to_graph(self,graph):
+    #    return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.patterns)),tail=self.final_comma)
     def append_to_graph(self,graph):
-        return GraphVizId.content(graph, map(lambda x:x.append_to_graph(graph),self.patterns),tail=self.final_comma)
-
+        return GraphVizId.createNode(graph,str(self.patterns))
 
 class TuplePattern(Pattern):
     def __init__(self, pattern: TuplePatternContent):
