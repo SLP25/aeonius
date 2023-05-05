@@ -1,11 +1,11 @@
-"""Aeonius
+"""aeonius
 #Batata
 """
 
 def ola(x,y):
     print("Batata")
 
-"""Aeonius
+"""aeonius
 (x, y) = (5, 6)               #comentario
 #x, y = (5, 6)
 [y, _] = ["Batata", "Cenoura"]
@@ -17,4 +17,11 @@ b = 1 if 2 == 3 else 4
 
 #h = x -> y -> x / y
 h = lambda x: lambda y: x / y
+
+def teste:
+    var = 2 + 3
+    x -> []  => 5
+         [a,b] | a == 2 => 3
+               |=> 6
+
 """

@@ -1,6 +1,7 @@
 from .element import Element
 from .context import Context
 from .expression import Expression
+from .utils import ident_str
 from typing import List, Tuple
 from .graphviz_data import GraphVizId
 
@@ -16,8 +17,13 @@ class MultiCondMatch(Match):
     def validate(self, context):
         return True
 
+    def __single_if__(self, expression: Expression, match: Match, context: Context):
+        cond = f"if {expression.to_python(context)}:"
+        code = ident_str(match.to_python(context))
+        return f"{cond}\n {code}"
+    
     def to_python(self, context: Context) -> str:
-        return "ok"
+        return "\n".join(map(lambda em: self.__single_if__(em[0], em[1], context), self.matches))
 
     def __eq__(self, obj):
         if not isinstance(obj, MultiCondMatch):
@@ -40,7 +46,7 @@ class MatchFunctionBody(Match):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"def y(z):{ident_str(self.body.to_python(context))}"
 
     def __eq__(self, obj):
         if not isinstance(obj, MatchFunctionBody):
@@ -61,7 +67,7 @@ class MatchExpression(Match):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return f"return {self.body.to_python(context)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, MatchExpression):
@@ -81,7 +87,7 @@ class MatchCondition(Match):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return self.body.to_python(context)
 
     def __eq__(self, obj):
         if not isinstance(obj, MatchCondition):

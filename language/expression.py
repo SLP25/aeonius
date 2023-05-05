@@ -299,7 +299,7 @@ class UnpackExpression(Expression):
         return True
 
     def to_python(self, context: Context) -> str:
-        return "ok"
+        return f"*{self.expression.to_python(context)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, UnpackExpression):
