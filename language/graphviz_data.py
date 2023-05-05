@@ -24,9 +24,9 @@ class GraphVizId():
         return id
     
     @staticmethod
-    def content(graph,nextList,tail=False):
+    def content(graph,nextList,tail=False,type="List"):
         id = GraphVizId.getId()
-        s="<i>List|"
+        s=f"<i>{type}|"
         for p in range(len(nextList)):
             s+=f"<{p}>|,|"
         if not tail:

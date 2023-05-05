@@ -110,10 +110,10 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
         return self.patterns == obj.patterns and self.final_comma == obj.final_comma
     
     #def append_to_graph(self,graph):
-    #    return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.patterns)),tail=self.final_comma)
+    #    return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.patterns)),tail=self.final_comma,type="Tuple")
     def append_to_graph(self,graph):
         return GraphVizId.createNode(graph,str(self.patterns))
-    #    return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.patterns)),tail=self.final_comma)
+    #    return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.patterns)),tail=self.final_comma,type="Tuple")
 
 
 class TuplePattern(Pattern):
@@ -251,7 +251,7 @@ class NonEmptyDictPatternContent(DictPatternContent):
         argsList= list(map(lambda xy: GraphVizId.pairToGraph(graph, xy[0].append_to_graph(graph), xy[1].append_to_graph(graph),"KEY","VALUE"),self.key_value_pairs))
         if self.tail:
             argsList.append(GraphVizId.createUnpackNode(graph, self.tail.append_to_graph(graph)))
-        return GraphVizId.content(graph,argsList,self.final_comma)
+        return GraphVizId.content(graph,argsList,self.final_comma,type="Dict")
     
 
 class DictPattern(Pattern):

@@ -86,7 +86,7 @@ class NonEmptyTupleConstantContent(TupleConstantContent):
         return self.constants == obj.constants and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.constants)))
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.constants)),type="Tuple")
 
 
 class TupleConstant(Constant):
@@ -210,7 +210,7 @@ class NonEmptyDictConstantContent(DictConstantContent):
         return self.key_value_pairs == obj.key_value_pairs and self.final_comma == obj.final_comma
     
     def append_to_graph(self,graph):
-        return GraphVizId.content(graph, map(lambda xy: GraphVizId.pairToGraph(graph, xy[0].append_to_graph(graph), xy[1].append_to_graph(graph),"KEY","VALUE"),self.key_value_pairs),self.final_comma)
+        return GraphVizId.content(graph, map(lambda xy: GraphVizId.pairToGraph(graph, xy[0].append_to_graph(graph), xy[1].append_to_graph(graph),"KEY","VALUE"),self.key_value_pairs),self.final_comma,type="Dict")
 
 
 class DictConstant(Constant):
