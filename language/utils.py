@@ -15,7 +15,9 @@ def clean_identifier(identifier: str):
         ">": "gt",
         "$": "dollar",
         "^": "power",
-        ".": "dot"
+        ".": "dot",
+        "&": "nd",
+        "|": "ou"
     }
 
     for key in replacement_table.keys():
