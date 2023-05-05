@@ -3,7 +3,7 @@ class Context():
 
     def __init__(self, function_name="", arg_name="", parent=None):
         self.parent = parent
-        self.symbols = {}
+        self.symbols = {} if parent is None else parent.symbols
         self.function_name = function_name
         self.arg_name = arg_name
 
