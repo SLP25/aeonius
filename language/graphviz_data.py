@@ -40,33 +40,19 @@ class GraphVizId():
     
     @staticmethod
     def pairToGraph(graph,e1,e2,l1,l2):
-        entry=GraphVizId.createNode(graph,nohtml(f"<key>{l1}|<value>{l2}"))
+        entry=GraphVizId.createNode(graph,nohtml(f"<key>{l1}|<value>{l2}"),shape="record")
         graph.edge(entry+f":key",e1)
         graph.edge(entry+f":value",e2)
         return entry
     
-    @staticmethod
-    def dictToGraph(graph,key,value):
-        entry=GraphVizId.createNode(graph,nohtml("<key>KEY|<value>VALUE"))
-        graph.edge(entry+":key",key)
-        graph.edge(entry+":value",value)
-        return entry
-    
+      
     @staticmethod
     def function(graph,function,args):
-        entry=GraphVizId.createNode(graph,nohtml("<func>FUNCTION|<args>ARGS"))
+        entry=GraphVizId.createNode(graph,nohtml("<func>FUNCTION|<args>ARGS"),shape="record")
         graph.edge(entry+":func",function)
         for i in args:
             graph.edge(entry+":args",i)
         return entry
-    
-    @staticmethod
-    def multicondmatch(graph,expression,match):
-        entry=GraphVizId.createNode(graph,nohtml("<expression>Expression|<match>Match"))
-        graph.edge(entry+":expression",expression)
-        graph.edge(entry+":match",match)
-        return entry
-        
         
     
     @staticmethod
