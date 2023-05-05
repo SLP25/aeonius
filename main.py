@@ -82,7 +82,24 @@ def main():
     else:
         with open(args["output"], "w") as g:
             g.write(parsed.to_python(Context()))
+            
+def import_main():
+    args = parse_args(single, valid_arguments)
+    with open(args["input"], "r") as f:
+        data = f.read()
 
+    parsed = parse(data)
+    exec(parsed.to_python(Context()))
+
+
+def aeonius_import(path):
+    with open(path, "r") as f:
+        data = f.read()
+        parsed = parse(data)
+        exec(parsed.to_python(Context()))
 
 if __name__ == "__main__":
     main()
+
+        
+    
