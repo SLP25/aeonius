@@ -17,7 +17,7 @@ class ConstantPattern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return self.constant.to_python(context)
 
     def __eq__(self, obj):
         if not isinstance(obj, ConstantPattern):
@@ -34,7 +34,7 @@ class AnythingPattern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        return "ok"
+        return ""
 
     def __eq__(self, obj):
         return isinstance(obj, AnythingPattern)
@@ -87,6 +87,7 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
         return True
 
     def to_python(self, context: Context):
+        print(self.patterns)
         return ",".join(map(lambda p: p.to_python(context), self.patterns)) + ("," if self.final_comma else "")
 
     def __eq__(self, obj):
@@ -118,9 +119,10 @@ class ListPatternContent(Pattern):
 
 
 class NonEmptyListPatternContent(ListPatternContent):
-    def __init__(self, patterns: List[Pattern], final_comma: bool = False):
+    def __init__(self, patterns: List[Pattern], final_comma: bool = False, tail = None):
         self.patterns = patterns
         self.final_comma = final_comma
+        self.tail = tail
 
     def validate(self, context):
         return True
@@ -132,7 +134,7 @@ class NonEmptyListPatternContent(ListPatternContent):
         if not isinstance(obj, NonEmptyListPatternContent):
             return False
 
-        return self.patterns == obj.patterns and self.final_comma == obj.final_comma
+        return self.patterns == obj.patterns and self.final_comma == obj.final_comma and self.tail == obj.tail
 
 
 class PrimitivePattern(Pattern):

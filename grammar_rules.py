@@ -85,7 +85,7 @@ def p_multicondmatch_2(v):
 
 def p_multicondmatch_3(v):
     "multicondmatch : multicondmatch '|' match"
-    v[0] = MultiCondMatch(v[1].matches + [(Constant(True), v[3])])
+    v[0] = MultiCondMatch(v[1].matches + [(PrimitiveConstant(True), v[3])])
 
 
 def p_match_1(v):
@@ -120,7 +120,7 @@ def p_primitive_2(v):
 
 def p_primitive_3(v):
     "primitive : STRING"
-    v[0] = PrimitiveConstant(v[1])
+    v[0] = PrimitiveConstant('"' + v[1] + '"')
 
 
 def p_primitive_4(v):
@@ -392,12 +392,12 @@ def p_tuplepattern_5(v):
 
 def p_nonsingletuplepattern_1(v):
     "nonsingletuplepattern : pattern ',' pattern"
-    v[0] = NonEmptyTuplePatternContent([(v[1], v[3])], False)
+    v[0] = NonEmptyTuplePatternContent([v[1], v[3]], False)
 
 
 def p_nonsingletuplepattern_2(v):
     "nonsingletuplepattern : nonsingletuplepattern ',' pattern"
-    v[0] = NonEmptyTuplePatternContent([(v[1], v[3])], False)
+    v[0] = NonEmptyTuplePatternContent([v[1], v[3]], False)
 
 
 def p_iterpattern_1(v):
