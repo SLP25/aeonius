@@ -34,9 +34,9 @@ class AssignmentPattern(Assignment):
     
     def append_to_graph(self,graph:Graph):
         id = GraphVizId.getId()
-        with graph.subgraph(name=id) as c:
-            g=GraphVizId.createNode(graph,nohtml("<0>AssignmentPattern|<1>Pattern|<2>Expression"),shape="record")
-            c.attr(color="red")
+        with graph.subgraph(name="cluster"+id) as c:
+            g=GraphVizId.createNode(c,nohtml("<0>AssignmentPattern|<1>Pattern|<2>Expression"),shape="record")
+            c.attr(color="blue")
             c.attr(label="AssignmentPattern")
             c.edge(g+":1",self.pattern.append_to_graph(c))
             c.edge(g+":2",self.expression.append_to_graph(c))
@@ -91,9 +91,9 @@ class AssignmentDefinition(Assignment):
     
     def append_to_graph(self,graph:Graph):
         id = GraphVizId.getId()
-        with graph.subgraph(name=id) as c:
-            g=GraphVizId.createNode(graph,nohtml(f"<0>AssignmentDefinition|{self.identifier}|<2>functionBody"),shape="record")
-            c.attr(color="red")
+        with graph.subgraph(name="cluster"+id) as c:
+            g=GraphVizId.createNode(c,nohtml(f"<0>AssignmentDefinition|{self.identifier}|<2>functionBody"),shape="record")
+            c.attr(color="blue")
             c.attr(label="AssignmentPattern")
             c.edge(g+":2",self.functionBody.append_to_graph(c))
         return g+":0"
@@ -142,9 +142,9 @@ class AssignmentOperator(Assignment):
     
     def append_to_graph(self,graph:Graph):
         id = GraphVizId.getId()
-        with graph.subgraph(name=id) as c:
-            g=GraphVizId.createNode(graph,nohtml(f"<0>AssignmentOperator|\\{self.identifier}|<2>functionBody"),shape="record")
-            c.attr(color="red")
+        with graph.subgraph(name="cluster"+id) as c:
+            g=GraphVizId.createNode(c,nohtml(f"<0>AssignmentOperator|\\{self.identifier}|<2>functionBody"),shape="record")
+            c.attr(color="blue")
             c.attr(label="AssignmentOperator")
             c.edge(g+":2",self.functionBody.append_to_graph(c))
         return g+":0"
