@@ -46,7 +46,10 @@ class MatchFunctionBody(Match):
         return True
 
     def to_python(self, context: Context):
-        return f"def y(z):{ident_str(self.body.to_python(context))}"
+        function_name = context.next_variable()
+        arg_name = context.next_variable()
+        new_context = Context(function_name, arg_name, context)
+        return f"def {function_name}({arg_name}):{ident_str(self.body.to_python(new_context))}"
 
     def __eq__(self, obj):
         if not isinstance(obj, MatchFunctionBody):

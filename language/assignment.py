@@ -54,7 +54,7 @@ class FunctionBody(Element):
         return True
 
     def to_python(self, context: Context) -> str:
-        return self.code.to_python(context) + "\n" + self.multiPattern.to_python(context) + '\nreturn y'
+        return f"{self.code.to_python(context)}\n{self.multiPattern.to_python(context)}\nreturn return_{context.function_name}"
 
     def __eq__(self, obj):
         if not isinstance(obj, FunctionBody):
@@ -80,8 +80,9 @@ class AssignmentDefinition(Assignment):
 
     def to_python(self, context: Context):
         identifier = self.identifier if context.in_global_scope() else context.next_variable()
-        new_context = Context(context)
-        return f"def {identifier}(x):\n{ident_str(self.functionBody.to_python(new_context))}"
+        arg_name = context.next_variable()
+        new_context = Context(identifier, arg_name, context)
+        return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}"
 
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentDefinition):
