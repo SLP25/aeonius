@@ -423,7 +423,7 @@ def p_nonemptyiterpattern_1(v):
 
 def p_nonemptyiterpattern_2(v):
     "nonemptyiterpattern : nonemptyiterpattern ',' pattern"
-    v[0] = NonEmptyListPatternContent(v[1].patterns + [v[3]], False, v[1].tail)
+    v[0] = NonEmptyListPatternContent(v[1].patterns + [v[3]], False)
 
 
 def p_dictpattern_1(v):

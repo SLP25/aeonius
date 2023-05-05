@@ -3,6 +3,7 @@ from .context import Context
 from .expression import Expression
 from .utils import ident_str
 from typing import List, Tuple
+from .graphviz_data import GraphVizId
 
 
 class Match(Element):
@@ -29,6 +30,12 @@ class MultiCondMatch(Match):
             return False
 
         return self.matches == obj.matches
+    
+    def append_to_graph(self,graph):
+        id = GraphVizId.createNode(graph,"MultiCondMatch")
+        for i in self.matches:
+            graph.edge(id,GraphVizId.pairToGraph(graph, i[0].append_to_graph(graph), i[1].append_to_graph(graph),"Expression","Match"))
+        return id
 
 
 class MatchFunctionBody(Match):
@@ -46,6 +53,10 @@ class MatchFunctionBody(Match):
             return False
 
         return self.body == obj.body
+    
+    def append_to_graph(self, graph):
+        #como n sei o q isto representa vou so usar o body
+        return self.body.append_to_graph(graph)
 
 
 class MatchExpression(Match):
@@ -63,6 +74,9 @@ class MatchExpression(Match):
             return False
 
         return self.body == obj.body
+    def append_to_graph(self, graph):
+        #como n sei o q isto representa vou so usar o body
+        return self.body.append_to_graph(graph)
 
 
 class MatchCondition(Match):
@@ -80,3 +94,6 @@ class MatchCondition(Match):
             return False
 
         return self.body == obj.body
+    def append_to_graph(self, graph):
+        #como n sei o q isto representa vou so usar o body
+        return self.body.append_to_graph(graph)
