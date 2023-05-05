@@ -1,10 +1,13 @@
+autopep8==2.0.2
 cfgv==3.3.1
 distlib==0.3.6
 filelock==3.10.7
+graphviz==0.20.1
 identify==2.5.22
 nodeenv==1.7.0
 platformdirs==3.2.0
 ply==3.11
 pre-commit==3.2.1
+pycodestyle==2.10.0
 PyYAML==6.0
 virtualenv==20.21.0

@@ -1,0 +1,5 @@
+digraph {
+	0 [label=Grammar]
+	1 [label=Python]
+	0 -> 1
+}
