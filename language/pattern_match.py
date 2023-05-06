@@ -28,7 +28,7 @@ class MultiPatternMatch(Element):
     def append_to_graph(self, graph):
         id = GraphVizId.createNode(graph, "MultiPatternMatch")
         for i in self.matches:
-            idg=GraphVizId.pairToGraph(graph, i[0].append_to_graph(
+            idg = GraphVizId.pairToGraph(graph, i[0].append_to_graph(
                 graph), i[1].append_to_graph(graph), "PATTERN", "MATCH")
             graph.edge(id, idg)
         return id

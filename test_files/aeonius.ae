@@ -1,9 +1,49 @@
 """aeonius
 
+#Auxiliar (temp enquanto nao ha aeonius)
+def length:
+    []     => 0
+    [_,*t] => 1 + (length t)
+
+def filter:
+    f -> [] => []
+         [h,*t] => [h] + (filter f t) if f h else (filter f t)
+
+def map:
+    f -> [] => []
+         [h,*t] => [f h] + (map t)
+
+def fst:
+    (x,y) => x
+
+def snd:
+    (x,y) => y
+
+def head:
+    [h,*_] => h
+
+def negate:
+    b => False if b else True
+
+def id:
+    x => x
+
+def flip:
+    f => f
+
+def is_number:
+    f => True
+
+def ascii:
+    _ => 1
+
+def dup:
+    f => (f,f)
+
 #1
 def enumFromTo:
     x -> y | x > y => []
-           |       => [start] + (enumFromTo (x + 1) y)
+           |       => [x] + (enumFromTo (x + 1) y)
 
 
 #2

@@ -15,7 +15,7 @@ class Element(ABC):
     @abstractmethod
     def __eq__(self, obj) -> bool:
         pass
-    
+
     @abstractmethod
-    def append_to_graph(self,graph:Graph)-> int:
+    def append_to_graph(self, graph: Graph) -> int:
         pass

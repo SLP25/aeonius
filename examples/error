@@ -1,15 +1,11 @@
 """aeonius
-x = 2 if j == [] else 0
-y = 2 * x for x in [1,2]
 
-def batata:
-    x -> y => x + y
 
-x = batata 5 2
-
-[a,*b] = [2,3,4]
-{x:5,2:3,**k} = {2:3,4:5,6:6}
+def a:
+    x =>
+        g x
+        def g:
+           y => 2 
 """
 
-def ola():
-    print("Ola")
+print(a(5))

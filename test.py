@@ -2,8 +2,9 @@ import os
 import filecmp
 from aeonius_parser import parse
 
+
 def test(file):
-    
+
     with open(f"tests/input/{file}") as f:
         input = f.read()
 
@@ -11,6 +12,7 @@ def test(file):
         expected = f.read()
 
     return parse(input) == expected
+
 
 input_files = set(os.listdir("tests/input/"))
 output_files = set(os.listdir("tests/output/"))

@@ -3,16 +3,17 @@ import filecmp
 from aeonius_parser import parse
 import graphviz
 
+
 def test(file):
-    
+
     with open(f"examples/test.txt") as f:
         input = f.read()
-    dot = graphviz.Digraph() 
+    dot = graphviz.Digraph()
 
     parse(input).append_to_graph(dot)
     dot.render('graph', view=True, format='png')
 
+
 input_files = set(os.listdir("tests/input/"))
 for file in input_files:
     test(file)
-

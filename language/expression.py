@@ -84,7 +84,7 @@ class FunctionApplicationExpression(Expression):
     def to_python(self, context: Context):
         res = self.function.to_python(context)
         for arg in self.arguments:
-            res += f" {arg.to_python(context)}"
+            res += f" ({arg.to_python(context)})"
         return res
 
     def __eq__(self, obj):
