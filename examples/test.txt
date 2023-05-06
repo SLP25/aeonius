@@ -21,8 +21,8 @@ h = lambda x: lambda y: x / y
 
 def teste:
     var = 2 + 3
-    x -> []  => 5
+    x -> []  => 2 || 4
          [a,b] | a == 2 => 3
-               |=> 6
+               | => 6
 
 """

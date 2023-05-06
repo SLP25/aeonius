@@ -18,6 +18,11 @@ reserved = {
     "False": "FALSE",
     "None": "NONE",
     #"do": "DO",
+    #"<-": "LEFTARROW",
+    "->": "RIGHTARROW",
+    "=>": "RESULTARROW",
+    "*": "UNPACKITER",
+    "**": "UNPACKDICT"
 }
 
 literals = ":|=()[]{},_"
@@ -27,18 +32,10 @@ tokens = [
     "OPIDENTIFIER",
     "INTEGER",
     "FLOAT",
-    "LEFTARROW",
-    "RIGHTARROW",
-    "RESULTARROW",
-    "UNDERSCORE",
-    "UNPACKITER",
-    "UNPACKDICT",
     "STRING",
     "PYTHONCODE",
     "BEGIN",
     "END",
-    "INDENT",
-    "UNDENT",
     "WS",
     "EOL",
 ] + list(reserved.values())
@@ -82,30 +79,12 @@ def t_STRING(t):
     t.value = t.value.strip("\"'")
     return t
 
-def t_LEFTARROW(t):
-    r"<-"
-    return t
-
-def t_RIGHTARROW(t):
-    r"->"
-    return t
-
-def t_RESULTARROW(t):
-    r"=>"
-    return t
-
-def t_UNPACKDICT(t):
-    r"\*\*"
-    return t
-
-def t_UNPACKITER(t):
-    r"\*"
-    return t
-
 def t_OPIDENTIFIER(t):
-    r"[\+\-\*/%<=>\$\^\.]+"
+    r"[\+\-\*/%<=>\$\^&\|\.]+"
     if len(t.value) == 1 and t.value in literals:
         t.type = t.value
+    else:
+        t.type = reserved.get(t.value, "OPIDENTIFIER")  # Check for reserved symbols
     return t
 
 def t_IDENTIFIER(t):
@@ -213,6 +192,10 @@ class MyLexer:
 
     def token(self):
         return next(self.ans, None)
+
+    @staticmethod
+    def tokens():
+        return list(set(tokens) - {"WS"}) + ["INDENT", "UNDENT"]
 
 if __name__ == "__main__":
     lexer = MyLexer()

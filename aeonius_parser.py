@@ -1,7 +1,9 @@
 from grammar_rules import *
 import ply.yacc as yacc
 
-from tokenizer import MyLexer, tokens
+from tokenizer import MyLexer
+
+tokens = MyLexer.tokens()
 
 # TODO: INDENT, UNDENT, DO, LEFTARROW, PYTHONCODE, BEGIN, END
 precedence = [
@@ -16,7 +18,7 @@ precedence = [
     ("left", "OPIDENTIFIER", "UNPACKITER", "UNPACKDICT"),
     ("right", "FUNC"),
     ("nonassoc", "PRIMITIVE", "INTEGER", "FLOAT", "STRING",
-     "TRUE", "FALSE", "NONE", "UNDERSCORE", "IDENTIFIER"),
+     "TRUE", "FALSE", "NONE", '_', "IDENTIFIER"),
     ("left", '[', ']', '{', '}'),
     ("left", '(', ')'),
 ]

@@ -5,7 +5,7 @@ import grammar_rules
 import inspect
 
 literals = ["|", "ε"]
-tokens = ['COMMENT', 'NAME', 'TEXT']
+tokens = ['NAME', 'TEXT']
 t_ignore = " \t\n"
 
 

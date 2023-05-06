@@ -15,7 +15,10 @@ class PrimitiveConstant(Constant):
         return True
 
     def to_python(self, context: Context):
-        return str(self.primitive)
+        if isinstance(self.primitive, str):
+            return "'" + self.primitive + "'"
+        else:
+            return str(self.primitive)
 
     def __eq__(self, obj):
         if not isinstance(obj, PrimitiveConstant):
@@ -24,7 +27,7 @@ class PrimitiveConstant(Constant):
         return type(self.primitive) == type(obj.primitive) and self.primitive == obj.primitive
     
     def append_to_graph(self,graph):
-        return GraphVizId.createNode(graph,"Primitive: "+str(self.primitive))
+        return GraphVizId.createNode(graph, "Primitive: " + self.to_python())
 
 
 class BracketConstant(Constant):

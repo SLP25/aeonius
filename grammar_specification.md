@@ -63,6 +63,7 @@ arguments: exp %prec FUNC
 operator: OPIDENTIFIER
         | UNPACKITER
         | UNPACKDICT
+        | '|'
 
 
 elemexp: exp
