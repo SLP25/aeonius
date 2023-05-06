@@ -80,7 +80,7 @@ def t_STRING(t):
     return t
 
 def t_OPIDENTIFIER(t):
-    r"[\+\-\*/%<=>\$\^&\|\.]+"
+    r"[\+\-\*/%<=>\$\^&\|\.!]+"
     if len(t.value) == 1 and t.value in literals:
         t.type = t.value
     else:

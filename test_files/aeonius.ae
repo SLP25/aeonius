@@ -17,9 +17,9 @@ op (++):
     [h, *t] -> x => [h] + (t ++ x)
 
 #4
-op (index):
+op (!!):
     [h,*t] -> 0 => h
-           -> n => t index (n - 1)
+              n => t !! (n - 1)
 
 
 #5
@@ -31,22 +31,22 @@ def reverse:
 #6
 def take:
     n -> []     => []
-      -> [h,*t] => [h] + take (n - 1) t if n > 0 else []
+         [h,*t] => [h] + take (n - 1) t if n > 0 else []
 
 #7
 def drop:
     n -> []     => []
-      -> [h,*t] => drop (n - 1) t if n > 0 else [h,*t]
+         [h,*t] => drop (n - 1) t if n > 0 else [h,*t]
 
 #8
 def zip:
     []       -> _        => []
     [h1,*t1] -> []       => []
-             -> [h2,*t2] => [(h1,h2)] + (zip t1 t2)
+                [h2,*t2] => [(h1,h2)] + (zip t1 t2)
 
 #9
 def elem:
-    x => length . (filter (x ==))
+    x => length (filter (lambda y: x == y)) > 0
 
 #10
 def replicate:
@@ -56,16 +56,16 @@ def replicate:
 #11
 def intersperce:
     x -> []      => []
-      -> [h]     => [h]
-      -> [h, *t] => [h,x] + (intersperce x t) 
+         [h]     => [h]
+         [h, *t] => [h,x] + (intersperce x t) 
 
 #12
 def group:
     []      => []
     [h]     => [[h]]
     [h, *t] => 
-        [[h1, *t1],*t2] = group t
         [[h,h1,*t1],*t2] if h == h1 else [[h],[h1,*t1],*t2]
+        [[h1, *t1],*t2] = group t
 
 
 #13
@@ -76,7 +76,7 @@ def concat:
 #14
 def inits:
     []     => []
-    [h,*t] => [] + (map (h + ) (inits t))
+    [h,*t] => [] + (map (lambda y: h + y) (inits t))
 
 #15
 def tails:
@@ -94,18 +94,17 @@ def isSuffixOf:
 #18
 def isSubsequenceOf:
     s -> l =>
-        def aux:
-            s => isPrefixOf s
-
-        length ((filter id) . (map (aux s)) l) > 0
+            length ((filter id) . (map (aux s)) l) > 0
+            def aux:
+                s => isPrefixOf s
 
 
 #19
 def elemIndices:
     x -> l => 
-        n = length l
-        l1 = enumFromTo 0 (n - 1)
-        map snd (filter (lambda (y,_): y == x) (zip l l1))
+            map snd (filter (lambda y: (fst y) == x) (zip l l1))
+            n = length l
+            l1 = enumFromTo 0 (n - 1)
 
 
 #20
@@ -114,12 +113,12 @@ nub = (map head) . (group)
 #21
 def delete:
     x -> []     => []
-      -> [h,*t] => [h] + (delete x t) if x <> h else t
+         [h,*t] => [h] + (delete x t) if x <> h else t
 
 #22
 def deleteAll:
     l -> []     => l
-      -> [h,*t] => deleteAll (delete h l) t
+         [h,*t] => deleteAll (delete h l) t
 
 #23
 def union:
@@ -132,7 +131,7 @@ def intersect:
 #25
 def insert:
     a -> []              => [a]
-      -> [h, *t] | h > a => [a,h,*t]
+         [h, *t] | h > a => [a,h,*t]
                  |       => [h] + (insert a t)
 
 #26
@@ -144,10 +143,11 @@ unlines = intersperce "\n"
 #28
 def max:
     [h]    => [h]
-    [h,*t] => m1 if m1 > h else h
+    [h,*t] => 
+        m1 if m1 > h else h
         m1 = max t
 
-pMaior = lambda x: index (max x)
+pMaior = lambda x: x !! (max x)
 
 
 #29
@@ -182,17 +182,17 @@ def iSort:
 #35
 def menor:
     ""     -> "" => False
-           -> _  => True
+              _  => True
     [h,*t] -> ""                                => False
-           -> [h1,*t1] | (ascii h) > (ascii h1) => False
+              [h1,*t1] | (ascii h) > (ascii h1) => False
                        | (ascii h) < (ascii h1) => True
                        |                        => menor t t1
 
 #36
 def elemMSet:
     a -> []         => False
-      -> [(a,_),*_] => True
-      -> [_,*t]     => elemMSet a t
+         [(a,_),*_] => True
+         [_,*t]     => elemMSet a t
 
 #37
 def lengthMSet:
@@ -202,22 +202,22 @@ def lengthMSet:
 
 #38
 def converteMSet:
-    [] => []
-    [(a,x),*t] = (replicate x a) + (converteMSet t)
+    []         => []
+    [(a,x),*t] => (replicate x a) + (converteMSet t)
 
 
 #39
 def insereMSet:
     a -> []         => [(a,1)]
-      -> [(a,x),*t] => [(a,x + 1),*t]
-      -> [h,*t]     => [h] + insereMSet a t
+         [(a,x),*t] => [(a,x + 1),*t]
+         [h,*t]     => [h] + insereMSet a t
 
 
 #40
 def removeMSet:
     a -> [] => []
-      -> [(a,x),*t] => *t if x == 1 else [(a, x - 1), *t]
-      -> [h,*t] => [h] + (removeMSet a t)
+         [(a,x),*t] => t if x == 1 else [(a, x - 1), *t]
+         [h,*t] => [h] + (removeMSet a t)
 
 
 #41
@@ -229,11 +229,11 @@ constroiMSet = (id >< (length . group)) . dup
 def partitionEithers:
     [] => []
     [{"a": x},*t] => 
-        (a1,b1) = partitionEithers t
         ([x] + a1, b1)
-    [{"b": x},*t] => 
         (a1,b1) = partitionEithers t
+    [{"b": x},*t] => 
         (a1,[x] +  b1)
+        (a1,b1) = partitionEithers t
 
 
 #43
@@ -250,17 +250,17 @@ def catMaybes:
 
 def posicao:
     (x,y) -> []            => (x,y)
-          -> ["Norte", *t] => posicao (x, y + 1) t
-          -> ["Sul", *t]   => posicao (x, y - 1) t
-          -> ["Oeste", *t] => posicao (x - 1, y) t
-          -> ["Este", *t]  => posicao (x + 1, y) t
+             ["Norte", *t] => posicao (x, y + 1) t
+             ["Sul", *t]   => posicao (x, y - 1) t
+             ["Oeste", *t] => posicao (x - 1, y) t
+             ["Este", *t]  => posicao (x + 1, y) t
 
 #45
 def caminho:
-    (x1,y1) -> (x2, y2) | x1 <= x2 && y1 <= y2 = (replicate (x2 - x1) "Este") + (replicate (y2 - y1) "Norte")
-                        | x1 <= x2 && y1 > y2 = (replicate (x2 - x1) "Este") + (replicate (y1 - y2) "Sul")
-                        | x1 > x2 && y1 <= y2 = (replicate (x1 - x2) "Oeste") + (replicate (y2 - y1) "Norte")
-                        | x1 > x2 && y1 > y2 = (replicate (x1 - x2) "Oeste") + (replicate (y1 - y2) "Sul")
+    (x1,y1) -> (x2, y2) | x1 <= x2 && y1 <= y2 => (replicate (x2 - x1) "Este") + (replicate (y2 - y1) "Norte")
+                        | x1 <= x2 && y1 > y2  => (replicate (x2 - x1) "Este") + (replicate (y1 - y2) "Sul")
+                        | x1 > x2 && y1 <= y2  => (replicate (x1 - x2) "Oeste") + (replicate (y2 - y1) "Norte")
+                        | x1 > x2 && y1 > y2   => (replicate (x1 - x2) "Oeste") + (replicate (y1 - y2) "Sul")
 
 #46
 vertical = lambda l: length (filter (lambda y: y == "Este" || y == "Oeste") l) == 0
@@ -271,29 +271,29 @@ vertical = lambda l: length (filter (lambda y: y == "Este" || y == "Oeste") l) =
 def maisCentral:
     [h] => h
     [{"x": x, "y": y},*t] =>
+        {"x": x, "y": y} if d <= d1 else {"x": x1, "y": y1}
         {"x": x1, "y": y1} = maisCentral t
         d1 = (x1 ^ 2) + (y1 ^ 2)
         d = (x ^ 2) + (y ^ 2)
-        {"x": x, "y": y} if d <= d1 else {"x": x1, "y": y1}
 
 
 #48
 
 def vizinhos:
     {"x": x, "y": y} -> [] => []
-                     -> [{"x": x1, "y":y1},*t] => 
-                            t1 = vizinhos  {"x": x, "y": y} t
+                        [{"x": x1, "y":y1},*t] => 
                             t1 if (abs x x1) + (abs y y1) > 1 else [{"x": x1, "y":y1}] + t1
+                            t1 = vizinhos  {"x": x, "y": y} t
 
 #49   
 def mesmaOrdenada:
     [ {"x": _, "y": y},  {"x": _, "y": y1},*t] | y != y1 => False
-                                               |         => mesmaOrdenada [{"x": _, "y": y1},*t]
+                                               |         => mesmaOrdenada [{"x": 0, "y": y1},*t]
     _ => True
 
 
 #50
 def interseccaoOk:
-    l => length (filter (negate . ("Vermelho" ==)) l) <= 1
+    l => length (filter (negate . (lambda s: s == "Vermelho")) l) <= 1
 
 """
