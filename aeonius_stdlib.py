@@ -25,6 +25,9 @@ def lteq(a,b):
 def eqeq(a,b):
     return a == b
 
+def ltgt(a,b):
+    return a != b
+
 def gteq(a,b):
     return a >= b
 
@@ -54,3 +57,36 @@ def mp(a):
 
 def fltr(a):
     return lambda x: filter(a, x)
+
+def id(a):
+    return a
+
+def fst(a):
+    return a[0]
+
+def snd(a):
+    return a[1]
+
+def head(a):
+    return a[0]
+
+def tail(a):
+    return a[1:]
+
+def flip(a):
+    return lambda x, y: a(y)(x)
+
+def is_number(a):
+    return ord(a) >= ord('0') and ord(a) <= ord('9')
+
+def ascii(a):
+    return ord(a)
+
+def dup(a):
+    return (a,a)
+
+def gtlt(a,b):
+    return lambda x: (a(x[0]), b(x[1]))
+
+def abs(a):
+    return -a if a < 0 else a
