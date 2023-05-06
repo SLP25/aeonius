@@ -138,11 +138,11 @@ def add_indentation(tokens):
         if t.type == "EOL":
             line_start = True
             yield t
-        elif t.type in ["RIGHTARROW"]:
+        elif t.type in ["RIGHTARROW", "RESULTARROW"]:
             if open_scope:
-                raise ValueError(f"Repeated -> not allowed at line {t.lineno}, column {t.columnno}")
+                raise ValueError(f"Repeated arrow not allowed at line {t.lineno}, column {t.columnno}")
             if line_start:
-                raise ValueError(f"Illegal -> at beginning of line at line {t.lineno}, column {t.columnno}")
+                raise ValueError(f"Illegal arrow at beginning of line at line {t.lineno}, column {t.columnno}")
             open_scope = True
             #line_start = False
             yield t

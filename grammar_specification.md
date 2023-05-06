@@ -7,7 +7,7 @@ grammar: ε
 aeonius: BEGIN EOL code END
 
 code: ε
-    | code assignment
+    | assignment code
 
 assignment: pattern '=' exp EOL
 	   | DEF IDENTIFIER ':' EOL INDENT defbody UNDENT
@@ -15,7 +15,7 @@ assignment: pattern '=' exp EOL
           | OP '(' OPIDENTIFIER ')' ':' EOL INDENT defbody UNDENT
           | OP '(' OPIDENTIFIER ')' ':' pattern match
 
-defbody: code multipatternmatch
+defbody: multipatternmatch code
 
 multipatternmatch: pattern match
                  | multipatternmatch pattern match
@@ -24,7 +24,8 @@ multicondmatch: exp match
               | multicondmatch '|' exp match
               | multicondmatch '|' match
 
-match: RESULTARROW exp EOL
+match: RESULTARROW INDENT exp EOL code UNDENT
+     | RESULTARROW EOL INDENT exp EOL code UNDENT
      | RIGHTARROW INDENT defbody UNDENT
      | RIGHTARROW EOL INDENT defbody UNDENT
      | '|' INDENT multicondmatch UNDENT

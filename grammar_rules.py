@@ -21,8 +21,8 @@ def p_code_1(v):
     v[0] = Code([])
 
 def p_code_2(v):
-    "code : code assignment"
-    v[0] = Code(v[1].assignments + [v[2]])
+    "code : assignment code"
+    v[0] = Code([v[1]] + v[2].assignments)
 
 def p_assignment_1(v):
     "assignment : pattern '=' exp EOL"
@@ -47,8 +47,8 @@ def p_assignment_5(v):
         None, MultiPatternMatch([(v[6], v[7])])))
 
 def p_defbody_1(v):
-    "defbody : code multipatternmatch"
-    v[0] = FunctionBody(v[1], v[2])
+    "defbody : multipatternmatch code"
+    v[0] = FunctionBody(v[2], v[1])
 
 def p_multipatternmatch_1(v):
     "multipatternmatch : pattern match"
@@ -71,18 +71,22 @@ def p_multicondmatch_3(v):
     v[0] = MultiCondMatch(v[1].matches + [(PrimitiveConstant(True), v[3])])
 
 def p_match_1(v):
-    "match : RESULTARROW exp EOL"
-    v[0] = MatchExpression(v[2])
+    "match : RESULTARROW INDENT exp EOL code UNDENT"
+    v[0] = "ok"
 
 def p_match_2(v):
+    "match : RESULTARROW EOL INDENT exp EOL code UNDENT"
+    v[0] = "ok"
+
+def p_match_3(v):
     "match : RIGHTARROW INDENT defbody UNDENT"
     v[0] = MatchFunctionBody(v[3])
 
-def p_match_3(v):
+def p_match_4(v):
     "match : RIGHTARROW EOL INDENT defbody UNDENT"
     v[0] = MatchFunctionBody(v[4])
 
-def p_match_4(v):
+def p_match_5(v):
     "match : '|' INDENT multicondmatch UNDENT"
     v[0] = MatchCondition(v[3])
 
