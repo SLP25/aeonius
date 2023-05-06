@@ -40,6 +40,10 @@ def ascii:
 def dup:
     f => (f,f)
 
+def abs:
+    a | a > 0 => a
+      |       => -1 * a
+
 #1
 def enumFromTo:
     x -> y | x > y => []

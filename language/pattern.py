@@ -264,7 +264,7 @@ class DictPattern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        return f"{{ {self.patterns.to_python(self.patterns)} }}"
+        return f"{{ {self.patterns.to_python(context)} }}"
 
     def __eq__(self, obj):
         if not isinstance(obj, DictPattern):

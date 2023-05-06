@@ -82,7 +82,7 @@ class AssignmentDefinition(Assignment):
         arg_name = context.next_variable()
         context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
-        
+
         body = self.functionBody.to_python(new_context)
         return f"def {identifier}({arg_name}):\n{ident_str(body)}"
 
