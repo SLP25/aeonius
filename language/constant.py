@@ -28,7 +28,7 @@ class PrimitiveConstant(Constant):
         return type(self.primitive) == type(obj.primitive) and self.primitive == obj.primitive
 
     def append_to_graph(self, graph):
-        return GraphVizId.createNode(graph, "Primitive: " + self.to_python())
+        return GraphVizId.createNode(graph, "Primitive: " + str(self.primitive))
 
 
 class BracketConstant(Constant):
@@ -234,4 +234,4 @@ class DictConstant(Constant):
         return self.constants == obj.constants
 
     def append_to_graph(self, graph):
-        return GraphVizId.encapsulate(graph, self.constants.append_to_graph(graph), initial='{', end='}')
+        return GraphVizId.encapsulate(graph, self.constants.append_to_graph(graph), initial='\{', end='\}')

@@ -5,6 +5,7 @@ from .expression import Expression
 from .utils import ident_str
 from typing import List, Tuple
 from .graphviz_data import GraphVizId
+from graphviz import nohtml
 
 
 class Match(Element):
@@ -86,8 +87,10 @@ class MatchExpression(Match):
         return self.body == obj.body and self.auxiliary == obj.auxiliary
 
     def append_to_graph(self, graph):
-        # FIXME: lumafepe como n sei o q isto representa vou so usar o body
-        return self.body.append_to_graph(graph)
+        g = GraphVizId.createNode(graph, nohtml("<0>MatchExpression|<1>Auxliary|<2>Return"), shape="record")
+        graph.edge(g+":1", self.auxiliary.append_to_graph(graph))
+        graph.edge(g+":2", self.body.append_to_graph(graph))
+        return g+":0"
 
 
 class MatchCondition(Match):

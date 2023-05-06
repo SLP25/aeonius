@@ -60,7 +60,7 @@ class GraphVizId():
     @staticmethod
     def encapsulate(graph, next, initial='[', end=']'):
         id = GraphVizId.getId()
-        s = f"{initial}|<0>|{end}"
+        s = initial+"|<0>|"+end
         graph.node(id, nohtml(s), shape="record")
         if next is not None:
             graph.edge(id+f":0", next)

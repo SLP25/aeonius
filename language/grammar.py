@@ -47,12 +47,7 @@ class Code(Element):
         return self.assignments == obj.assignments
 
     def append_to_graph(self, graph):
-        id = GraphVizId.getId()
-        graph.node(id, "Code")
-        for i in self.assignments:
-            j = i.append_to_graph(graph)
-            graph.edge(id, j)
-        return id
+        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.assignments)),type="Code")
 
 
 class Aeonius(Language):

@@ -456,4 +456,4 @@ class DictExpression(Expression):
         return self.expressions == obj.expressions
 
     def append_to_graph(self, graph):
-        return GraphVizId.encapsulate(graph, self.expressions.append_to_graph(graph), initial='{', end='}')
+        return GraphVizId.encapsulate(graph, self.expressions.append_to_graph(graph), initial='\{', end='\}')

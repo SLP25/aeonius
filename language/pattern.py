@@ -273,4 +273,4 @@ class DictPattern(Pattern):
         return self.patterns == obj.patterns
 
     def append_to_graph(self, graph):
-        return GraphVizId.encapsulate(graph, self.patterns.append_to_graph(graph), initial='{', end='}')
+        return GraphVizId.encapsulate(graph, self.patterns.append_to_graph(graph), initial='\{', end='\}')
