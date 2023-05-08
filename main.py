@@ -3,6 +3,7 @@ from language.context import Context
 
 import sys
 
+
 def help():
     print("                aeonius                    ")
     print("     A functional extension for Python     ")
@@ -17,10 +18,11 @@ def help():
     print("--output: The python file to write the parsed")
     print("program to")
 
+
 def parse_args(single_flags, valid_args):
 
     result = {}
-    
+
     argv = []
 
     # Remove flags that don't take any arguments
@@ -41,12 +43,11 @@ def parse_args(single_flags, valid_args):
     # As such, we iterate over the even indices of the argv list
     for i in range(2, len(argv), 2):
         if argv[i - 1] in valid_args:
-            # Remove first '--' chars from argv 
+            # Remove first '--' chars from argv
             result[argv[i - 1][2:]] = argv[i]
         else:
             print(f"Invalid argument {argv[i - 1]}")
             exit(1)
-
 
     return result
 
@@ -61,28 +62,26 @@ def main():
         "--input",
         "--output"
     ]
-        
 
     args = parse_args(single, valid_arguments)
- 
+
     if "h" in args:
         help()
         return
-    
-
 
     with open(args["input"], "r") as f:
         data = f.read()
 
     parsed = parse(data)
 
-    if(args["d"]):
+    if (args["d"]):
         print(parsed.to_python(Context()))
 
     else:
         with open(args["output"], "w") as g:
             g.write(parsed.to_python(Context()))
-            
+
+
 def import_main():
     args = parse_args(single, valid_arguments)
     with open(args["input"], "r") as f:
@@ -98,8 +97,6 @@ def aeonius_import(path):
         parsed = parse(data)
         exec(parsed.to_python(Context()))
 
+
 if __name__ == "__main__":
     main()
-
-        
-    

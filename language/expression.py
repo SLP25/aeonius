@@ -84,7 +84,7 @@ class FunctionApplicationExpression(Expression):
     def to_python(self, context: Context):
         res = self.function.to_python(context)
         for arg in self.arguments:
-            res += f" {arg.to_python(context)}"
+            res += f" ({arg.to_python(context)})"
         return res
 
     def __eq__(self, obj):
@@ -456,4 +456,4 @@ class DictExpression(Expression):
         return self.expressions == obj.expressions
 
     def append_to_graph(self, graph):
-        return GraphVizId.encapsulate(graph, self.expressions.append_to_graph(graph), initial='{', end='}')
+        return GraphVizId.encapsulate(graph, self.expressions.append_to_graph(graph), initial='\{', end='\}')

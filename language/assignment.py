@@ -53,7 +53,7 @@ class FunctionBody(Element):
         return True
 
     def to_python(self, context: Context) -> str:
-        return f"{self.code.to_python(context)}\n{self.multiPattern.to_python(context)}\nreturn return_{context.function_name}"
+        return f"{self.code.to_python(context)}\n{self.multiPattern.to_python(context)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, FunctionBody):
@@ -63,7 +63,7 @@ class FunctionBody(Element):
 
     def append_to_graph(self, graph):
         id = GraphVizId.createNode(graph, nohtml(
-            "<0>FunctionBody|<CODE>|<PATTERNS>"), shape="record")
+            "<0>FunctionBody|<CODE>Code|<PATTERNS>Patterns"), shape="record")
         graph.edge(id+":CODE", self.code.append_to_graph(graph))
         graph.edge(id+":PATTERNS", self.multiPattern.append_to_graph(graph))
         return id+":0"
@@ -80,8 +80,11 @@ class AssignmentDefinition(Assignment):
     def to_python(self, context: Context):
         identifier = self.identifier if context.in_global_scope() else context.next_variable()
         arg_name = context.next_variable()
+        context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
-        return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}"
+
+        body = self.functionBody.to_python(new_context)
+        return f"def {identifier}({arg_name}):\n{ident_str(body)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentDefinition):

@@ -1,9 +1,59 @@
 """aeonius
 
+#Auxiliar (temp enquanto nao ha aeonius)
+def length:
+    []     => 0
+    [_,*t] => 1 + (length t)
+
+def filter:
+    f -> [] => []
+         [h,*t] => [h] + (filter f t) if f h else (filter f t)
+
+def map:
+    f -> [] => []
+         [h,*t] => [f h] + (map t)
+
+def fst:
+    (x,y) => x
+
+def snd:
+    (x,y) => y
+
+def head:
+    [h,*_] => h
+
+def negate:
+    b => False if b else True
+
+def id:
+    x => x
+
+def flip:
+    f => f
+
+def is_number:
+    f => True
+
+def ascii:
+    _ => 1
+
+def dup:
+    f => (f,f)
+
+def abs:
+    a | a > 0 => a
+      |       => -1 * a
+
+#assumes the value exists
+def find:
+    a -> [h,*t] | a == h => 0 
+                |        => 1 + (find a t) 
+
+
 #1
 def enumFromTo:
     x -> y | x > y => []
-           |       => [start] + (enumFromTo (x + 1) y)
+           |       => [x] + (enumFromTo (x + 1) y)
 
 
 #2
@@ -17,9 +67,9 @@ op (++):
     [h, *t] -> x => [h] + (t ++ x)
 
 #4
-op (!):
+op (!!):
     [h,*t] -> 0 => h
-              n => t ! (n - 1)
+              n => t !! (n - 1)
 
 
 #5
@@ -46,7 +96,7 @@ def zip:
 
 #9
 def elem:
-    x => length . (filter (lambda y: x == y))
+    x => length (filter (lambda y: x == y)) > 0
 
 #10
 def replicate:
@@ -63,8 +113,9 @@ def intersperce:
 def group:
     []      => []
     [h]     => [[h]]
-    [h, *t] => [[h,h1,*t1],*t2] if h == h1 else [[h],[h1,*t1],*t2]
-               [[h1, *t1],*t2] = group t
+    [h, *t] => 
+        [[h,h1,*t1],*t2] if h == h1 else [[h],[h1,*t1],*t2]
+        [[h1, *t1],*t2] = group t
 
 
 #13
@@ -75,7 +126,7 @@ def concat:
 #14
 def inits:
     []     => []
-    [h,*t] => [] + (map (lambda x: h + x) (inits t))
+    [h,*t] => [] + (map (lambda y: h + y) (inits t))
 
 #15
 def tails:
@@ -92,15 +143,19 @@ def isSuffixOf:
 
 #18
 def isSubsequenceOf:
-    s -> l => length ((filter id) . (map (aux s)) l) > 0
-              def aux: s => isPrefixOf s
+    s -> l =>
+            length ((filter id) . (map (aux s)) l) > 0
+            def aux:
+                s => isPrefixOf s
 
 
 #19
 def elemIndices:
-    x -> l => map snd (filter (lambda (y,_): y == x) (zip l l1))
-              n = length l
-              l1 = enumFromTo 0 (n - 1)
+    x -> l => 
+            map snd (filter (lambda y: (fst y) == x) (zip l l1))
+            n = length l
+            l1 = enumFromTo 0 (n - 1)
+
 
 #20
 nub = (map head) . (group)
