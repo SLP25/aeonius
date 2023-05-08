@@ -80,7 +80,7 @@ def t_STRING(t):
     return t
 
 def t_OPIDENTIFIER(t):
-    r"[\+\-\*/%<=>\$\^&\|\.]+"
+    r"[\+\-\*/%<=>\$\^&\|\.!?\\]+"
     if len(t.value) == 1 and t.value in literals:
         t.type = t.value
     else:
@@ -148,14 +148,14 @@ def add_indentation(tokens):
             yield t
         elif t.type in ["|"] and not line_start:
             if open_scope:
-                raise ValueError(f"Illegal token after '->' at line {t.lineno}, column {t.columnno}")
+                raise ValueError(f"Illegal token after arrow at line {t.lineno}, column {t.columnno}")
             yield t
             indentation.append(t.columnno)
             yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
         else:
             if open_scope:
                 if t.columnno <= indentation[-1]:
-                    raise ValueError(f"You must indent after -> at line {t.lineno}, column {t.columnno}")
+                    raise ValueError(f"You must indent after arrow at line {t.lineno}, column {t.columnno}")
                 indentation.append(t.columnno)
                 yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
             elif line_start:

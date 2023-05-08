@@ -28,7 +28,8 @@ match: RESULTARROW INDENT exp EOL code UNDENT
      | RESULTARROW EOL INDENT exp EOL code UNDENT
      | RIGHTARROW INDENT defbody UNDENT
      | RIGHTARROW EOL INDENT defbody UNDENT
-     | '|' INDENT multicondmatch UNDENT
+     | '|' INDENT multicondmatch code UNDENT
+     
 
 
 primitive: INTEGER
@@ -48,7 +49,7 @@ exp: IDENTIFIER
    | '{' dictexp '}'
    | exp arguments %prec FUNC         	#function call
    | '(' exp ')'	                     #Wrapped in brackets
-   | LAMBDA IDENTIFIER ':' exp
+   | LAMBDA pattern ':' exp
    | exp IF exp ELSE exp
    | exp operator exp %prec OPIDENTIFIER 	#Operator call
 #   | operator exp		              #unary operator call
