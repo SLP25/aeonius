@@ -16,7 +16,7 @@ precedence = [
     ("nonassoc", "FOR", "IN", "IF", "ELSE"),
     # TODO: different precedences/associativities
     ("left", "OPIDENTIFIER", "UNPACKITER", "UNPACKDICT"),
-    ("right", "FUNC"),
+    ("left", "FUNC"),
     ("nonassoc", "PRIMITIVE", "INTEGER", "FLOAT", "STRING",
      "TRUE", "FALSE", "NONE", '_', "IDENTIFIER"),
     ("left", '[', ']', '{', '}'),

@@ -221,7 +221,7 @@ def removeMSet:
 
 
 #41
-constroiMSet = ae_map ((head >< length) . dup) group
+constroiMSet = []# ae_map ((head >< length) . dup) group
 
 #42
 # Um either é um dicionario: {"a": valor} ou {"b": valor}

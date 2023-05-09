@@ -55,7 +55,7 @@ def parse_args(single_flags, valid_args):
     return result
 
 
-def transpile(input):
+def transpile(input, debug):
     parsed = parse(input)
 
     with open("aeonius_stdlib.py", "r") as f:
@@ -64,7 +64,10 @@ def transpile(input):
     context = Context()
     context.symbols = Context.stdlib_symbols
 
-    return stdlib + parsed.to_python(context)
+    if debug:
+        return parsed.to_python(context)
+    else:
+        return stdlib + parsed.to_python(context)
 
 def main():
     single = [
@@ -86,7 +89,7 @@ def main():
     with open(args["input"], "r") as f:
         data = f.read()
 
-    parsed = transpile(data)
+    parsed = transpile(data, args["d"])
 
     if (args["d"]):
         print(parsed)

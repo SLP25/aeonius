@@ -83,9 +83,8 @@ class FunctionApplicationExpression(Expression):
 
     def to_python(self, context: Context):
         res = self.function.to_python(context)
-        for arg in self.arguments:
-            res += f" ({arg.to_python(context)})"
-        return res
+
+        return f"({res} ({self.arguments.to_python(context)}))"
 
     def __eq__(self, obj):
         if not isinstance(obj, FunctionApplicationExpression):

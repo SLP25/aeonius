@@ -1,7 +1,11 @@
 """aeonius
 
-op (><):
-    x -> y => True
+def vizinhos:
+    {"x": x, "y": y} -> [] => []
+                        [{"x": x1, "y":y1},*t] => 
+                            t1 if (abs (x-x1)) + (abs (y-y1)) > 1 else [{"x": x1, "y":y1}] + t1
+                            z = {"x": x, "y": y}
+                            t1 = (vizinhos z) t
 """
 
-print(a(5))
+print(vizinhos({"x": 1, "y": 3})([{"x": 1, "y": 3}, {"x": 1, "y": 4}, {"x": 3, "y": 3}]))

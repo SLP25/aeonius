@@ -179,7 +179,7 @@ def p_exp_5(v):
 
 
 def p_exp_6(v):
-    "exp : exp arguments %prec FUNC"
+    "exp : exp exp %prec FUNC"
     v[0] = FunctionApplicationExpression(v[1], v[2])
 
 
@@ -228,14 +228,6 @@ def p_exp_15(v):
     v[0] = DictionaryCompreensionExpression(v[2], v[4], v[6], v[8], v[10])
 
 
-def p_arguments_1(v):
-    "arguments : exp %prec FUNC"
-    v[0] = [v[1]]
-
-
-def p_arguments_2(v):
-    "arguments : arguments exp %prec FUNC"
-    v[0] = v[1] + [v[2]]
 
 
 def p_operator_1(v):
