@@ -47,7 +47,7 @@ exp: IDENTIFIER
    | '(' tupleexp ')'
    | '[' iterexp ']'
    | '{' dictexp '}'
-   | exp arguments %prec FUNC         	#function call
+   | exp exp %prec FUNC         	       #function call
    | '(' exp ')'	                     #Wrapped in brackets
    | LAMBDA pattern ':' exp
    | exp IF exp ELSE exp
@@ -58,9 +58,6 @@ exp: IDENTIFIER
    | exp FOR pattern IN exp IF exp
    | '{' IDENTIFIER ':' exp FOR pattern IN exp '}'
    | '{' IDENTIFIER ':' exp FOR pattern IN exp IF exp '}'
-
-arguments: exp %prec FUNC
-         | arguments exp %prec FUNC
 
 operator: OPIDENTIFIER
         | UNPACKITER
