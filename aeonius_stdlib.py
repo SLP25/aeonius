@@ -71,11 +71,11 @@ def dot(a, b):
 
 
 def ae_map(a):
-    return lambda x: map(a, x)
+    return lambda x: list(map(a, x))
 
 
 def ae_filter(a):
-    return lambda x: filter(a, x)
+    return lambda x: list(filter(a, x))
 
 
 def id(a):

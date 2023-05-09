@@ -64,7 +64,7 @@ def transpile(input, debug):
     context = Context()
     context.symbols = Context.stdlib_symbols
 
-    if debug:
+    if not debug:
         return parsed.to_python(context)
     else:
         return stdlib + parsed.to_python(context)

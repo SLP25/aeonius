@@ -95,20 +95,21 @@ class MatchExpression(Match):
 
 
 class MatchCondition(Match):
-    def __init__(self, body: MultiCondMatch):
+    def __init__(self, body: MultiCondMatch, code: Code):
         self.body = body
+        self.code = code
 
     def validate(self, context):
         return True
 
     def to_python(self, context: Context):
-        return self.body.to_python(context)
+        return self.code.to_python(context) + "\n" + self.body.to_python(context)
 
     def __eq__(self, obj):
         if not isinstance(obj, MatchCondition):
             return False
 
-        return self.body == obj.body
+        return self.body == obj.body and self.code == obj.code
 
     def append_to_graph(self, graph):
         # como n sei o q isto representa vou so usar o body
