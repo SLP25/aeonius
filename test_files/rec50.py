@@ -177,14 +177,13 @@ def unlines(l):
 
 
 #28
-def max(l):
-    h,*t=l
+def pMaior(l):
+    def max(l):
+        h,*t=l
     if l==[h]:return [h]
     else:
         m1=max(t)
         return m1 if m1 > h else h
-
-def pMaior(l):
     return find(max(l),l)
 
 
@@ -279,9 +278,8 @@ def constroiMSet(l):
     gl=group(l)
     return list(map(lambda x:(x[0],len(x)),gl))
 
-#42
 # Um either é um dicionario: {"a": valor} ou {"b": valor}
-
+#42
 def partitionEithers(l):
     if l==[]:return ([],[])
     h,*t =l
@@ -294,20 +292,16 @@ def partitionEithers(l):
         return (a1,[x] + b1)
         
 
-
-#43
 # Maybe => Valor ou None
-
+#43
 def catMaybes(l):
     if l==[]:return []
     h,*t=l
     if h==None: return catMaybes(t)
     else:return [h] + catMaybes(t)
 
-
-#44
 # Posicoes sao strings
-
+#44
 def posicao(xy,l):
     x,y=xy
     if l==[]:return (x,y)
@@ -331,9 +325,8 @@ def caminho(p1,p2):
 def vertical():
     return len(filter(lambda y: y == "Este" or y == "Oeste",l)) == 0
 
-#47
 # Estrutura é um dicionario {"x": x, "y": y}
-
+#47
 def maisCentral(l):
     h,*t=l
     if [h]==l:return h
@@ -348,7 +341,6 @@ def maisCentral(l):
         
         
 #48
-
 def vizinhos(p,l):
     if l==[]:return []
     x,y=p['x'],p['y']
@@ -357,7 +349,7 @@ def vizinhos(p,l):
     t1 = vizinhos(p,t)
     return t1 if ((abs(x-x1)) + (abs(y-y1))) > 1 else [h] + t1
 
-#49   
+#49
 def mesmaOrdenada(l):
     if len(l)<2:return True
     h1,h2,*t=l

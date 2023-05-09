@@ -140,13 +140,13 @@ unwords = concat . intersperce " "
 #27
 unlines = concat . intersperce "\n"
 
-#28
 def max:
     [h]    => [h]
     [h,*t] => 
         m1 if m1 > h else h
         m1 = max t
-
+        
+#28
 pMaior = lambda x: x
 
 
@@ -223,9 +223,8 @@ def removeMSet:
 #41
 constroiMSet = ae_map ((head >< length) . dup) group
 
-#42
 # Um either é um dicionario: {"a": valor} ou {"b": valor}
-
+#42
 def partitionEithers:
     [] => ([],[])
     [{"a": x},*t] => 
@@ -235,19 +234,16 @@ def partitionEithers:
         (a1,[x] +  b1)
         (a1,b1) = partitionEithers t
 
-
-#43
 # Maybe => Valor ou None
 
+#43
 def catMaybes:
     []         => []
     [None, *t] => catMaybes t
     [x, *t]    => [x] + (catMaybes t)
 
-
-#44
 # Posicoes sao strings
-
+#44
 def posicao:
     (x,y) -> []            => (x,y)
              ["Norte", *t] => posicao (x, y + 1) t
@@ -265,8 +261,9 @@ def caminho:
 #46
 vertical = lambda l: length (ae_filter (lambda y: y == "Este" || y == "Oeste") l) == 0
 
-#47
 # Estrutura é um dicionario {"x": x, "y": y}
+#47
+maisCentral = lambda l: l
 
 #def maisCentral:
 #    [h] => h
@@ -278,14 +275,13 @@ vertical = lambda l: length (ae_filter (lambda y: y == "Este" || y == "Oeste") l
 
 
 #48
-
 def vizinhos:
     {"x": x, "y": y} -> [] => []
                         [{"x": x1, "y":y1},*t] => 
                             t1 if (abs (x-x1)) + (abs (y-y1)) > 1 else [{"x": x1, "y":y1}] + t1
                             t1 = vizinhos  {"x": x, "y": y} t
 
-#49   
+#49
 def mesmaOrdenada:
     [ {"x": _, "y": y},  {"x": _, "y": y1},*t] | y != y1 => False
                                                |         => mesmaOrdenada [{"x": 0, "y": y1},*t]

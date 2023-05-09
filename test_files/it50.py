@@ -20,8 +20,8 @@ def take(n,l):
 def drop(n,l):
     return l[n:]
 #8
-    def zipp(l1,l2):
-        return list(zip(l1,l2))
+def zipp(l1,l2):
+    return list(zip(l1,l2))
 #9
 def elem(e,l):
     return e in l
@@ -30,9 +30,9 @@ def replicate(n,a):
     return [a for i in range(n)]
 #11
 def intersperse(e,l):
-    last=l.pop()
+    last=l[-1]
     ln=[]
-    for i in l:
+    for i in l[:-1]:
         ln.append(i)
         ln.append(e) 
     ln.append(last) 
@@ -81,12 +81,11 @@ def isSubsequenceOf(l1,l2):
                 return True
     return False
 #19
-def elemIndicesAux(a,l):
-    for p,i in enumerate(l):
-        if a==i:
-            yield p
-
 def elemIndices(a,l):
+    def elemIndicesAux(a,l):
+        for p,i in enumerate(l):
+            if a==i:
+                yield p
     return list(elemIndicesAux(a, l))
 #20
 def nub(l):
@@ -111,14 +110,14 @@ def union(a,b):
             c.append(i)
     return c
 
-#25
-def intersectAux(a,b):
-    for i in a:
-        if i in b:
-            yield i
+
 
 #24
 def intersect(a,b):
+    def intersectAux(a,b):
+        for i in a:
+            if i in b:
+                yield i
     return list(intersectAux(a, b))
 
 #25
@@ -138,9 +137,6 @@ def unlines(l):
 
 
 #28
-def maxx(l):
-    return max(l)
-
 def pMaior(l):
     return max(enumerate(l),key=lambda x:x[1])[0]
 
@@ -174,15 +170,15 @@ def menor(s1,s2):
 def elemMSet(a,l):
     return a in map(lambda x:x[0],l)
 #37
-def lengthMSet(a,l):
+def lengthMSet(l):
     return sum(map(lambda x:x[1],l))
 
-def converteMSetAux(l):
-    for i in l:
-        for j in range(i[1]):
-            yield i[0]
 #38
 def converteMSet(l):
+    def converteMSetAux(l):
+        for i in l:
+            for j in range(i[1]):
+                yield i[0]
     return list(converteMSetAux(l))
 #39
 def insereMSet(a,l):    
@@ -197,11 +193,10 @@ def removeMSet(a,l):
     if h[0]==a: return t if h[1] == 1 else [(a, h[1] - 1)]+t
     return [h] + removeMSet(a,t)
 #41
-def constroiMSetAux(l):
-    for i in set(l):
-        yield (i,l.count(i))
-        
 def constroiMSet(l):
+    def constroiMSetAux(l):
+        for i in set(l):
+            yield (i,l.count(i))
     return list(constroiMSetAux(l))
 #42
 def partitionEithers(l):
@@ -211,15 +206,13 @@ def partitionEithers(l):
             r[k].append(v)
     return (r['a'],r['b'])
 
-#43
 # Maybe => Valor ou None
-
+#43
 def catMaybes(l):
     return list(filter(lambda x:x!=None, l))
 
-#44
 # Posicoes sao strings
-
+#44
 def posicao(xy,l):
     x,y=xy
     if l==[]:return (x,y)
@@ -243,8 +236,8 @@ def caminho(p1,p2):
     return r
 
 #46
-def vertical():
-    return len(filter(lambda y: y == "Este" or y == "Oeste",l)) == 0
+def vertical(l):
+    return not any(map(lambda y: y == "Este" or y == "Oeste",l))
 #47
 def maisCentral(l):
     return min(l,key=lambda x: (x['x'] ^ 2) + (x['y'] ^ 2))
