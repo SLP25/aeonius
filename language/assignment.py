@@ -2,7 +2,7 @@ from language.context import Context
 from .element import Element
 from .pattern import Pattern
 from .expression import Expression
-from .utils import ident_str, clean_identifier
+from .utils import ident_str, clean_identifier, return_name
 from .context import Context
 from .grammar import Code
 from .pattern_match import MultiPatternMatch
@@ -78,12 +78,13 @@ class AssignmentDefinition(Assignment):
         return True
 
     def to_python(self, context: Context):
-        identifier = self.identifier if context.in_global_scope() else context.next_variable()
+        identifier = self.identifier if context.in_global_scope(
+        ) else return_name(context.function_name)
         arg_name = context.next_variable()
         context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
 
-        body = self.functionBody.to_python(new_context)
+        body = f"{self.functionBody.to_python(new_context)}\nreturn {return_name(identifier)}"
         return f"def {identifier}({arg_name}):\n{ident_str(body)}"
 
     def __eq__(self, obj):
@@ -115,9 +116,9 @@ class AssignmentOperator(Assignment):
 
         identifier = clean_identifier(
             self.identifier) if context.in_global_scope() else context.next_variable()
-        
+
         arg_name = context.next_variable()
-        context.symbols[self.identifier] = identifier 
+        context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
         return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}"
 

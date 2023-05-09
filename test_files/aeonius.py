@@ -1,55 +1,5 @@
 """aeonius
 
-#Auxiliar (temp enquanto nao ha aeonius)
-def length:
-    []     => 0
-    [_,*t] => 1 + (length t)
-
-def filter:
-    f -> [] => []
-         [h,*t] => [h] + (filter f t) if f h else (filter f t)
-
-def map:
-    f -> [] => []
-         [h,*t] => [f h] + (map t)
-
-def fst:
-    (x,y) => x
-
-def snd:
-    (x,y) => y
-
-def head:
-    [h,*_] => h
-
-def negate:
-    b => False if b else True
-
-def id:
-    x => x
-
-def flip:
-    f => f
-
-def is_number:
-    f => True
-
-def ascii:
-    _ => 1
-
-def dup:
-    f => (f,f)
-
-def abs:
-    a | a > 0 => a
-      |       => -1 * a
-
-#assumes the value exists
-def find:
-    a -> [h,*t] | a == h => 0 
-                |        => 1 + (find a t) 
-
-
 #1
 def enumFromTo:
     x -> y | x > y => []
@@ -96,7 +46,7 @@ def zip:
 
 #9
 def elem:
-    x => length (filter (lambda y: x == y)) > 0
+    x => length (ae_filter (lambda y: x == y)) > 0
 
 #10
 def replicate:
@@ -126,7 +76,7 @@ def concat:
 #14
 def inits:
     []     => []
-    [h,*t] => [] + (map (lambda y: h + y) (inits t))
+    [h,*t] => [] + (ae_map (lambda y: h + y) (inits t))
 
 #15
 def tails:
@@ -144,7 +94,7 @@ def isSuffixOf:
 #18
 def isSubsequenceOf:
     s -> l =>
-            length ((filter id) . (map (aux s)) l) > 0
+            length ((ae_filter id) . (ae_map (aux s)) l) > 0
             def aux:
                 s => isPrefixOf s
 
@@ -152,13 +102,13 @@ def isSubsequenceOf:
 #19
 def elemIndices:
     x -> l => 
-            map snd (filter (lambda y: (fst y) == x) (zip l l1))
+            ae_map snd (ae_filter (lambda y: (fst y) == x) (zip l l1))
             n = length l
             l1 = enumFromTo 0 (n - 1)
 
 
 #20
-nub = (map head) . (group)
+nub = (ae_map head) . (group)
 
 #21
 def delete:
@@ -172,11 +122,11 @@ def deleteAll:
 
 #23
 def union:
-    a -> b => a + (filter (negate . ((flip elem) a) b))
+    a -> b => a + (ae_filter (negate . ((flip elem) a) b))
 
 #24
 def intersect:
-    a -> b => filter ((flip elem) b) a
+    a -> b => ae_filter ((flip elem) b) a
 
 #25
 def insert:
@@ -197,14 +147,14 @@ def max:
         m1 if m1 > h else h
         m1 = max t
 
-pMaior = lambda x: (find (max x) x)
+pMaior = lambda x: x
 
 
 #29
 temRepetidos = lambda x: x == (nub x)
 
 #30
-algarismos = filter is_number
+algarismos = ae_filter is_number
 
 #31
 def posImpares:
@@ -271,7 +221,7 @@ def removeMSet:
 
 
 #41
-constroiMSet = map ((head >< length) . dup) group
+constroiMSet = ae_map ((head >< length) . dup) group
 
 #42
 # Um either é um dicionario: {"a": valor} ou {"b": valor}
@@ -313,18 +263,18 @@ def caminho:
                         | x1 > x2 && y1 > y2   => (replicate (x1 - x2) "Oeste") + (replicate (y1 - y2) "Sul")
 
 #46
-vertical = lambda l: length (filter (lambda y: y == "Este" || y == "Oeste") l) == 0
+vertical = lambda l: length (ae_filter (lambda y: y == "Este" || y == "Oeste") l) == 0
 
 #47
 # Estrutura é um dicionario {"x": x, "y": y}
 
-def maisCentral:
-    [h] => h
-    [{"x": x, "y": y},*t] =>
-        {"x": x, "y": y} if d <= d1 else {"x": x1, "y": y1}
-        {"x": x1, "y": y1} = maisCentral t
-        d1 = (x1 ^ 2) + (y1 ^ 2)
-        d = (x ^ 2) + (y ^ 2)
+#def maisCentral:
+#    [h] => h
+#    [{"x": x, "y": y},*t] =>
+#        {"x": x, "y": y} if d <= d1 else {"x": x1, "y": y1}
+#        {"x": x1, "y": y1} = maisCentral t
+#        d1 = (x1 ^ 2) + (y1 ^ 2)
+#        d = (x ^ 2) + (y ^ 2)
 
 
 #48
@@ -344,6 +294,6 @@ def mesmaOrdenada:
 
 #50
 def interseccaoOk:
-    l => length (filter (negate . (lambda s: s == "Vermelho")) l) <= 1
+    l => length (ae_filter (negate . (lambda s: s == "Vermelho")) l) <= 1
 
 """

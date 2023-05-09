@@ -25,3 +25,7 @@ def clean_identifier(identifier: str):
         identifier = identifier.replace(key, replacement_table[key])
 
     return identifier
+
+
+def return_name(name):
+    return f"return_{name}"

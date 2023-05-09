@@ -2,7 +2,7 @@ from .element import Element
 from .context import Context
 from .grammar import Code
 from .expression import Expression
-from .utils import ident_str
+from .utils import ident_str, return_name
 from typing import List, Tuple
 from .graphviz_data import GraphVizId
 from graphviz import nohtml
@@ -49,7 +49,7 @@ class MatchFunctionBody(Match):
         return True
 
     def to_python(self, context: Context):
-        function_name = context.next_variable()
+        function_name = return_name(context.function_name)
         arg_name = context.next_variable()
         new_context = Context(function_name, arg_name, context)
         return f"def {function_name}({arg_name}):{ident_str(self.body.to_python(new_context))}"
@@ -78,7 +78,7 @@ class MatchExpression(Match):
                               context.function_name, context)
         aux = self.auxiliary.to_python(new_context)
 
-        return f"{aux}\nreturn_{context.function_name} = {self.body.to_python(new_context)}\nreturn return_{context.function_name}"
+        return f"{aux}\n{return_name(context.function_name)} = {self.body.to_python(new_context)}\nreturn {return_name(context.function_name)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, MatchExpression):
@@ -87,7 +87,8 @@ class MatchExpression(Match):
         return self.body == obj.body and self.auxiliary == obj.auxiliary
 
     def append_to_graph(self, graph):
-        g = GraphVizId.createNode(graph, nohtml("<0>MatchExpression|<1>Auxliary|<2>Return"), shape="record")
+        g = GraphVizId.createNode(graph, nohtml(
+            "<0>MatchExpression|<1>Auxliary|<2>Return"), shape="record")
         graph.edge(g+":1", self.auxiliary.append_to_graph(graph))
         graph.edge(g+":2", self.body.append_to_graph(graph))
         return g+":0"
