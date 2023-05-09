@@ -1,7 +1,9 @@
 """aeonius
 
-op (><):
-    x -> y => True
+def batata:
+    x => ae_filter (lambda y: x == y)
+    
 """
 
-print(a(5))
+print(batata(5)([1,2,3]))
+#print(vizinhos({"x": 1, "y": 3})([{"x": 1, "y": 3}, {"x": 1, "y": 4}, {"x": 3, "y": 3}]))

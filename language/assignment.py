@@ -84,8 +84,8 @@ class AssignmentDefinition(Assignment):
         context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
 
-        body = f"{self.functionBody.to_python(new_context)}\nreturn {return_name(identifier)}"
-        return f"def {identifier}({arg_name}):\n{ident_str(body)}"
+        body = f"{self.functionBody.to_python(new_context)}"
+        return f"def {identifier}({arg_name}):\n{ident_str(body)}\n"
 
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentDefinition):

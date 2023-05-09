@@ -46,12 +46,14 @@ def zip:
 
 #9
 def elem:
-    x => length (ae_filter (lambda y: x == y)) > 0
+    x -> []               => False
+         [h, *t] | h == x => True
+                 |        => elem x t
 
 #10
 def replicate:
     0 -> _ => []
-    n -> a => [a] + (replicate (n - 1))
+    n -> a => [a] + (replicate (n - 1) a)
 
 #11
 def intersperce:
@@ -221,7 +223,7 @@ def removeMSet:
 
 
 #41
-constroiMSet = ae_map ((head >< length) . dup) group
+constroiMSet = []# ae_map ((head >< length) . dup) group
 
 # Um either é um dicionario: {"a": valor} ou {"b": valor}
 #42

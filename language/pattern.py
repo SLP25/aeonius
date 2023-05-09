@@ -57,7 +57,7 @@ class IdentifierPatttern(Pattern):
     def to_python(self, context: Context):
         if self.identifier not in context.symbols:
             context.symbols[self.identifier] = context.next_variable()
-
+        
         return context.symbols[self.identifier]
 
     def __eq__(self, obj):

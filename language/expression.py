@@ -83,9 +83,8 @@ class FunctionApplicationExpression(Expression):
 
     def to_python(self, context: Context):
         res = self.function.to_python(context)
-        for arg in self.arguments:
-            res += f" ({arg.to_python(context)})"
-        return res
+
+        return f"({res} ({self.arguments.to_python(context)}))"
 
     def __eq__(self, obj):
         if not isinstance(obj, FunctionApplicationExpression):
@@ -107,9 +106,8 @@ class LambdaExpression(Expression):
 
     def to_python(self, context: Context):
         arg_name = context.next_variable()
-        new_context = Context("", arg_name, context)
-        new_context.symbols[self.identifier] = arg_name
-        return f"lambda {arg_name}: {self.expression.to_python(new_context)}"
+        context.symbols[self.identifier] = arg_name
+        return f"lambda {arg_name}: {self.expression.to_python(context)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, LambdaExpression):
