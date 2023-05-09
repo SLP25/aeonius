@@ -1,11 +1,7 @@
 """aeonius
 
-
-def a:
-    x =>
-        g x
-        def g:
-           y => 2 
+op (><):
+    x -> y => True
 """
 
 print(a(5))

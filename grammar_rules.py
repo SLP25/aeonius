@@ -125,7 +125,7 @@ def p_primitive_2(v):
 
 def p_primitive_3(v):
     "primitive : STRING"
-    v[0] = PrimitiveConstant('"' + v[1] + '"')
+    v[0] = PrimitiveConstant(v[1])
 
 
 def p_primitive_4(v):

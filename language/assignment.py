@@ -112,10 +112,14 @@ class AssignmentOperator(Assignment):
         return True
 
     def to_python(self, context: Context):
+
         identifier = clean_identifier(
             self.identifier) if context.in_global_scope() else context.next_variable()
-
-        return f"def {identifier}({context.next_variable()}):\n{ident_str(self.functionBody.to_python(Context(context)))}"
+        
+        arg_name = context.next_variable()
+        context.symbols[self.identifier] = identifier 
+        new_context = Context(identifier, arg_name, context)
+        return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}"
 
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentOperator):

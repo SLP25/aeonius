@@ -70,11 +70,11 @@ def dot(a, b):
     return lambda x: a(b(x))
 
 
-def mp(a):
+def ae_map(a):
     return lambda x: map(a, x)
 
 
-def fltr(a):
+def ae_filter(a):
     return lambda x: filter(a, x)
 
 

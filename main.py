@@ -25,6 +25,9 @@ def parse_args(single_flags, valid_args):
 
     argv = []
 
+    for s in single_flags:
+        result[s[1:]] = False
+
     # Remove flags that don't take any arguments
     # and process them now
     for str in sys.argv:
@@ -52,6 +55,17 @@ def parse_args(single_flags, valid_args):
     return result
 
 
+def transpile(input):
+    parsed = parse(input)
+
+    with open("aeonius_stdlib.py", "r") as f:
+        stdlib = f.read()
+    
+    context = Context()
+    context.symbols = Context.stdlib_symbols
+
+    return stdlib + parsed.to_python(context)
+
 def main():
     single = [
         "-h",
@@ -65,21 +79,21 @@ def main():
 
     args = parse_args(single, valid_arguments)
 
-    if "h" in args:
+    if args["h"]:
         help()
         return
 
     with open(args["input"], "r") as f:
         data = f.read()
 
-    parsed = parse(data)
+    parsed = transpile(data)
 
     if (args["d"]):
-        print(parsed.to_python(Context()))
+        print(parsed)
 
     else:
         with open(args["output"], "w") as g:
-            g.write(parsed.to_python(Context()))
+            g.write(parsed)
 
 
 def import_main():

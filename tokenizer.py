@@ -168,24 +168,14 @@ def add_indentation(tokens):
             yield t
         elif t.type in ["|"] and not line_start:
             if open_scope:
-<<<<<<< HEAD
                 raise ValueError(f"Illegal token after arrow at line {t.lineno}, column {t.columnno}")
-=======
-                raise ValueError(
-                    f"Illegal token after '->' at line {t.lineno}, column {t.columnno}")
->>>>>>> 54e1e7546a597d07984172feaabf870149742825
             yield t
             indentation.append(t.columnno)
             yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
         else:
             if open_scope:
                 if t.columnno <= indentation[-1]:
-<<<<<<< HEAD
                     raise ValueError(f"You must indent after arrow at line {t.lineno}, column {t.columnno}")
-=======
-                    raise ValueError(
-                        f"You must indent after -> at line {t.lineno}, column {t.columnno}")
->>>>>>> 54e1e7546a597d07984172feaabf870149742825
                 indentation.append(t.columnno)
                 yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
             elif line_start:
