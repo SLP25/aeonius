@@ -60,7 +60,7 @@ def transpile(input, debug):
 
     with open("aeonius_stdlib.py", "r") as f:
         stdlib = f.read()
-    
+
     context = Context()
     context.symbols = Context.stdlib_symbols
 
@@ -68,6 +68,7 @@ def transpile(input, debug):
         return parsed.to_python(context)
     else:
         return stdlib + parsed.to_python(context)
+
 
 def main():
     single = [

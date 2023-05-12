@@ -55,7 +55,9 @@ class IdentifierPatttern(Pattern):
         return True
 
     def to_python(self, context: Context):
-        if self.identifier not in context.symbols:
+        if context.in_global_scope():
+            context.symbols[self.identifier] = self.identifier
+        elif self.identifier not in context.symbols:
             context.symbols[self.identifier] = context.next_variable()
         
         return context.symbols[self.identifier]

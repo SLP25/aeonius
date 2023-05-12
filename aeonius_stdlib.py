@@ -1,73 +1,73 @@
-def plus(a, b):
-    return a + b
+def plus(a):
+    return lambda x: a + x
 
 
-def minus(a, b):
-    return a - b
+def minus(a):
+    return lambda x: a - x
 
 
-def times(a, b):
-    return a * b
+def times(a):
+    return lambda x: a * x
 
 
-def div(a, b):
-    return a / b
+def div(a):
+    return lambda x: a / x
 
 
-def mod(a, b):
-    return a % b
+def mod(a):
+    return lambda x: a % x
 
 
-def power(a, b):
-    return a ** b
+def power(a):
+    return lambda x: a ** x
 
 
-def lt(a, b):
-    return a < b
+def lt(a):
+    return lambda x: a < x
 
 
-def lteq(a, b):
-    return a <= b
+def lteq(a):
+    return lambda x: a <= x
 
 
-def eqeq(a, b):
-    return a == b
+def eqeq(a):
+    return lambda x: a == x
 
 
-def ltgt(a, b):
-    return a != b
+def ltgt(a):
+    return lambda x: a != x
 
 
-def gteq(a, b):
-    return a >= b
+def gteq(a):
+    return lambda x: a >= x
 
 
-def gt(a, b):
-    return a > b
+def gt(a):
+    return lambda x: a > x
 
 
-def ndnd(a, b):
-    return a and b
+def ndnd(a):
+    return lambda x: a and x
 
 
-def ouou(a, b):
-    return a or b
+def ouou(a):
+    return lambda x: a or x
 
 
-def xor(a, b):
-    return a ^ b
+def xor(a):
+    return lambda x: a ^ x
 
 
 def negate(a):
     return not a
 
 
-def index(a, i):
-    return a[i]
+def index(a):
+    return lambda x: a[x]
 
 
-def dot(a, b):
-    return lambda x: a(b(x))
+def dot(a):
+    return lambda x: lambda y: a(x(y))
 
 
 def ae_map(a):
@@ -99,11 +99,31 @@ def tail(a):
 
 
 def flip(a):
-    return lambda x, y: a(y)(x)
+    return lambda x: lambda y: a(y)(x)
+
+
+def gtlt(a):
+    return lambda b: lambda x: (a(x[0]), b(x[1]))
+
+
+def maximum(a):
+    return max(a)
+
+
+def minimum(a):
+    return min(a)
+
+
+def uncurry(a):
+    return lambda x: a(x[0])(x[1])
 
 
 def is_number(a):
     return ord(a) >= ord('0') and ord(a) <= ord('9')
+
+
+def get(a):
+    return lambda x: a[x]
 
 
 def ascii(a):
@@ -112,10 +132,6 @@ def ascii(a):
 
 def dup(a):
     return (a, a)
-
-
-def gtlt(a, b):
-    return lambda x: (a(x[0]), b(x[1]))
 
 
 def abs(a):

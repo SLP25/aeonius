@@ -77,12 +77,12 @@ def concat:
 
 #14
 def inits:
-    []     => []
-    [h,*t] => [] + (ae_map (lambda y: h + y) (inits t))
+    []     => [[]]
+    [h,*t] => [[]] + (ae_map (lambda y: [h] + y) (inits t))
 
 #15
 def tails:
-    []     => []
+    []     => [[]]
     [h,*t] => [[h,*t]] + (tails t)
 
 #16
@@ -110,7 +110,11 @@ def elemIndices:
 
 
 #20
-nub = (ae_map head) . (group)
+def nub:
+    []     => []
+    [h,*t] => 
+        n if (elem h n) else ([h] + n)
+        n = nub t
 
 #21
 def delete:
@@ -124,7 +128,7 @@ def deleteAll:
 
 #23
 def union:
-    a -> b => a + (ae_filter (negate . ((flip elem) a) b))
+    a -> b => a + (ae_filter (negate . ((flip elem) a)) b)
 
 #24
 def intersect:
@@ -143,13 +147,13 @@ unwords = concat . intersperce " "
 unlines = concat . intersperce "\n"
 
 def max:
-    [h]    => [h]
+    [h]    => h
     [h,*t] => 
         m1 if m1 > h else h
         m1 = max t
         
 #28
-pMaior = lambda x: x
+pMaior = head . (uncurry elemIndices) . (maximum >< id) . dup
 
 
 #29
@@ -179,21 +183,22 @@ def iSorted:
 #34
 def iSort:
     []      => []
-    [h, *t] => insert h (iSort *t)
+    [h, *t] => insert h (iSort t)
 
 #35
 def menor:
-    ""     -> "" => False
+    []     -> [] => False
               _  => True
-    [h,*t] -> ""                                => False
+    [h,*t] -> []                                => False
               [h1,*t1] | (ascii h) > (ascii h1) => False
                        | (ascii h) < (ascii h1) => True
-                       |                        => menor (concat t) (concat t1)
+                       |                        => menor t t1
 
 #36
 def elemMSet:
     a -> []         => False
-         [(a,_),*_] => True
+         [(b,_),*t] | a == b => True
+                    |        => elemMSet a t
          [_,*t]     => elemMSet a t
 
 #37
@@ -211,19 +216,20 @@ def converteMSet:
 #39
 def insereMSet:
     a -> []         => [(a,1)]
-         [(a,x),*t] => [(a,x + 1),*t]
+         [(b,x),*t] | a == b => [(a,x + 1),*t]
+                    |        => [(b,x)] + (insereMSet a t) 
          [h,*t]     => [h] + insereMSet a t
-
 
 #40
 def removeMSet:
     a -> [] => []
-         [(a,x),*t] => t if x == 1 else [(a, x - 1), *t]
+         [(b,x),*t] | a == b => t if x == 1 else [(a, x - 1), *t]
+                    |        => [(b,x)] + (removeMSet a t)
          [h,*t] => [h] + (removeMSet a t)
 
 
 #41
-constroiMSet = []# ae_map ((head >< length) . dup) group
+constroiMSet = ae_map ((head >< length) . dup) . group
 
 # Um either é um dicionario: {"a": valor} ou {"b": valor}
 #42
@@ -261,19 +267,19 @@ def caminho:
                         | x1 > x2 && y1 > y2   => (replicate (x1 - x2) "Oeste") + (replicate (y1 - y2) "Sul")
 
 #46
-vertical = lambda l: length (ae_filter (lambda y: y == "Este" || y == "Oeste") l) == 0
+vertical = lambda l: length (ae_filter (lambda y: elem y (["Oeste", "Este"])) l) == 0
 
 # Estrutura é um dicionario {"x": x, "y": y}
 #47
 maisCentral = lambda l: l
 
-#def maisCentral:
-#    [h] => h
-#    [{"x": x, "y": y},*t] =>
-#        {"x": x, "y": y} if d <= d1 else {"x": x1, "y": y1}
-#        {"x": x1, "y": y1} = maisCentral t
-#        d1 = (x1 ^ 2) + (y1 ^ 2)
-#        d = (x ^ 2) + (y ^ 2)
+def maisCentral:
+   [h] => h
+   [(x,y),*t] =>
+       (x,y) if d <= d1 else (x1,y1)
+       (x1,y1) = maisCentral t
+       d1 = (x1 ^ 2) + (y1 ^ 2)
+       d = (x ^ 2) + (y ^ 2)
 
 
 #48
@@ -285,7 +291,7 @@ def vizinhos:
 
 #49
 def mesmaOrdenada:
-    [ {"x": _, "y": y},  {"x": _, "y": y1},*t] | y != y1 => False
+    [ {"x": _, "y": y},  {"x": _, "y": y1},*t] | y <> y1 => False
                                                |         => mesmaOrdenada [{"x": 0, "y": y1},*t]
     _ => True
 
@@ -293,5 +299,4 @@ def mesmaOrdenada:
 #50
 def interseccaoOk:
     l => length (ae_filter (negate . (lambda s: s == "Vermelho")) l) <= 1
-
 """

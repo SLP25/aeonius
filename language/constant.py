@@ -17,7 +17,7 @@ class PrimitiveConstant(Constant):
 
     def to_python(self, context: Context):
         if isinstance(self.primitive, str):
-            return "'" + self.primitive + "'"
+            return "list('" + self.primitive + "')"
         else:
             return str(self.primitive)
 

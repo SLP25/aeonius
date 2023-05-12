@@ -1,9 +1,9 @@
 class Context():
     next_var = 0
 
-    #TODO: Refactor this to be a lot nicer
+    # TODO: Refactor this to be a lot nicer (i.e. sort alphabetically)
     stdlib_symbols = {
-        "." : "dot",
+        ".": "dot",
         "length": "length",
         "ae_filter": "ae_filter",
         "ae_map": "ae_map",
@@ -17,7 +17,11 @@ class Context():
         "is_number": "is_number",
         "ascii": "ascii",
         "dup": "dup",
-        "abs": "abs"
+        "abs": "abs",
+        "uncurry": "uncurry",
+        "maximum": "maximum",
+        "minimum": "minimum",
+        "get": "get"
     }
 
     def __init__(self, function_name="", arg_name="", parent=None):

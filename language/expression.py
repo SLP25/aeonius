@@ -239,7 +239,7 @@ class OperationExpression(Expression):
         return True
 
     def to_python(self, context: Context):
-        return f"{clean_identifier(self.identifier)}({self.left_expression.to_python(context)}, {self.right_expression.to_python(context)})"
+        return f"{clean_identifier(self.identifier)}({self.left_expression.to_python(context)})({self.right_expression.to_python(context)})"
 
     def __eq__(self, obj):
         if not isinstance(obj, OperationExpression):

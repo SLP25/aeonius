@@ -120,7 +120,7 @@ class AssignmentOperator(Assignment):
         arg_name = context.next_variable()
         context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
-        return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}"
+        return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}\n"
 
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentOperator):
