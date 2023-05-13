@@ -3,7 +3,7 @@ from .match import Match
 from .context import Context
 from .pattern import Pattern
 from .graphviz_data import GraphVizId
-from .utils import ident_str, return_name
+from .utils import ident_str, return_name, pipe_validate
 from typing import List, Tuple
 
 
@@ -12,7 +12,7 @@ class MultiPatternMatch(Element):
         self.matches = matches
 
     def validate(self, context):
-        return True
+        return pipe_validate(list(map(lambda s: s[0].validate(context), self.matches)) + list(map(lambda s: s[1].validate(context), self.matches)))
 
     def to_python(self, context: Context):
         new_context = Context(context.function_name, context.arg_name, context)

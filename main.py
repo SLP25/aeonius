@@ -58,6 +58,16 @@ def parse_args(single_flags, valid_args):
 def transpile(input, debug):
     parsed = parse(input)
 
+    context = Context()
+    context.symbols = Context.stdlib_symbols
+    (valid, reasons) = parsed.validate(context)
+
+    if not valid:
+        print("Logic error in code")
+        for reason in reasons:
+            print(reason)
+        exit(-1)
+
     with open("aeonius_stdlib.py", "r") as f:
         stdlib = f.read()
 

@@ -2,7 +2,7 @@ from .element import Element
 from .context import Context
 from .grammar import Code
 from .expression import Expression
-from .utils import ident_str, return_name
+from .utils import ident_str, return_name, pipe_validate
 from typing import List, Tuple
 from .graphviz_data import GraphVizId
 from graphviz import nohtml
@@ -17,7 +17,7 @@ class MultiCondMatch(Match):
         self.matches = matches
 
     def validate(self, context):
-        return True
+        return pipe_validate(list(map(lambda s: s[0].validate(context), self.matches)) + list(map(lambda s: s[1].validate(context), self.matches)))
 
     def __single_if__(self, expression: Expression, match: Match, context: Context):
         cond = f"if {expression.to_python(context)}:"
@@ -45,8 +45,9 @@ class MatchFunctionBody(Match):
     def __init__(self, body):
         self.body = body
 
+    #TODO: Validate availability of "return_{name}"
     def validate(self, context):
-        return True
+        return self.body.validate(context)
 
     def to_python(self, context: Context):
         function_name = return_name(context.function_name)
@@ -71,7 +72,7 @@ class MatchExpression(Match):
         self.auxiliary = auxiliary
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.body.validate(context), self.auxiliary.validate(context)])
 
     def to_python(self, context: Context):
         new_context = Context(context.function_name,
@@ -100,7 +101,7 @@ class MatchCondition(Match):
         self.code = code
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.body.validate(context), self.code.validate(context)])
 
     def to_python(self, context: Context):
         return self.code.to_python(context) + "\n" + self.body.to_python(context)
@@ -112,5 +113,4 @@ class MatchCondition(Match):
         return self.body == obj.body and self.code == obj.code
 
     def append_to_graph(self, graph):
-        # como n sei o q isto representa vou so usar o body
         return self.body.append_to_graph(graph)

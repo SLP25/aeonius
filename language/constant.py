@@ -5,15 +5,13 @@ from .graphviz_data import GraphVizId
 
 
 class Constant(Element):
-    pass
+    def validate(self, context):
+        return (True, [])
 
 
 class PrimitiveConstant(Constant):
     def __init__(self, primitive):
         self.primitive = primitive
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         if isinstance(self.primitive, str):
@@ -34,9 +32,6 @@ class PrimitiveConstant(Constant):
 class BracketConstant(Constant):
     def __init__(self, constant: Constant):
         self.constant = constant
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         return f"({self.constant.to_python(context)})"
@@ -59,11 +54,8 @@ class EmptyTupleConstantContent(TupleConstantContent):
     def __init__(self):
         pass
 
-    def validate(self, context):
-        return True
-
     def to_python(self, context: Context):
-        return ""
+        return (True, [])
 
     def __eq__(self, obj):
         return isinstance(obj, EmptyTupleConstantContent)
@@ -76,9 +68,6 @@ class NonEmptyTupleConstantContent(TupleConstantContent):
     def __init__(self, constants: TupleConstantContent, final_comma: bool = False):
         self.constants = constants
         self.final_comma = final_comma
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         return ",".join(map(lambda elem: elem.to_python(context), self.constants))
@@ -96,9 +85,6 @@ class NonEmptyTupleConstantContent(TupleConstantContent):
 class TupleConstant(Constant):
     def __init__(self, constant: TupleConstantContent):
         self.constant = constant
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         return f"({self.constant.to_python(context)})"
@@ -121,9 +107,6 @@ class EmptyListConstantContent(ListConstantContent):
     def __init__(self):
         pass
 
-    def validate(self, context):
-        return True
-
     def to_python(self, context: Context):
         return ""
 
@@ -138,9 +121,6 @@ class NonEmptyListConstantContent(ListConstantContent):
     def __init__(self, constants: List[Constant], final_comma: bool = False):
         self.constants = constants
         self.final_comma = final_comma
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         return ",".join(map(lambda elem: elem.to_python(context), self.constants))
@@ -158,9 +138,6 @@ class NonEmptyListConstantContent(ListConstantContent):
 class ListConstant(Constant):
     def __init__(self, constants: ListConstantContent):
         self.constants = constants
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         return f"[{self.constants.to_python(context)}]"
@@ -183,9 +160,6 @@ class EmptyDictConstantContent(DictConstantContent):
     def __init__(self):
         pass
 
-    def validate(self, context):
-        return True
-
     def to_python(self, context: Context):
         return ""
 
@@ -200,9 +174,6 @@ class NonEmptyDictConstantContent(DictConstantContent):
     def __init__(self, key_value_pairs: List[Tuple[Constant, Constant]], final_comma: bool = False):
         self.key_value_pairs = key_value_pairs
         self.final_comma = final_comma
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         return ",".join(map(lambda kv: f"{kv[0].to_python(context)}: {kv[1].to_python(context)}", self.key_value_pairs))
@@ -220,9 +191,6 @@ class NonEmptyDictConstantContent(DictConstantContent):
 class DictConstant(Constant):
     def __init__(self, constants: DictConstantContent):
         self.constants = constants
-
-    def validate(self, context):
-        return True
 
     def to_python(self, context: Context):
         return f"{{{self.constant.to_python(context)}}}"

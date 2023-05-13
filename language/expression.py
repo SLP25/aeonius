@@ -5,7 +5,7 @@ from .pattern import Pattern
 from .context import Context
 from typing import List, Tuple
 from .graphviz_data import GraphVizId
-from .utils import clean_identifier
+from .utils import clean_identifier, pipe_validate
 from graphviz import nohtml
 
 
@@ -18,7 +18,9 @@ class IdentifierExpression(Expression):
         self.identifier = identifier
 
     def validate(self, context):
-        return True
+        if not self.identifier in context.symbols:
+            return (False, [f"Undefined symbol {self.identifier}"])
+        return (True, "")
 
     def to_python(self, context: Context):
         return context.symbols[self.identifier]
@@ -38,7 +40,7 @@ class ConstantExpression(Expression):
         self.constant = constant
 
     def validate(self, context):
-        return True
+        return self.constant.validate(context)
 
     def to_python(self, context: Context):
         return self.constant.to_python(context)
@@ -58,7 +60,9 @@ class OperatorApplication(Expression):
         self.operator = operator
 
     def validate(self, context):
-        return True
+        if self.operator not in context.symbols:
+            return (False, [f"Undefined operator symbol {self.operator}"])
+        return (True, [])
 
     def to_python(self, context: Context):
         return clean_identifier(self.operator)
@@ -79,7 +83,7 @@ class FunctionApplicationExpression(Expression):
         self.arguments = arguments
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.function.validate(context)] + list(map(lambda s: s.validate(context), self.arguments)))
 
     def to_python(self, context: Context):
         res = self.function.to_python(context)
@@ -102,7 +106,15 @@ class LambdaExpression(Expression):
         self.expression = expression
 
     def validate(self, context):
-        return True
+        if self.identifier in context.symbols:
+            this = (
+                False, [f"Lambda argument {self.identifier} overrides existing symbol"])
+        else:
+            this = (True, [])
+        arg_name = context.next_variable()
+        context.symbols[self.identifier] = arg_name
+
+        return pipe_validate([this, self.expression.validate(context)])
 
     def to_python(self, context: Context):
         arg_name = context.next_variable()
@@ -130,7 +142,7 @@ class IfElseExpression(Expression):
         self.false_expression = false_expression
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.condition.validate(context), self.true_expression.validate(context), self.false_expression.validate(context)])
 
     def to_python(self, context: Context):
         return f"{self.true_expression.to_python(context)} if {self.condition.to_python(context)} else {self.false_expression.to_python(context)}"
@@ -158,7 +170,7 @@ class ForLoopExpression(Expression):
         self.condition = condition
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.expression.validate(context), self.pattern.validate(context), self.set.validate(context), self.condition.validate(context)])
 
     def to_python(self, context: Context):
         result = f"{self.expression.to_python(context)} for {self.pattern.to_python(context)} in {self.set.to_python(context)}"
@@ -197,7 +209,7 @@ class DictionaryCompreensionExpression(Expression):
         self.condition = condition
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.expression.validate(context), self.pattern.validate(context), self.set.validate(context), self.condition.validate(context)])
 
     def to_python(self, context: Context):
         result = f"{{ {self.identifier} : {self.expression.to_python(context)} for {self.pattern.to_python(context)} in {self.set.to_python(context)}"
@@ -236,7 +248,12 @@ class OperationExpression(Expression):
         self.right_expression = right_expression
 
     def validate(self, context):
-        return True
+        if self.identifier not in context.symbols:
+            this = (False, [f"Undefined operator {self.identifier}"])
+        else:
+            this = (True, [])
+
+        return pipe_validate([this, self.left_expression.validate(context), self.right_expression.validate(context)])
 
     def to_python(self, context: Context):
         return f"{clean_identifier(self.identifier)}({self.left_expression.to_python(context)})({self.right_expression.to_python(context)})"
@@ -260,7 +277,7 @@ class BracketExpression(Expression):
         self.expression = expression
 
     def validate(self, context):
-        return True
+        return self.expression.validate(context)
 
     def to_python(self, context: Context):
         return f"({self.expression.to_python(context)})"
@@ -284,7 +301,7 @@ class UnpackExpression(Expression):
         self.expression = expression
 
     def validate(self, context):
-        return True
+        return self.expression.validate(context)
 
     def to_python(self, context: Context) -> str:
         return f"*{self.expression.to_python(context)}"
@@ -305,7 +322,7 @@ class NonEmptyTupleExpressionContent(TupleExpressionContent):
         self.final_comma = final_comma
 
     def validate(self, context):
-        return True
+        return self.expressions.validate(context)
 
     def to_python(self, context: Context):
         result = ",".join(
@@ -331,7 +348,7 @@ class TupleExpression(Expression):
         self.expression = expression
 
     def validate(self, context):
-        return True
+        return self.expression.validate(context)
 
     def to_python(self, context: Context):
         return f"({self.expression.to_python(context)})"
@@ -356,7 +373,7 @@ class NonEmptyListExpressionContent(ListExpressionContent):
         self.final_comma = final_comma
 
     def validate(self, context):
-        return True
+        return pipe_validate(list(map(lambda s: s.validate(context), self.expressions)))
 
     def to_python(self, context: Context):
         result = ",".join(
@@ -382,7 +399,7 @@ class ListExpression(Expression):
         self.expressions = expressions
 
     def validate(self, context):
-        return True
+        return self.expressions.validate(context)
 
     def to_python(self, context: Context):
         return f"[{self.expressions.to_python(context)}]"
@@ -408,7 +425,7 @@ class NonEmptyDictExpressionContent(DictExpressionContent):
         self.tail = tail
 
     def validate(self, context):
-        return True
+        return pipe_validate(list(map(lambda s: s[0].validate(context))) + list(map(lambda s: s[1].validate(context))))
 
     def to_python(self, context: Context):
         result = ",".join(map(
@@ -442,7 +459,7 @@ class DictExpression(Expression):
         self.expressions = expressions
 
     def validate(self, context):
-        return True
+        return self.expressions.validate(context)
 
     def to_python(self, context: Context):
         return f"{{ {self.expressions.to_python(context)}}}"
