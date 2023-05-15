@@ -118,12 +118,14 @@ def import_main():
     parsed = parse(data)
     exec(parsed.to_python(Context()))
 
-
+#TODO::ADD VALIDATION
 def aeonius_import(path):
     with open(path, "r") as f:
         data = f.read()
         parsed = parse(data)
-        exec(parsed.to_python(Context()))
+        context = Context()
+        context.symbols = Context.stdlib_symbols
+        exec(parsed.to_python(context))
 
 
 if __name__ == "__main__":
