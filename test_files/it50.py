@@ -93,13 +93,14 @@ def nub(l):
 
 #21
 def delete(x,l):
-    l.remove(x)
+    if x in l:
+        l.remove(x)
     return l
 
 #22
 def deleteAll(l1,l2):
     for i in l2:
-        l1.remove(i)
+        l1=delete(i,l1)
     return l1
 
 #23
@@ -129,11 +130,23 @@ def insert(a,l):
     
 #26
 def unwords(l):
-    return " ".join(l)
+    last=l[-1]
+    r=[]
+    for i in l:
+        r+=i
+        r+=[" "]
+    r.append(last)
+    return r
 
 #27
 def unlines(l):
-    return "\n".join(l)
+    last=l[-1]
+    r=[]
+    for i in l:
+        r+=i
+        r+=["\n"]
+    r.append(last)
+    return r
 
 
 #28
@@ -158,7 +171,7 @@ def posPares(l):
     return l[0::2]
 #33
 def iSorted(l):
-    return l.sorted()
+    return all(l[i] <= l[i + 1] for i in range(len(l)-1))
 
 #34
 def iSort(l):
@@ -200,11 +213,11 @@ def constroiMSet(l):
     return list(constroiMSetAux(l))
 #42
 def partitionEithers(l):
-    r={"a":[],"b":[]}
+    r={1:[],2:[]}
     for i in l:
         for k,v in i.items():
             r[k].append(v)
-    return (r['a'],r['b'])
+    return (r[1],r[2])
 
 # Maybe => Valor ou None
 #43
@@ -240,13 +253,13 @@ def vertical(l):
     return not any(map(lambda y: y == "Este" or y == "Oeste",l))
 #47
 def maisCentral(l):
-    return min(l,key=lambda x: (x['x'] ^ 2) + (x['y'] ^ 2))
+    return min(l,key=lambda x: (x[0] ^ 2) + (x[1] ^ 2))
 #48
 def vizinhos(p,l):
-    return list(filter(lambda h:(abs(p['x']-h['x']) + abs(p['y']-h['y'])) <= 1,l))
+    return list(filter(lambda h:(abs(p[0]-h[0]) + abs(p[1]-h[1])) <= 1,l))
 #49
 def mesmaOrdenada(l):
-    return len(set(map(lambda x:x['y'],l)))==1
+    return len(set(map(lambda x:x[1],l)))==1
 #50
 def interseccaoOk(l):
-    return len(filter(lambda s: s != "Vermelho",l)) <= 1
+    return len(list(filter(lambda s: s != "Vermelho",l))) <= 1

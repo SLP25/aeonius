@@ -97,7 +97,7 @@ class FunctionApplicationExpression(Expression):
         return self.function == obj.function and self.arguments == obj.arguments
 
     def append_to_graph(self, graph):
-        return GraphVizId.function(graph, self.function.append_to_graph(graph), map(lambda x: x.append_to_graph(graph), self.arguments))
+        return GraphVizId.function(graph, self.function.append_to_graph(graph), [self.arguments.append_to_graph(graph)])
 
 
 class LambdaExpression(Expression):

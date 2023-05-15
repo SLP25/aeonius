@@ -139,4 +139,4 @@ def abs(a):
 
 
 def length(a):
-    return len(a)
+    return len(list(a))

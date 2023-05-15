@@ -95,11 +95,10 @@ def isSuffixOf:
 
 #18
 def isSubsequenceOf:
-    s -> l =>
-            length ((ae_filter id) . (ae_map (aux s)) l) > 0
-            def aux:
-                s => isPrefixOf s
-
+    [] -> l => True
+    [h,*t] -> [] => False
+              [h1,*t1] | h==h1 => isSubsequenceOf t t1
+                       |       => isSubsequenceOf [h,*t] t1
 
 #19
 def elemIndices:
@@ -123,6 +122,7 @@ def delete:
 
 #22
 def deleteAll:
+    [] -> _ => []
     l -> []     => l
          [h,*t] => deleteAll (delete h l) t
 
@@ -141,10 +141,10 @@ def insert:
                  |       => [h] + (insert a t)
 
 #26
-unwords = concat . intersperce " "
+unwords = concat . intersperce [" "]
 
 #27
-unlines = concat . intersperce "\n"
+unlines = concat . intersperce ["\n"]
 
 def max:
     [h]    => h
@@ -231,14 +231,14 @@ def removeMSet:
 #41
 constroiMSet = ae_map ((head >< length) . dup) . group
 
-# Um either é um dicionario: {"a": valor} ou {"b": valor}
+# Um either é um dicionario: {"1": valor} ou {"2": valor}
 #42
 def partitionEithers:
     [] => ([],[])
-    [{"a": x},*t] => 
+    [{1: x},*t] => 
         ([x]+a1, b1)
         (a1,b1) = partitionEithers t
-    [{"b": x},*t] => 
+    [{2: x},*t] => 
         (a1,[x] +  b1)
         (a1,b1) = partitionEithers t
 
@@ -269,10 +269,8 @@ def caminho:
 #46
 vertical = lambda l: length (ae_filter (lambda y: elem y (["Oeste", "Este"])) l) == 0
 
-# Estrutura é um dicionario {"x": x, "y": y}
+# Estrutura é um tuplo (x,y)
 #47
-maisCentral = lambda l: l
-
 def maisCentral:
    [h] => h
    [(x,y),*t] =>
@@ -284,15 +282,15 @@ def maisCentral:
 
 #48
 def vizinhos:
-    {"x": x, "y": y} -> [] => []
-                        [{"x": x1, "y":y1},*t] => 
-                            t1 if (abs (x-x1)) + (abs (y-y1)) > 1 else [{"x": x1, "y":y1}] + t1
-                            t1 = vizinhos  {"x": x, "y": y} t
+    (x,y) -> [] => []
+             [(x1,y1),*t] => 
+                 t1 if (abs (x-x1)) + (abs (y-y1)) > 1 else [(x1,y1)] + t1
+                 t1 = vizinhos  (x,y) t
 
 #49
 def mesmaOrdenada:
-    [ {"x": _, "y": y},  {"x": _, "y": y1},*t] | y <> y1 => False
-                                               |         => mesmaOrdenada [{"x": 0, "y": y1},*t]
+    [ (_,y),  (_, y1),*t] => 
+        False if y <> y1 else mesmaOrdenada [(0,y1),*t]
     _ => True
 
 

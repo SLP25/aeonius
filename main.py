@@ -60,13 +60,13 @@ def transpile(input, debug):
 
     context = Context()
     context.symbols = Context.stdlib_symbols
-    (valid, reasons) = parsed.validate(context)
+    #(valid, reasons) = parsed.validate(context)
 
-    if not valid:
-        print("Logic error in code")
-        for reason in reasons:
-            print(reason)
-        exit(-1)
+    #if not valid:
+    #    print("Logic error in code")
+    #    for reason in reasons:
+    #        print(reason)
+    #    exit(-1)
 
     with open("aeonius_stdlib.py", "r") as f:
         stdlib = f.read()
@@ -74,10 +74,10 @@ def transpile(input, debug):
     context = Context()
     context.symbols = Context.stdlib_symbols
 
-    if not debug:
-        return parsed.to_python(context)
+    if debug:
+        return (parsed.to_python(context),context)
     else:
-        return stdlib + parsed.to_python(context)
+        return (stdlib + parsed.to_python(context),context)
 
 
 def main():
@@ -100,7 +100,7 @@ def main():
     with open(args["input"], "r") as f:
         data = f.read()
 
-    parsed = transpile(data, args["d"])
+    parsed = transpile(data, args["d"])[0]
 
     if (args["d"]):
         print(parsed)
@@ -122,10 +122,10 @@ def import_main():
 def aeonius_import(path):
     with open(path, "r") as f:
         data = f.read()
-        parsed = parse(data)
-        context = Context()
-        context.symbols = Context.stdlib_symbols
-        exec(parsed.to_python(context))
+        parsed,context = transpile(data, False)
+        for i in context.symbols.values():
+            globals()[i]=lambda x:x
+        exec(parsed,globals())
 
 
 if __name__ == "__main__":
