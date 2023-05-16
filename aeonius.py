@@ -4,7 +4,6 @@ from language.grammar import Aeonius
 import ast
 import sys
 import imp
-
 import inspect
 
 def get_importing_module():
@@ -20,6 +19,7 @@ def get_importing_module():
 
 def importCode(code,name,add_to_sys_modules=0):
     """
+    https://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
     Import dynamically generated code as a module. code is the
     object containing the code (a string, a file handle or an
     actual compiled code object, same types as accepted by an
