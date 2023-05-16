@@ -1,7 +1,7 @@
-from test_files import aeonius
+from test_files import aeonius as ae50
 from test_files import it50
 from test_files import rec50
-import main as ae_main
+import main as aeonius
 from main import parse_args,help
 from language.utils import clean_identifier
 import re
@@ -15,7 +15,7 @@ sys.setrecursionlimit(10**6)
 
 def run():
     functionNames={}
-    for pythonFile in [aeonius,it50,rec50]:
+    for pythonFile in [ae50,it50,rec50]:
         with open(pythonFile.__file__) as f:
             file=f.read()
             functions=re.findall(r"(#\d+)\n(def (\w+)\(.*\)\:|def (\w+)\:|op \((.*)\)\:|(\w+) =)",file)
@@ -77,7 +77,7 @@ def run():
     }
     results={}
 
-    ae_main.aeonius_import(aeonius.__file__)
+    aeonius.aeonius_import(ae50)
 
     def argsToFunction(args):
         s=""
@@ -90,13 +90,10 @@ def run():
         results[k]={"ae":[],"it":[],"rec":[]}
         input = functionArguments[k]
         for function in v:
-            execString=""
+            execString=function
             if function.startswith("aeonius"):
-                
-                execString='ae_main.'+function.split('.')[1]
                 execString+=argsToFunction(input)
             else:
-                execString+=function
                 execString+='('+",".join(map(str,input))+')'
             for iteration in range(10):
                 start = time.time()
@@ -135,15 +132,11 @@ def show():
 def main():
 
     single = [
-            "-h",
             "-r",
             "-s"
         ]
 
     args = parse_args(single, {})
-    if args["h"]:
-        help()
-        exit()
     if args["r"]:
         run()
     if args["s"]:

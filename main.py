@@ -1,6 +1,8 @@
 from aeonius_parser import parse
 from language.context import Context
 
+import importlib as imp
+import importlib.util as impu
 import sys
 
 
@@ -119,8 +121,8 @@ def import_main():
     exec(parsed.to_python(Context()))
 
 #TODO::ADD VALIDATION
-def aeonius_import(path):
-    with open(path, "r") as f:
+def aeonius_import(module):
+    with open(module.__file__, "r") as f:
         data = f.read()
         parsed,context = transpile(data, False)
         for i in context.symbols.values():
