@@ -1,4 +1,4 @@
-from test_files import aeonius as ae50
+from test_files import aeonius as ae50t
 from test_files import it50
 from test_files import rec50
 import main as aeonius
@@ -15,7 +15,7 @@ sys.setrecursionlimit(10**6)
 
 def run():
     functionNames={}
-    for pythonFile in [ae50,it50,rec50]:
+    for pythonFile in [ae50t,it50,rec50]:
         with open(pythonFile.__file__) as f:
             file=f.read()
             functions=re.findall(r"(#\d+)\n(def (\w+)\(.*\)\:|def (\w+)\:|op \((.*)\)\:|(\w+) =)",file)
@@ -76,8 +76,8 @@ def run():
         50:[[['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['V', 'e', 'r', 'm', 'e', 'l', 'h', 'o'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['V', 'e', 'r', 'm', 'e', 'l', 'h', 'o'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e']]]
     }
     results={}
-
-    aeonius.aeonius_import(ae50)
+    
+    ae50 = aeonius.include(ae50t)
 
     def argsToFunction(args):
         s=""
@@ -92,6 +92,7 @@ def run():
         for function in v:
             execString=function
             if function.startswith("aeonius"):
+                execString="ae50."+function.split('.')[1]
                 execString+=argsToFunction(input)
             else:
                 execString+='('+",".join(map(str,input))+')'
