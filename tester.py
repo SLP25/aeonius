@@ -1,8 +1,8 @@
 from test_files import aeonius as ae50t
 from test_files import it50
 from test_files import rec50
-import main as aeonius
-from main import parse_args,help
+import aeonius
+from aeonius import parse_args,help
 from language.utils import clean_identifier
 import re
 import time

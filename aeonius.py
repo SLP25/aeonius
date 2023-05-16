@@ -5,6 +5,18 @@ import ast
 import sys
 import imp
 
+import inspect
+
+def get_importing_module():
+    stack = inspect.stack()
+    calling_module_name = None
+    for frame_info in stack:
+        module = inspect.getmodule(frame_info[0])
+        if module and module.__name__ != __name__:
+            calling_module = module
+            break
+    return calling_module
+
 
 def importCode(code,name,add_to_sys_modules=0):
     """
@@ -156,9 +168,7 @@ def include(module):
         return importCode(parsed,module.__name__,1)
 
 #TODO::ADD VALIDATION
-def includeAE(name):
-    module=sys.modules[name]
-    
+def includeAE(module):
     with open(module.__file__, "r") as f:
         data = f.read()
         parsed = parse(data)
@@ -167,9 +177,16 @@ def includeAE(name):
         with open("aeonius_stdlib.py", "r") as f:
             stdlib = f.read()
         parsed.snippets=list(filter(lambda x:isinstance(x, Aeonius),parsed.snippets))
-        return importCode(stdlib + parsed.to_python(context),module.__name__,1)
+        return importCode(stdlib + parsed.to_python(context),module.__name__,0)
+
+
+
 
 
 
 if __name__ == "__main__":
     main()
+else:
+    aeonius_code=includeAE(get_importing_module())
+    
+    
