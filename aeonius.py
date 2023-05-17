@@ -1,49 +1,17 @@
 from aeonius_parser import parse
 from language.context import Context
 from language.grammar import Aeonius
-import ast
 import sys
-import imp
 import inspect
 
 def get_importing_module():
-    stack = inspect.stack()
-    calling_module_name = None
-    for frame_info in stack:
+    for frame_info in inspect.stack():
         module = inspect.getmodule(frame_info[0])
         if module and module.__name__ != __name__:
-            calling_module = module
-            break
-    return calling_module
+            return module
 
-
-def importCode(code,name,add_to_sys_modules=0):
-    """
-    https://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
-    Import dynamically generated code as a module. code is the
-    object containing the code (a string, a file handle or an
-    actual compiled code object, same types as accepted by an
-    exec statement). The name is the name to give to the module,
-    and the final argument says wheter to add it to sys.modules
-    or not. If it is added, a subsequent import statement using
-    name will return this module. If it is not added to sys.modules
-    import will try to load it in the normal fashion.
-    
-    import foo
-
-    is equivalent to
-
-    foofile = open("/path/to/foo.py")
-    foo = importCode(foofile,"foo",1)
-
-    Returns a newly generated module.
-    """
-    module = imp.new_module(name)
-
+def importCode(code,module):
     exec(code,module.__dict__)
-    if add_to_sys_modules:
-        sys.modules[name] = module
-    return module
 
 
 def help():
@@ -177,7 +145,7 @@ def includeAE(module):
         with open("aeonius_stdlib.py", "r") as f:
             stdlib = f.read()
         parsed.snippets=list(filter(lambda x:isinstance(x, Aeonius),parsed.snippets))
-        return importCode(stdlib + parsed.to_python(context),module.__name__,0)
+        importCode(stdlib + parsed.to_python(context),module)
 
 
 
