@@ -4,6 +4,7 @@ from .constant import Constant, PrimitiveConstant
 from .context import Context
 from typing import List, Tuple
 from .graphviz_data import GraphVizId
+from .utils import pipe_validate
 
 
 class Pattern(Element):
@@ -15,7 +16,7 @@ class ConstantPattern(Pattern):
         self.constant = constant
 
     def validate(self, context):
-        return True
+        return (True, [])
 
     def to_python(self, context: Context):
         return self.constant.to_python(context)
@@ -35,7 +36,7 @@ class AnythingPattern(Pattern):
         pass
 
     def validate(self, context):
-        return True
+        return (True, [])
 
     def to_python(self, context: Context):
         return "_"
@@ -52,10 +53,16 @@ class IdentifierPatttern(Pattern):
         self.identifier = identifier
 
     def validate(self, context):
-        return True
+        if self.identifier in context.symbols:
+            return (False, [f"Redefinition of symbol {self.identifier}"])
+
+        context.symbols[self.identifier] = self.identifier
+        return (True, [])
 
     def to_python(self, context: Context):
-        if self.identifier not in context.symbols:
+        if context.in_global_scope():
+            context.symbols[self.identifier] = self.identifier
+        elif self.identifier not in context.symbols:
             context.symbols[self.identifier] = context.next_variable()
 
         return context.symbols[self.identifier]
@@ -75,7 +82,7 @@ class BracketPattern(Pattern):
         self.pattern = pattern
 
     def validate(self, context):
-        return True
+        return self.pattern.validate(context)
 
     def to_python(self, context: Context):
         return f"({self.pattern.to_python(context)})"
@@ -100,7 +107,7 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
         self.final_comma = final_comma
 
     def validate(self, context):
-        return True
+        return self.patterns.validate(context)
 
     def to_python(self, context: Context):
         return ",".join(map(lambda p: p.to_python(context), self.patterns)) + ("," if self.final_comma else "")
@@ -120,7 +127,7 @@ class TuplePattern(Pattern):
         self.pattern = pattern
 
     def validate(self, context):
-        return True
+        return self.pattern.validate(context)
 
     def to_python(self, context: Context):
         return f"({self.pattern.to_python(context)})"
@@ -146,7 +153,12 @@ class NonEmptyListPatternContent(ListPatternContent):
         self.tail = tail
 
     def validate(self, context):
-        return True
+        if self.tail is None:
+            tail_val = (True, [])
+        else:
+            tail_val = self.tail.validate(context)
+
+        return pipe_validate(list(map(lambda s: s.validate(context), self.patterns)) + [tail_val])
 
     def to_python(self, context: Context):
         return ",".join(map(lambda p: p.to_python(context), self.patterns)) + ("," if self.final_comma else "")
@@ -165,7 +177,7 @@ class PrimitivePattern(Pattern):
         self.primitive = primitive
 
     def validate(self, context):
-        return True
+        return self.primitive.validate(context)
 
     def to_python(self, context):
         return self.primitive.to_python(context)
@@ -185,7 +197,7 @@ class UnpackPattern(Pattern):
         self.pattern = pattern
 
     def validate(self, context):
-        return True
+        return self.pattern.validate(context)
 
     def to_python(self, context: Context) -> str:
         return f"*{self.pattern.to_python(context)}"
@@ -205,7 +217,7 @@ class ListPattern(Pattern):
         self.patterns = patterns
 
     def validate(self, context):
-        return True
+        return self.patterns.validate(context)
 
     def to_python(self, context: Context):
         return f"[{self.patterns.to_python(context)}]"
@@ -231,7 +243,7 @@ class NonEmptyDictPatternContent(DictPatternContent):
         self.tail = tail
 
     def validate(self, context):
-        return True
+        return pipe_validate(list(map(lambda s: s[0].validate(context), self.key_value_pairs)) + list(map(lambda s: s[1].validate(context), self.key_value_pairs)))
 
     def to_python(self, context: Context):
         content = map(
@@ -261,7 +273,7 @@ class DictPattern(Pattern):
         self.patterns = patterns
 
     def validate(self, context):
-        return True
+        return self.patterns.validate(context)
 
     def to_python(self, context: Context):
         return f"{{ {self.patterns.to_python(context)} }}"

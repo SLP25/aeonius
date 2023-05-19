@@ -1,23 +1,27 @@
 class Context():
     next_var = 0
 
-    #TODO: Refactor this to be a lot nicer
+    # TODO: Refactor this to be a lot nicer
     stdlib_symbols = {
-        "." : "dot",
-        "length": "length",
+        ".": "dot",
+        "abs": "abs",
         "ae_filter": "ae_filter",
         "ae_map": "ae_map",
-        "id": "id",
-        "fst": "fst",
-        "snd": "snd",
-        "head": "head",
-        "tail": "tail",
-        "negate": "negate",
-        "flip": "flip",
-        "is_number": "is_number",
         "ascii": "ascii",
         "dup": "dup",
-        "abs": "abs"
+        "flip": "flip",
+        "fst": "fst",
+        "get": "get",
+        "head": "head",
+        "id": "id",
+        "is_number": "is_number",
+        "length": "length",
+        "maximum": "maximum",
+        "minimum": "minimum",
+        "negate": "negate", 
+        "snd": "snd",      
+        "tail": "tail",
+        "uncurry": "uncurry",
     }
 
     def __init__(self, function_name="", arg_name="", parent=None):
@@ -33,3 +37,4 @@ class Context():
         result = f"var_{Context.next_var}"
         Context.next_var += 1
         return result
+

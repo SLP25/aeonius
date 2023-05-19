@@ -1,7 +1,17 @@
 from aeonius_parser import parse
 from language.context import Context
-
+from language.grammar import Aeonius
 import sys
+import inspect
+
+def get_importing_module():
+    for frame_info in inspect.stack():
+        module = inspect.getmodule(frame_info[0])
+        if module and module.__name__ != __name__:
+            return module
+
+def importCode(code,module):
+    exec(code,module.__dict__)
 
 
 def help():
@@ -58,16 +68,27 @@ def parse_args(single_flags, valid_args):
 def transpile(input, debug):
     parsed = parse(input)
 
+    context = Context()
+    context.symbols = Context.stdlib_symbols
+    #(valid, reasons) = parsed.validate(context)
+
+    #if not valid:
+    #    print("Logic error in code")
+    #    for reason in reasons:
+    #        print(reason)
+    #    exit(-1)
+
     with open("aeonius_stdlib.py", "r") as f:
         stdlib = f.read()
-    
+
     context = Context()
     context.symbols = Context.stdlib_symbols
 
     if debug:
-        return parsed.to_python(context)
+        return (parsed.to_python(context),context)
     else:
-        return stdlib + parsed.to_python(context)
+        return (stdlib + parsed.to_python(context),context)
+
 
 def main():
     single = [
@@ -89,7 +110,7 @@ def main():
     with open(args["input"], "r") as f:
         data = f.read()
 
-    parsed = transpile(data, args["d"])
+    parsed = transpile(data, args["d"])[0]
 
     if (args["d"]):
         print(parsed)
@@ -107,13 +128,33 @@ def import_main():
     parsed = parse(data)
     exec(parsed.to_python(Context()))
 
+#TODO::ADD VALIDATION
+def include(module):
+    with open(module.__file__, "r") as f:
+        data = f.read()
+        parsed,context = transpile(data, False)
+        return importCode(parsed,module.__name__,1)
 
-def aeonius_import(path):
-    with open(path, "r") as f:
+#TODO::ADD VALIDATION
+def includeAE(module):
+    with open(module.__file__, "r") as f:
         data = f.read()
         parsed = parse(data)
-        exec(parsed.to_python(Context()))
+        context = Context()
+        context.symbols = Context.stdlib_symbols
+        with open("aeonius_stdlib.py", "r") as f:
+            stdlib = f.read()
+        parsed.snippets=list(filter(lambda x:isinstance(x, Aeonius),parsed.snippets))
+        importCode(stdlib + parsed.to_python(context),module)
+
+
+
+
 
 
 if __name__ == "__main__":
     main()
+else:
+    aeonius_code=includeAE(get_importing_module())
+    
+    

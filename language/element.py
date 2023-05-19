@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from .context import Context
 from graphviz import Graph
-
+from typing import List,Tuple
 
 class Element(ABC):
     @abstractmethod
-    def validate(self, context) -> bool:
+    def validate(self, context) -> Tuple[bool, List[str]]:
         pass
 
     @abstractmethod

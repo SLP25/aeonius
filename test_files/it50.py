@@ -20,8 +20,8 @@ def take(n,l):
 def drop(n,l):
     return l[n:]
 #8
-    def zipp(l1,l2):
-        return list(zip(l1,l2))
+def zipp(l1,l2):
+    return list(zip(l1,l2))
 #9
 def elem(e,l):
     return e in l
@@ -30,9 +30,9 @@ def replicate(n,a):
     return [a for i in range(n)]
 #11
 def intersperse(e,l):
-    last=l.pop()
+    last=l[-1]
     ln=[]
-    for i in l:
+    for i in l[:-1]:
         ln.append(i)
         ln.append(e) 
     ln.append(last) 
@@ -81,12 +81,11 @@ def isSubsequenceOf(l1,l2):
                 return True
     return False
 #19
-def elemIndicesAux(a,l):
-    for p,i in enumerate(l):
-        if a==i:
-            yield p
-
 def elemIndices(a,l):
+    def elemIndicesAux(a,l):
+        for p,i in enumerate(l):
+            if a==i:
+                yield p
     return list(elemIndicesAux(a, l))
 #20
 def nub(l):
@@ -94,13 +93,14 @@ def nub(l):
 
 #21
 def delete(x,l):
-    l.remove(x)
+    if x in l:
+        l.remove(x)
     return l
 
 #22
 def deleteAll(l1,l2):
     for i in l2:
-        l1.remove(i)
+        l1=delete(i,l1)
     return l1
 
 #23
@@ -111,14 +111,14 @@ def union(a,b):
             c.append(i)
     return c
 
-#25
-def intersectAux(a,b):
-    for i in a:
-        if i in b:
-            yield i
+
 
 #24
 def intersect(a,b):
+    def intersectAux(a,b):
+        for i in a:
+            if i in b:
+                yield i
     return list(intersectAux(a, b))
 
 #25
@@ -130,17 +130,26 @@ def insert(a,l):
     
 #26
 def unwords(l):
-    return " ".join(l)
+    last=l[-1]
+    r=[]
+    for i in l:
+        r+=i
+        r+=[" "]
+    r.append(last)
+    return r
 
 #27
 def unlines(l):
-    return "\n".join(l)
+    last=l[-1]
+    r=[]
+    for i in l:
+        r+=i
+        r+=["\n"]
+    r.append(last)
+    return r
 
 
 #28
-def maxx(l):
-    return max(l)
-
 def pMaior(l):
     return max(enumerate(l),key=lambda x:x[1])[0]
 
@@ -162,7 +171,7 @@ def posPares(l):
     return l[0::2]
 #33
 def iSorted(l):
-    return l.sorted()
+    return all(l[i] <= l[i + 1] for i in range(len(l)-1))
 
 #34
 def iSort(l):
@@ -174,15 +183,15 @@ def menor(s1,s2):
 def elemMSet(a,l):
     return a in map(lambda x:x[0],l)
 #37
-def lengthMSet(a,l):
+def lengthMSet(l):
     return sum(map(lambda x:x[1],l))
 
-def converteMSetAux(l):
-    for i in l:
-        for j in range(i[1]):
-            yield i[0]
 #38
 def converteMSet(l):
+    def converteMSetAux(l):
+        for i in l:
+            for j in range(i[1]):
+                yield i[0]
     return list(converteMSetAux(l))
 #39
 def insereMSet(a,l):    
@@ -197,29 +206,26 @@ def removeMSet(a,l):
     if h[0]==a: return t if h[1] == 1 else [(a, h[1] - 1)]+t
     return [h] + removeMSet(a,t)
 #41
-def constroiMSetAux(l):
-    for i in set(l):
-        yield (i,l.count(i))
-        
 def constroiMSet(l):
+    def constroiMSetAux(l):
+        for i in set(l):
+            yield (i,l.count(i))
     return list(constroiMSetAux(l))
 #42
 def partitionEithers(l):
-    r={"a":[],"b":[]}
+    r={1:[],2:[]}
     for i in l:
         for k,v in i.items():
             r[k].append(v)
-    return (r['a'],r['b'])
+    return (r[1],r[2])
 
-#43
 # Maybe => Valor ou None
-
+#43
 def catMaybes(l):
     return list(filter(lambda x:x!=None, l))
 
-#44
 # Posicoes sao strings
-
+#44
 def posicao(xy,l):
     x,y=xy
     if l==[]:return (x,y)
@@ -243,17 +249,17 @@ def caminho(p1,p2):
     return r
 
 #46
-def vertical():
-    return len(filter(lambda y: y == "Este" or y == "Oeste",l)) == 0
+def vertical(l):
+    return not any(map(lambda y: y == "Este" or y == "Oeste",l))
 #47
 def maisCentral(l):
-    return min(l,key=lambda x: (x['x'] ^ 2) + (x['y'] ^ 2))
+    return min(l,key=lambda x: (x[0] ^ 2) + (x[1] ^ 2))
 #48
 def vizinhos(p,l):
-    return list(filter(lambda h:(abs(p['x']-h['x']) + abs(p['y']-h['y'])) <= 1,l))
+    return list(filter(lambda h:(abs(p[0]-h[0]) + abs(p[1]-h[1])) <= 1,l))
 #49
 def mesmaOrdenada(l):
-    return len(set(map(lambda x:x['y'],l)))==1
+    return len(set(map(lambda x:x[1],l)))==1
 #50
 def interseccaoOk(l):
-    return len(filter(lambda s: s != "Vermelho",l)) <= 1
+    return len(list(filter(lambda s: s != "Vermelho",l))) <= 1

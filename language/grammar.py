@@ -2,6 +2,7 @@ from .element import Element
 from .context import Context
 from typing import List
 from .graphviz_data import GraphVizId
+from .utils import pipe_validate
 
 
 class Language(Element):
@@ -13,7 +14,7 @@ class Grammar(Element):
         self.snippets = snippets
 
     def validate(self, context: Context):
-        return True
+        return pipe_validate(list(map(lambda s: s.validate(context), self.snippets)))
 
     def to_python(self, context: Context):
         return "\n".join(map(lambda s: s.to_python(context), self.snippets))
@@ -35,7 +36,7 @@ class Code(Element):
         self.assignments = assignments
 
     def validate(self, context):
-        return True
+        return pipe_validate(list(map(lambda s: s.validate(context), self.assignments)))
 
     def to_python(self, context: Context):
         return "\n".join(map(lambda s: s.to_python(context), self.assignments))
@@ -47,7 +48,7 @@ class Code(Element):
         return self.assignments == obj.assignments
 
     def append_to_graph(self, graph):
-        return GraphVizId.content(graph, list(map(lambda x:x.append_to_graph(graph),self.assignments)),type="Code")
+        return GraphVizId.content(graph, list(map(lambda x: x.append_to_graph(graph), self.assignments)), type="Code")
 
 
 class Aeonius(Language):
@@ -55,7 +56,7 @@ class Aeonius(Language):
         self.code = code
 
     def validate(self, context):
-        return True
+        return self.code.validate(context)
 
     def to_python(self, context: Context):
         return self.code.to_python(context)
@@ -75,7 +76,7 @@ class Python(Language):
         self.code = code
 
     def validate(self, context):
-        return True
+        return self.code.validate(context)
 
     def to_python(self, context: Context):
         return self.code

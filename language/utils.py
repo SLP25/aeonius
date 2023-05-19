@@ -1,7 +1,19 @@
+from typing import List, Tuple
+
+def concat(list):
+    res = []
+
+    for l in list:
+        res += l
+
+    return res
+
 def ident_str(str, level=4):
     lines = str.splitlines()
     return "\n".join(map(lambda s: (" " * level) + s, lines))
 
+def pipe_validate(values: List[Tuple[bool, List[str]]]) -> Tuple[bool, List[str]]:
+    return not any(map(lambda v: not v[0], values)), concat(list(map(lambda v: v[1], values)))
 
 def clean_identifier(identifier: str):
     replacement_table = {

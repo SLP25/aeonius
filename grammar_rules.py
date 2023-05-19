@@ -88,7 +88,7 @@ def p_match_4(v):
 
 def p_match_5(v):
     "match : '|' INDENT multicondmatch code UNDENT"
-    v[0] = "ok"
+    v[0] = MatchCondition(v[3], v[4])
 
 def p_primitive_1(v):
     "primitive : INTEGER"
@@ -151,8 +151,8 @@ def p_exp_7(v):
     v[0] = BracketExpression(v[2])
 
 def p_exp_8(v):
-    "exp : LAMBDA pattern ':' exp"
-    v[0] = "ok"
+    "exp : LAMBDA IDENTIFIER ':' exp"
+    v[0] = LambdaExpression(v[2], v[4])
 
 def p_exp_9(v):
     "exp : exp IF exp ELSE exp"

@@ -2,7 +2,7 @@ from language.context import Context
 from .element import Element
 from .pattern import Pattern
 from .expression import Expression
-from .utils import ident_str, clean_identifier, return_name
+from .utils import ident_str, clean_identifier, return_name, pipe_validate
 from .context import Context
 from .grammar import Code
 from .pattern_match import MultiPatternMatch
@@ -21,7 +21,7 @@ class AssignmentPattern(Assignment):
         self.expression = expression
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.pattern.validate(context), self.expression.validate(context)])
 
     def to_python(self, context: Context):
         return f"{self.pattern.to_python(context)} = {self.expression.to_python(context)}\n"
@@ -50,7 +50,7 @@ class FunctionBody(Element):
         self.multiPattern = multiPattern
 
     def validate(self, context):
-        return True
+        return pipe_validate([self.code.validate(context), self.multiPattern.validate(context)])
 
     def to_python(self, context: Context) -> str:
         return f"{self.code.to_python(context)}\n{self.multiPattern.to_python(context)}"
@@ -75,7 +75,19 @@ class AssignmentDefinition(Assignment):
         self.functionBody = functionBody
 
     def validate(self, context):
-        return True
+        identifier = self.identifier if context.in_global_scope(
+        ) else return_name(context.function_name)
+
+        # Redefinition of existing symbol
+        if identifier in context.symbols:
+            this = (False, [f"Symbol {self.identifier} already defined"])
+        else:
+            this = (True, [])
+
+        context.symbols[self.identifier] = identifier
+        new_context = Context(identifier, context.next_variable(), context)
+
+        return pipe_validate([this, self.functionBody.validate(new_context)])
 
     def to_python(self, context: Context):
         identifier = self.identifier if context.in_global_scope(
@@ -84,7 +96,7 @@ class AssignmentDefinition(Assignment):
         context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
 
-        body = f"{self.functionBody.to_python(new_context)}\nreturn {return_name(identifier)}"
+        body = f"{self.functionBody.to_python(new_context)}"
         return f"def {identifier}({arg_name}):\n{ident_str(body)}\n"
 
     def __eq__(self, obj):
@@ -109,8 +121,21 @@ class AssignmentOperator(Assignment):
         self.identifier = identifier
         self.functionBody = functionBody
 
+    # TODO: Validate exactly two arguments
     def validate(self, context):
-        return True
+        identifier = clean_identifier(
+            self.identifier) if context.in_global_scope() else context.next_variable()
+
+        # Redefinition of existing symbol
+        if identifier in context.symbols:
+            this = (False, [f"Symbol {self.identifier} already defined"])
+        else:
+            this = (True, [])
+
+        context.symbols[self.identifier] = identifier
+        new_context = Context(identifier, context.next_variable(), context)
+
+        return pipe_validate([this, self.functionBody.validate(new_context)])
 
     def to_python(self, context: Context):
 
@@ -120,7 +145,7 @@ class AssignmentOperator(Assignment):
         arg_name = context.next_variable()
         context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
-        return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}"
+        return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}\n"
 
     def __eq__(self, obj):
         if not isinstance(obj, AssignmentOperator):

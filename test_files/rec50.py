@@ -121,7 +121,11 @@ def isSuffixOf(s,l):
 
 #18
 def isSubsequenceOf(s,l):
-    return bool(len(filter(lambda x:x,map(lambda x:isPrefixOf(s,x),l)))>0)
+    if s==[]:return True
+    if l==[]:return False
+    h,*t=s
+    h1,*t1=l
+    return isSubsequenceOf(t,t1) if h==h1 else isSubsequenceOf(s,t1)
 
 #19
 def elemIndices(x,l):
@@ -130,14 +134,10 @@ def elemIndices(x,l):
 
 #20
 def nub(l):
-    def nubb(l,ls):
-        if l==[]:
-            return []
-        else:
-            x,*xs=l
-            if elem(x,ls): return nubb(xs,ls)
-            else: [x]+nubb(xs,[x]+ls)            
-    return nubb(l,[])
+    if l==[]:return []
+    h,*t=l
+    n = nub(t)
+    return n if elem(h,n) else ([h] + n)
 
 #21
 def delete(x,l):
@@ -169,22 +169,21 @@ def insert(a,l):
 
 #26
 def unwords(l):
-    return concat(intersperce(" ",l))
+    return concat(intersperce([" "],l))
 
 #27
 def unlines(l):
-    return concat(intersperce("\n",l))
+    return concat(intersperce(["\n"],l))
 
 
 #28
-def max(l):
-    h,*t=l
-    if l==[h]:return [h]
-    else:
-        m1=max(t)
-        return m1 if m1 > h else h
-
 def pMaior(l):
+    def max(l):
+        h,*t=l
+        if l==[h]:return h
+        else:
+            m1=max(t)
+            return m1 if m1 > h else h
     return find(max(l),l)
 
 
@@ -228,15 +227,15 @@ def iSort(l):
 
 #35
 def menor(s1,s2):
-    if s1=="":
-        if s2=="":return False
+    if s1==[]:
+        if s2==[]:return False
         else :return True
     h,*t = s1
-    if s2 == "": return False
+    if s2 == []: return False
     h1,*t1 =s2
     if ord(h) > ord(h1):return False
-    elif ord(h) < rd(h1):return True
-    return menor(concat(t),concat(t1))
+    elif ord(h) < ord(h1):return True
+    return menor(t,t1)
 
 #36
 def elemMSet(a,l):
@@ -279,35 +278,30 @@ def constroiMSet(l):
     gl=group(l)
     return list(map(lambda x:(x[0],len(x)),gl))
 
-#42
 # Um either é um dicionario: {"a": valor} ou {"b": valor}
-
+#42
 def partitionEithers(l):
     if l==[]:return ([],[])
     h,*t =l
     a1,b1 = partitionEithers(t)
-    if "a" in h:
-        x=h["a"]
+    if 1 in h:
+        x=h[1]
         return ([x]+a1, b1)
     else: 
-        x=h["b"]
+        x=h[2]
         return (a1,[x] + b1)
         
 
-
-#43
 # Maybe => Valor ou None
-
+#43
 def catMaybes(l):
     if l==[]:return []
     h,*t=l
     if h==None: return catMaybes(t)
     else:return [h] + catMaybes(t)
 
-
-#44
 # Posicoes sao strings
-
+#44
 def posicao(xy,l):
     x,y=xy
     if l==[]:return (x,y)
@@ -328,40 +322,38 @@ def caminho(p1,p2):
     elif x1 > x2 and y1 > y2   :return replicate((x1 - x2),"Oeste") + replicate( (y1 - y2), "Sul")
 
 #46
-def vertical():
-    return len(filter(lambda y: y == "Este" or y == "Oeste",l)) == 0
+def vertical(l):
+    return len(list(filter(lambda y: y == "Este" or y == "Oeste",l))) == 0
 
+# Estrutura é um tuplo (x,y) 
 #47
-# Estrutura é um dicionario {"x": x, "y": y}
-
 def maisCentral(l):
     h,*t=l
     if [h]==l:return h
     rt=maisCentral(t)
-    x1=rt['x']
-    y1=rt['y']
-    x=h['x']
-    y=h['y']
+    x1=rt[0]
+    y1=rt[1]
+    x=h[0]
+    y=h[1]
     d1 = (x1 ^ 2) + (y1 ^ 2)
     d = (x ^ 2) + (y ^ 2)
     return h if d <= d1 else rt
         
         
 #48
-
 def vizinhos(p,l):
     if l==[]:return []
-    x,y=p['x'],p['y']
+    x,y=p[0],p[1]
     h,*t=l
-    x1,y1=h['x'],h['y']
+    x1,y1=h[0],h[1]
     t1 = vizinhos(p,t)
     return t1 if ((abs(x-x1)) + (abs(y-y1))) > 1 else [h] + t1
 
-#49   
+#49
 def mesmaOrdenada(l):
     if len(l)<2:return True
     h1,h2,*t=l
-    y1,y2=h1['y'],h2['y']
+    y1,y2=h1[1],h2[1]
     if y1 != y2:return False
     else: return mesmaOrdenada([h2]+t)
 
@@ -369,4 +361,4 @@ def mesmaOrdenada(l):
 
 #50
 def interseccaoOk(l):
-    return len(filter(lambda s: s != "Vermelho",l)) <= 1
+    return len(list(filter(lambda s: s != "Vermelho",l))) <= 1

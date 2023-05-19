@@ -46,12 +46,14 @@ def zip:
 
 #9
 def elem:
-    x => length (ae_filter (lambda y: x == y)) > 0
+    x -> []               => False
+         [h, *t] | h == x => True
+                 |        => elem x t
 
 #10
 def replicate:
     0 -> _ => []
-    n -> a => [a] + (replicate (n - 1))
+    n -> a => [a] + (replicate (n - 1) a)
 
 #11
 def intersperce:
@@ -75,12 +77,12 @@ def concat:
 
 #14
 def inits:
-    []     => []
-    [h,*t] => [] + (ae_map (lambda y: h + y) (inits t))
+    []     => [[]]
+    [h,*t] => [[]] + (ae_map (lambda y: [h] + y) (inits t))
 
 #15
 def tails:
-    []     => []
+    []     => [[]]
     [h,*t] => [[h,*t]] + (tails t)
 
 #16
@@ -93,11 +95,10 @@ def isSuffixOf:
 
 #18
 def isSubsequenceOf:
-    s -> l =>
-            length ((ae_filter id) . (ae_map (aux s)) l) > 0
-            def aux:
-                s => isPrefixOf s
-
+    [] -> l => True
+    [h,*t] -> [] => False
+              [h1,*t1] | h==h1 => isSubsequenceOf t t1
+                       |       => isSubsequenceOf [h,*t] t1
 
 #19
 def elemIndices:
@@ -108,7 +109,11 @@ def elemIndices:
 
 
 #20
-nub = (ae_map head) . (group)
+def nub:
+    []     => []
+    [h,*t] => 
+        n if (elem h n) else ([h] + n)
+        n = nub t
 
 #21
 def delete:
@@ -117,12 +122,13 @@ def delete:
 
 #22
 def deleteAll:
+    [] -> _ => []
     l -> []     => l
          [h,*t] => deleteAll (delete h l) t
 
 #23
 def union:
-    a -> b => a + (ae_filter (negate . ((flip elem) a) b))
+    a -> b => a + (ae_filter (negate . ((flip elem) a)) b)
 
 #24
 def intersect:
@@ -135,19 +141,19 @@ def insert:
                  |       => [h] + (insert a t)
 
 #26
-unwords = concat . intersperce " "
+unwords = concat . intersperce [" "]
 
 #27
-unlines = concat . intersperce "\n"
+unlines = concat . intersperce ["\n"]
 
-#28
 def max:
-    [h]    => [h]
+    [h]    => h
     [h,*t] => 
         m1 if m1 > h else h
         m1 = max t
-
-pMaior = lambda x: x
+        
+#28
+pMaior = head . (uncurry elemIndices) . (maximum >< id) . dup
 
 
 #29
@@ -177,21 +183,22 @@ def iSorted:
 #34
 def iSort:
     []      => []
-    [h, *t] => insert h (iSort *t)
+    [h, *t] => insert h (iSort t)
 
 #35
 def menor:
-    ""     -> "" => False
+    []     -> [] => False
               _  => True
-    [h,*t] -> ""                                => False
+    [h,*t] -> []                                => False
               [h1,*t1] | (ascii h) > (ascii h1) => False
                        | (ascii h) < (ascii h1) => True
-                       |                        => menor (concat t) (concat t1)
+                       |                        => menor t t1
 
 #36
 def elemMSet:
     a -> []         => False
-         [(a,_),*_] => True
+         [(b,_),*t] | a == b => True
+                    |        => elemMSet a t
          [_,*t]     => elemMSet a t
 
 #37
@@ -209,45 +216,42 @@ def converteMSet:
 #39
 def insereMSet:
     a -> []         => [(a,1)]
-         [(a,x),*t] => [(a,x + 1),*t]
+         [(b,x),*t] | a == b => [(a,x + 1),*t]
+                    |        => [(b,x)] + (insereMSet a t) 
          [h,*t]     => [h] + insereMSet a t
-
 
 #40
 def removeMSet:
     a -> [] => []
-         [(a,x),*t] => t if x == 1 else [(a, x - 1), *t]
+         [(b,x),*t] | a == b => t if x == 1 else [(a, x - 1), *t]
+                    |        => [(b,x)] + (removeMSet a t)
          [h,*t] => [h] + (removeMSet a t)
 
 
 #41
-constroiMSet = []# ae_map ((head >< length) . dup) group
+constroiMSet = ae_map ((head >< length) . dup) . group
 
+# Um either é um dicionario: {"1": valor} ou {"2": valor}
 #42
-# Um either é um dicionario: {"a": valor} ou {"b": valor}
-
 def partitionEithers:
     [] => ([],[])
-    [{"a": x},*t] => 
+    [{1: x},*t] => 
         ([x]+a1, b1)
         (a1,b1) = partitionEithers t
-    [{"b": x},*t] => 
+    [{2: x},*t] => 
         (a1,[x] +  b1)
         (a1,b1) = partitionEithers t
 
-
-#43
 # Maybe => Valor ou None
 
+#43
 def catMaybes:
     []         => []
     [None, *t] => catMaybes t
     [x, *t]    => [x] + (catMaybes t)
 
-
-#44
 # Posicoes sao strings
-
+#44
 def posicao:
     (x,y) -> []            => (x,y)
              ["Norte", *t] => posicao (x, y + 1) t
@@ -263,37 +267,34 @@ def caminho:
                         | x1 > x2 && y1 > y2   => (replicate (x1 - x2) "Oeste") + (replicate (y1 - y2) "Sul")
 
 #46
-vertical = lambda l: length (ae_filter (lambda y: y == "Este" || y == "Oeste") l) == 0
+vertical = lambda l: length (ae_filter (lambda y: elem y (["Oeste", "Este"])) l) == 0
 
+# Estrutura é um tuplo (x,y)
 #47
-# Estrutura é um dicionario {"x": x, "y": y}
-
-#def maisCentral:
-#    [h] => h
-#    [{"x": x, "y": y},*t] =>
-#        {"x": x, "y": y} if d <= d1 else {"x": x1, "y": y1}
-#        {"x": x1, "y": y1} = maisCentral t
-#        d1 = (x1 ^ 2) + (y1 ^ 2)
-#        d = (x ^ 2) + (y ^ 2)
+def maisCentral:
+   [h] => h
+   [(x,y),*t] =>
+       (x,y) if d <= d1 else (x1,y1)
+       (x1,y1) = maisCentral t
+       d1 = (x1 ^ 2) + (y1 ^ 2)
+       d = (x ^ 2) + (y ^ 2)
 
 
 #48
-
 def vizinhos:
-    {"x": x, "y": y} -> [] => []
-                        [{"x": x1, "y":y1},*t] => 
-                            t1 if (abs (x-x1)) + (abs (y-y1)) > 1 else [{"x": x1, "y":y1}] + t1
-                            t1 = vizinhos  {"x": x, "y": y} t
+    (x,y) -> [] => []
+             [(x1,y1),*t] => 
+                 t1 if (abs (x-x1)) + (abs (y-y1)) > 1 else [(x1,y1)] + t1
+                 t1 = vizinhos  (x,y) t
 
-#49   
+#49
 def mesmaOrdenada:
-    [ {"x": _, "y": y},  {"x": _, "y": y1},*t] | y != y1 => False
-                                               |         => mesmaOrdenada [{"x": 0, "y": y1},*t]
+    [ (_,y),  (_, y1),*t] => 
+        False if y <> y1 else mesmaOrdenada [(0,y1),*t]
     _ => True
 
 
 #50
 def interseccaoOk:
     l => length (ae_filter (negate . (lambda s: s == "Vermelho")) l) <= 1
-
 """
