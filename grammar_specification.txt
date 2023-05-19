@@ -12,8 +12,8 @@ code: ε
 assignment: pattern '=' exp EOL
 	   | DEF IDENTIFIER ':' EOL INDENT defbody UNDENT
           | DEF IDENTIFIER ':' pattern match
-          | OP '(' OPIDENTIFIER ')' ':' EOL INDENT defbody UNDENT
-          | OP '(' OPIDENTIFIER ')' ':' pattern match
+          | OP '(' operator ')' ':' EOL INDENT defbody UNDENT
+          | OP '(' operator ')' ':' pattern match
 
 defbody: multipatternmatch code
 
@@ -51,15 +51,38 @@ exp: IDENTIFIER
    | '(' exp ')'	                     #Wrapped in brackets
    | LAMBDA pattern ':' exp
    | exp IF exp ELSE exp
-   | exp operator exp %prec OPIDENTIFIER 	#Operator call
-#   | operator exp		              #unary operator call
-   | '(' operator ')'                     #operator function
    | exp FOR pattern IN exp
    | exp FOR pattern IN exp IF exp
    | '{' IDENTIFIER ':' exp FOR pattern IN exp '}'
    | '{' IDENTIFIER ':' exp FOR pattern IN exp IF exp '}'
+   | '(' operator ')'                     #operator function
+#   | operator exp		              #unary operator call
+   | exp OPIDENT exp
+   | exp OPIDENT_L1 exp
+   | exp OPIDENT_L2 exp
+   | exp OPIDENT_L3 exp
+   | exp OPIDENT_L4 exp
+   | exp OPIDENT_L5 exp
+   | exp OPIDENT_R1 exp
+   | exp OPIDENT_R2 exp
+   | exp OPIDENT_R3 exp
+   | exp OPIDENT_R4 exp
+   | exp OPIDENT_R5 exp
+   | exp UNPACKITER exp
+   | exp UNPACKDICT exp
+   | exp '|' exp
 
-operator: OPIDENTIFIER
+operator: OPIDENT
+        | OPIDENT_L1
+        | OPIDENT_L2
+        | OPIDENT_L3
+        | OPIDENT_L4
+        | OPIDENT_L5
+        | OPIDENT_R1
+        | OPIDENT_R2
+        | OPIDENT_R3
+        | OPIDENT_R4
+        | OPIDENT_R5
         | UNPACKITER
         | UNPACKDICT
         | '|'

@@ -14,8 +14,17 @@ precedence = [
     ("left", ','),
     ("left", ':'),
     ("nonassoc", "FOR", "IN", "IF", "ELSE"),
-    # TODO: different precedences/associativities
-    ("left", "OPIDENTIFIER", "UNPACKITER", "UNPACKDICT"),
+    ("left", "OPIDENT_L1"), #                   == != < > <= >=
+    ("right", "OPIDENT_R1"),
+    ("left", "OPIDENT_L2"), #                   || && | &
+    ("right", "OPIDENT_R2"),
+    ("nonassoc", "OPIDENT"), #                  unspecified
+    ("left", "OPIDENT_L3"), #                   + -
+    ("right", "OPIDENT_R3"),
+    ("left", "OPIDENT_L4", "UNPACKITER"), #     * / %
+    ("right", "OPIDENT_R4"),
+    ("left", "OPIDENT_L5", "UNPACKDICT"), #     **
+    ("right", "OPIDENT_R5"),
     ("nonassoc", "PRIMITIVE", "INTEGER", "FLOAT", "STRING",
      "TRUE", "FALSE", "NONE", '_', "IDENTIFIER"),
     ("left", '[', ']', '{', '}'),

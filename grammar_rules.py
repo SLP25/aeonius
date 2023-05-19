@@ -38,11 +38,11 @@ def p_assignment_3(v):
         None, MultiPatternMatch([(v[4], v[5])])))
 
 def p_assignment_4(v):
-    "assignment : OP '(' OPIDENTIFIER ')' ':' EOL INDENT defbody UNDENT"
+    "assignment : OP '(' operator ')' ':' EOL INDENT defbody UNDENT"
     v[0] = AssignmentOperator(v[3], v[8])
 
 def p_assignment_5(v):
-    "assignment : OP '(' OPIDENTIFIER ')' ':' pattern match"
+    "assignment : OP '(' operator ')' ':' pattern match"
     v[0] = AssignmentOperator(v[3], FunctionBody(
         None, MultiPatternMatch([(v[6], v[7])])))
 
@@ -159,42 +159,134 @@ def p_exp_9(v):
     v[0] = IfElseExpression(v[3], v[1], v[5])
 
 def p_exp_10(v):
-    "exp : exp operator exp %prec OPIDENTIFIER"
-    v[0] = OperationExpression(v[2], v[1], v[3])
-
-def p_exp_11(v):
-    "exp : '(' operator ')'"
-    v[0] = OperatorApplication(v[2])
-
-def p_exp_12(v):
     "exp : exp FOR pattern IN exp"
     v[0] = ForLoopExpression(v[1], v[3], v[5])
 
-def p_exp_13(v):
+def p_exp_11(v):
     "exp : exp FOR pattern IN exp IF exp"
     v[0] = ForLoopExpression(v[1], v[3], v[5], v[7])
 
-def p_exp_14(v):
+def p_exp_12(v):
     "exp : '{' IDENTIFIER ':' exp FOR pattern IN exp '}'"
     v[0] = DictionaryCompreensionExpression(v[2], v[4], v[6], v[8])
 
-def p_exp_15(v):
+def p_exp_13(v):
     "exp : '{' IDENTIFIER ':' exp FOR pattern IN exp IF exp '}'"
     v[0] = DictionaryCompreensionExpression(v[2], v[4], v[6], v[8], v[10])
 
+def p_exp_14(v):
+    "exp : '(' operator ')'"
+    v[0] = OperatorApplication(v[2])
+
+def p_exp_15(v):
+    "exp : exp OPIDENT exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_16(v):
+    "exp : exp OPIDENT_L1 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_17(v):
+    "exp : exp OPIDENT_L2 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_18(v):
+    "exp : exp OPIDENT_L3 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_19(v):
+    "exp : exp OPIDENT_L4 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_20(v):
+    "exp : exp OPIDENT_L5 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_21(v):
+    "exp : exp OPIDENT_R1 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_22(v):
+    "exp : exp OPIDENT_R2 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_23(v):
+    "exp : exp OPIDENT_R3 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_24(v):
+    "exp : exp OPIDENT_R4 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_25(v):
+    "exp : exp OPIDENT_R5 exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_26(v):
+    "exp : exp UNPACKITER exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_27(v):
+    "exp : exp UNPACKDICT exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
+def p_exp_28(v):
+    "exp : exp '|' exp"
+    v[0] = OperationExpression(v[2], v[1], v[3])
+
 def p_operator_1(v):
-    "operator : OPIDENTIFIER"
-    v[0] = v[1]
+    "operator : OPIDENT"
+    v[0] = OperatorApplication(v[1])
 
 def p_operator_2(v):
+    "operator : OPIDENT_L1"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_3(v):
+    "operator : OPIDENT_L2"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_4(v):
+    "operator : OPIDENT_L3"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_5(v):
+    "operator : OPIDENT_L4"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_6(v):
+    "operator : OPIDENT_L5"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_7(v):
+    "operator : OPIDENT_R1"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_8(v):
+    "operator : OPIDENT_R2"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_9(v):
+    "operator : OPIDENT_R3"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_10(v):
+    "operator : OPIDENT_R4"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_11(v):
+    "operator : OPIDENT_R5"
+    v[0] = OperatorApplication(v[1])
+
+def p_operator_12(v):
     "operator : UNPACKITER"
     v[0] = v[1]
 
-def p_operator_3(v):
+def p_operator_13(v):
     "operator : UNPACKDICT"
     v[0] = v[1]
 
-def p_operator_4(v):
+def p_operator_14(v):
     "operator : '|'"
     v[0] = v[1]
 

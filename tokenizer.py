@@ -17,6 +17,8 @@ reserved = {
     "True": "TRUE",
     "False": "FALSE",
     "None": "NONE",
+    #"infixl": None,
+    #"infixr": None,
     # "do": "DO",
     # "<-": "LEFTARROW",
     "->": "RIGHTARROW",
@@ -29,7 +31,7 @@ literals = ":|=()[]{},_"
 
 tokens = [
     "IDENTIFIER",
-    "OPIDENTIFIER",
+    "OPIDENT",
     "INTEGER",
     "FLOAT",
     "STRING",
@@ -38,12 +40,18 @@ tokens = [
     "END",
     "WS",
     "EOL",
+    "INFIX",
 ] + list(reserved.values())
 
 
+operator_symbols = r"+-*/%<=>$^&|.!?\\"
+operator_regex = "".join([rf"\{c}" for c in operator_symbols])
+
+
 def t_ANY_EOL(t):
-    r"(\s*(\#.*)?\n)+"
-    t.lexer.lineno += t.value.count('\n')  # so we can track line numbers
+    r"(\s*\n)+"
+    t.eols = t.value.count('\n')
+    t.lexer.lineno += t.eols    # so we can track line numbers
     if t.lexer.current_state() == 'aeonius':
         return t
 
@@ -68,6 +76,14 @@ def t_aeonius_END(t):
     t.lexer.begin("python")
     return t
 
+@lex.TOKEN(rf"infix(l|r)\s+[1-5](\s+[{operator_regex}]+)+")
+def t_INFIX(t):
+    split = t.value.split()
+    t.operators = split[2:]
+    t.precedence = int(split[1])
+    t.associativity = "R" if split[0] == "infixr" else "L"
+    return t
+
 
 def t_INTEGER(t):
     r"-?\d+"
@@ -88,13 +104,13 @@ def t_STRING(t):
     return t
 
 
-def t_OPIDENTIFIER(t):
-    r"[\+\-\*/%<=>\$\^&\|\.!?\\]+"
+@lex.TOKEN(rf"[{operator_regex}]+")
+def t_OPIDENT(t):
     if len(t.value) == 1 and t.value in literals:
         t.type = t.value
     else:
         # Check for reserved symbols
-        t.type = reserved.get(t.value, "OPIDENTIFIER")
+        t.type = reserved.get(t.value, "OPIDENT")
     return t
 
 
@@ -125,7 +141,7 @@ def t_ANY_error(t):
     t.lexer.skip(1)
 
 
-def create_token(type, lexpos, lineno, columnno):
+def create_token(type, value, lexpos, lineno, columnno):
     tok = lex.LexToken()
     tok.type = type
     tok.value = None
@@ -171,21 +187,21 @@ def add_indentation(tokens):
                 raise ValueError(f"Illegal token after arrow at line {t.lineno}, column {t.columnno}")
             yield t
             indentation.append(t.columnno)
-            yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
+            yield create_token("INDENT", None, t.lexpos, t.lineno, t.columnno)
         else:
             if open_scope:
                 if t.columnno <= indentation[-1]:
                     raise ValueError(f"You must indent after arrow at line {t.lineno}, column {t.columnno}")
                 indentation.append(t.columnno)
-                yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
+                yield create_token("INDENT", None, t.lexpos, t.lineno, t.columnno)
             elif line_start:
                 if indentation[-1] < t.columnno:
                     indentation.append(t.columnno)
-                    yield create_token("INDENT", t.lexpos, t.lineno, t.columnno)
+                    yield create_token("INDENT", None, t.lexpos, t.lineno, t.columnno)
                 else:
                     while indentation[-1] > t.columnno:
                         indentation.pop()
-                        yield create_token("UNDENT", t.lexpos, t.lineno, t.columnno)
+                        yield create_token("UNDENT", None, t.lexpos, t.lineno, t.columnno)
                     if indentation[-1] != t.columnno:
                         raise ValueError(
                             f"Inconsistent indentation at line {t.lineno}, column {t.columnno}")
@@ -195,8 +211,44 @@ def add_indentation(tokens):
             yield t
 
     while indentation.pop() > 1:
-        yield create_token("UNDENT", -1, -1, -1)
+        yield create_token("UNDENT", None, -1, -1, -1)
 
+def infix_operators(tokens):
+    infix_list = {}
+    aux = []
+
+    for t in tokens:
+        if t.type == "INFIX":
+            for op in t.operators:
+                if op in infix_list:
+                    raise ValueError(f"Repeated infix declaration for operator {op}")
+                infix_list[op] = f"OPIDENT_{t.associativity}{t.precedence}"
+        else:
+            aux.append(t)
+
+    for t in aux:
+        if t.type == "OPIDENT" and t.value in infix_list:
+            yield create_token(infix_list[t.value], t.value, t.lexpos, t.lineno, t.columnno)
+        else:
+            yield t
+
+def join_eols(tokens):
+    first = None
+
+    for t in tokens:
+        if t.type == "EOL":
+            if first == None:
+                first = t
+            else:
+                first.value += t.value
+        else:
+            if first != None:
+                yield first
+                first = None
+            yield t
+
+    if first != None:
+        yield first
 
 class MyLexer:
     def __init__(self):
@@ -210,14 +262,15 @@ class MyLexer:
 
     def input(self, data):
         self.lexer.input(data)
-        self.ans = iter(add_indentation(add_columnno(self.__inner_iter__())))
+        self.ans = iter(join_eols(infix_operators(add_indentation(add_columnno(self.__inner_iter__())))))
 
     def token(self):
         return next(self.ans, None)
 
     @staticmethod
     def tokens():
-        return list(set(tokens) - {"WS"}) + ["INDENT", "UNDENT"]
+        return list(set(tokens) - {"WS", "INFIX"}) + ["INDENT", "UNDENT"] \
+            + [f"OPIDENT_L{i}" for i in range(1,6)] + [f"OPIDENT_R{i}" for i in range(1,6)]
 
 
 if __name__ == "__main__":
