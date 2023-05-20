@@ -3,6 +3,7 @@ from language.context import Context
 from language.grammar import Aeonius
 import sys
 import inspect
+import graphviz
 
 with open("prelude.py", "r") as f:
     prelude = f.read()
@@ -28,9 +29,12 @@ def help():
     print("-d: Whether to run on debug mode. In debug")
     print("mode, the compiled python code is printed")
     print("to stdout instead of to a file")
+    print("-g: Wheather to generate the language graph.")
+    print("This graph will be generated instead of the")
+    print("python program")
     print("--input: The input aeonius file")
-    print("--output: The python file to write the parsed")
-    print("program to")
+    print("--output: The python/graph file to write the")
+    print("parsed program to")
 
 
 def parse_args(single_flags, valid_args):
@@ -97,7 +101,8 @@ def transpile(input, debug):
 def main():
     single = [
         "-h",
-        "-d"
+        "-d",
+        "-g"
     ]
 
     valid_arguments = [
@@ -113,6 +118,13 @@ def main():
 
     with open(args["input"], "r") as f:
         data = f.read()
+    
+    if args["g"]:
+        parsed = parse(input)
+        dot = graphviz.Digraph()
+        parsed.append_to_graph(dot)
+        dot.render(args["output"], view=False, format='png')
+        return
 
     parsed = transpile(data, args["d"])[0]
 
