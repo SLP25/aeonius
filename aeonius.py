@@ -4,6 +4,10 @@ from language.grammar import Aeonius
 import sys
 import inspect
 
+with open("prelude.py", "r") as f:
+    prelude = f.read()
+
+
 def get_importing_module():
     for frame_info in inspect.stack():
         module = inspect.getmodule(frame_info[0])
@@ -66,7 +70,7 @@ def parse_args(single_flags, valid_args):
 
 
 def transpile(input, debug):
-    parsed = parse(input)
+    parsed = parse(prelude + input)
 
     context = Context()
     context.symbols = Context.stdlib_symbols
@@ -125,7 +129,7 @@ def import_main():
     with open(args["input"], "r") as f:
         data = f.read()
 
-    parsed = parse(data)
+    parsed = parse(prelude + data)
     exec(parsed.to_python(Context()))
 
 #TODO::ADD VALIDATION
@@ -139,7 +143,7 @@ def include(module):
 def includeAE(module):
     with open(module.__file__, "r") as f:
         data = f.read()
-        parsed = parse(data)
+        parsed = parse(prelude + data)
         context = Context()
         context.symbols = Context.stdlib_symbols
         with open("aeonius_stdlib.py", "r") as f:

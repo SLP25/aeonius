@@ -144,7 +144,7 @@ def t_ANY_error(t):
 def create_token(type, value, lexpos, lineno, columnno):
     tok = lex.LexToken()
     tok.type = type
-    tok.value = None
+    tok.value = value
     tok.lineno = lineno
     tok.columnno = columnno
     tok.lexpos = lexpos
@@ -276,9 +276,9 @@ class MyLexer:
 if __name__ == "__main__":
     lexer = MyLexer()
 
-    with open("examples/error", "r") as f:
+    with open("examples/test.txt", "r") as f:
         lexer.input(f.read())
 
     while t := lexer.token():
         print(t, t.columnno)
-        # input()
+        #input()

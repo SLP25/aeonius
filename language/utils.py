@@ -26,11 +26,13 @@ def clean_identifier(identifier: str):
         "=": "eq",
         ">": "gt",
         "$": "dollar",
-        "^": "power",
+        "^": "xor",
         ".": "dot",
         "&": "nd",
         "|": "ou",
-        "!": "excl"
+        "!": "excl",
+        "?": "inter",
+        "\\": "bcksl",
     }
 
     for key in replacement_table.keys():

@@ -18,7 +18,7 @@ def mod(a):
     return lambda x: a % x
 
 
-def power(a):
+def timestimes(a):
     return lambda x: a ** x
 
 
