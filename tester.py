@@ -115,19 +115,42 @@ def show():
         values = json.load(f)
     
     averages=[[k,np.mean(v['ae']),np.mean(v['rec']),np.mean(v['it'])] for k,v in values.items()]
-    
+    #50 averages
     average = pd.DataFrame(averages, columns=["Question", "AE", "REC", "IT"])
     averagePlot = average.plot(x="Question", y=["AE", "REC", "IT"], kind="bar", rot=0)
     averagePlot.title.set_text('AverageTime')
     averagePlot.plot()
+    #all averages
     
+    averages2=[[],[],[]]
+    for v in values.values():
+        averages2[0]+=v['ae']
+        averages2[1]+=v['rec']
+        averages2[2]+=v['it']
+    average2 = pd.DataFrame(np.asmatrix(averages2).mean(1).flatten(), columns=["AE", "REC", "IT"])
+    averagePlot2 = average2.plot(y=["AE", "REC", "IT"], kind="bar", rot=0)
+    averagePlot2.title.set_text('AverageTime')
+    averagePlot2.plot()
+    
+    # 50 variance
     variances=[[k,np.var(v['ae']),np.var(v['rec']),np.var(v['it'])] for k,v in values.items()]
     variance = pd.DataFrame(variances, columns=["Question", "AE", "REC", "IT"])
     variancePlot = variance.plot(x="Question", y=["AE", "REC", "IT"], kind="bar",stacked=True, rot=0)
     variancePlot.title.set_text('VarianceTime')
     variancePlot.plot() 
-    plt.show()
     
+    #all variance
+    variances2=[[],[],[]]
+    for v in values.values():
+        variances2[0]+=v['ae']
+        variances2[1]+=v['rec']
+        variances2[2]+=v['it']
+    variance2 = pd.DataFrame(np.asmatrix(variances2).var(1).flatten(), columns=["AE", "REC", "IT"])
+    variancePlot2 = variance2.plot(y=["AE", "REC", "IT"], kind="bar", rot=0)
+    variancePlot2.title.set_text('VarianceTime')
+    variancePlot2.plot()
+    
+    plt.show()
 
 
 def main():
