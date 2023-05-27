@@ -72,7 +72,7 @@ class MatchExpression(Match):
         self.auxiliary = auxiliary
 
     def validate(self, context):
-        return pipe_validate([self.body.validate(context), self.auxiliary.validate(context)])
+        return pipe_validate([self.auxiliary.validate(context), self.body.validate(context)])
 
     def to_python(self, context: Context):
         new_context = Context(context.function_name,

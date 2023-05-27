@@ -65,7 +65,9 @@ class OperatorApplication(Expression):
         return (True, [])
 
     def to_python(self, context: Context):
-        return clean_identifier(self.operator)
+        res = clean_identifier(self.operator)
+        context.symbols[self.operator] = res
+        return res
 
     def __eq__(self, obj):
         if not isinstance(obj, OperatorApplication):
@@ -83,7 +85,7 @@ class FunctionApplicationExpression(Expression):
         self.arguments = arguments
 
     def validate(self, context):
-        return pipe_validate([self.function.validate(context)] + list(map(lambda s: s.validate(context), self.arguments)))
+        return pipe_validate([self.function.validate(context), self.arguments.validate(context)])
 
     def to_python(self, context: Context):
         res = self.function.to_python(context)
@@ -112,14 +114,17 @@ class LambdaExpression(Expression):
         else:
             this = (True, [])
         arg_name = context.next_variable()
-        context.symbols[self.identifier] = arg_name
+        new_context = Context("", self.identifier, context)
+        new_context.symbols[self.identifier] = arg_name
 
-        return pipe_validate([this, self.expression.validate(context)])
+        return pipe_validate([this, self.expression.validate(new_context)])
 
     def to_python(self, context: Context):
         arg_name = context.next_variable()
-        context.symbols[self.identifier] = arg_name
-        return f"lambda {arg_name}: {self.expression.to_python(context)}"
+        new_context = Context("", self.identifier, context)
+        new_context.symbols[self.identifier] = arg_name
+        new_context.symbols[self.identifier] = arg_name
+        return f"lambda {arg_name}: {self.expression.to_python(new_context)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, LambdaExpression):
@@ -170,14 +175,17 @@ class ForLoopExpression(Expression):
         self.condition = condition
 
     def validate(self, context):
-        return pipe_validate([self.expression.validate(context), self.pattern.validate(context), self.set.validate(context), self.condition.validate(context)])
+        if self.condition is None:
+            return pipe_validate([self.expression.validate(context), self.pattern.validate(context), self.set.validate(context)])
+        else:
+            return pipe_validate([self.expression.validate(context), self.pattern.validate(context), self.set.validate(context), self.condition.validate(context)])
 
     def to_python(self, context: Context):
-        result = f"{self.expression.to_python(context)} for {self.pattern.to_python(context)} in {self.set.to_python(context)}"
+        result = f"[{self.expression.to_python(context)} for {self.pattern.to_python(context)} in {self.set.to_python(context)}"
 
         if self.condition is not None:
             result += f" if {self.condition.to_python(context)}"
-
+        result += "]"
         return result
 
     def __eq__(self, obj):
@@ -322,7 +330,7 @@ class NonEmptyTupleExpressionContent(TupleExpressionContent):
         self.final_comma = final_comma
 
     def validate(self, context):
-        return self.expressions.validate(context)
+        return pipe_validate(list(map(lambda s: s.validate(context), self.expressions)))
 
     def to_python(self, context: Context):
         result = ",".join(

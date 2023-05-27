@@ -12,14 +12,22 @@ class MultiPatternMatch(Element):
         self.matches = matches
 
     def validate(self, context):
-        return pipe_validate(list(map(lambda s: s[0].validate(context), self.matches)) + list(map(lambda s: s[1].validate(context), self.matches)))
+        results = []
+        for m in self.matches:
+            new_context = Context(context.function_name, context.arg_name, context)
+            new_context.symbols["ignore"] = True
+            results = results + [m[0].validate(new_context), m[1].validate(new_context)]
+        return pipe_validate(results)
 
     def to_python(self, context: Context):
-        new_context = Context(context.function_name, context.arg_name, context)
-        new_context.symbols["ignore"] = True
-        matches = "\n".join(map(
-            lambda s: f"case {s[0].to_python(new_context)}:\n{ident_str(s[1].to_python(context))}", self.matches))
-        return f"match {context.arg_name}:\n{ident_str(matches)}\nreturn {return_name(context.function_name)}"
+        matches = ""
+        for m in self.matches:
+            new_context = Context(context.function_name, context.arg_name, context)
+            new_context.symbols["ignore"] = True
+            matches += f"case {m[0].to_python(new_context)}:\n{ident_str(m[1].to_python(new_context))}"
+            matches += "\n"
+
+        return f"match {context.arg_name}:\n{ident_str(matches)}\nreturn {return_name(new_context.function_name)}"
 
     def __eq__(self, obj):
         if not isinstance(obj, MultiPatternMatch):

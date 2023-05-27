@@ -76,7 +76,7 @@ class Python(Language):
         self.code = code
 
     def validate(self, context):
-        return self.code.validate(context)
+        return (True, [])
 
     def to_python(self, context: Context):
         return self.code

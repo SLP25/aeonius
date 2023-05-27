@@ -54,7 +54,10 @@ class IdentifierPatttern(Pattern):
 
     def validate(self, context):
         if self.identifier in context.symbols:
+            print(context.symbols)
+            print(self.to_python(context))      
             return (False, [f"Redefinition of symbol {self.identifier}"])
+            
 
         context.symbols[self.identifier] = self.identifier
         return (True, [])
@@ -64,6 +67,7 @@ class IdentifierPatttern(Pattern):
             context.symbols[self.identifier] = self.identifier
         elif self.identifier not in context.symbols:
             context.symbols[self.identifier] = context.next_variable()
+
 
         return context.symbols[self.identifier]
 
@@ -107,7 +111,7 @@ class NonEmptyTuplePatternContent(TuplePatternContent):
         self.final_comma = final_comma
 
     def validate(self, context):
-        return self.patterns.validate(context)
+        return pipe_validate(list(map(lambda s: s.validate(context), self.patterns)))
 
     def to_python(self, context: Context):
         return ",".join(map(lambda p: p.to_python(context), self.patterns)) + ("," if self.final_comma else "")

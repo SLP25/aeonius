@@ -1,3 +1,5 @@
+import aeonius
+
 """aeonius
 
 #1
@@ -298,3 +300,5 @@ def mesmaOrdenada:
 def interseccaoOk:
     l => length (ae_filter (negate . (lambda s: s == "Vermelho")) l) <= 1
 """
+
+print(enumFromTo(1)(10))

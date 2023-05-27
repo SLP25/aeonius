@@ -78,13 +78,13 @@ def transpile(input, debug):
 
     context = Context()
     context.symbols = Context.stdlib_symbols
-    #(valid, reasons) = parsed.validate(context)
+    (valid, reasons) = parsed.validate(context)
 
-    #if not valid:
-    #    print("Logic error in code")
-    #    for reason in reasons:
-    #        print(reason)
-    #    exit(-1)
+    if not valid:
+        print("Logic error in code")
+        for reason in reasons:
+            print(reason)
+        exit(-1)
 
     with open("aeonius_stdlib.py", "r") as f:
         stdlib = f.read()
@@ -144,20 +144,32 @@ def import_main():
     parsed = parse(prelude + data)
     exec(parsed.to_python(Context()))
 
-#TODO::ADD VALIDATION
+
 def include(module):
     with open(module.__file__, "r") as f:
         data = f.read()
         parsed,context = transpile(data, False)
         return importCode(parsed,module.__name__,1)
 
-#TODO::ADD VALIDATION
+
 def includeAE(module):
     with open(module.__file__, "r") as f:
         data = f.read()
         parsed = parse(prelude + data)
         context = Context()
         context.symbols = Context.stdlib_symbols
+
+        (valid, reasons) = parsed.validate(context)
+
+        if not valid:
+            print("Logic error in code")
+            for reason in reasons:
+                print(reason)
+            exit(-1)
+
+        context = Context()
+        context.symbols = Context.stdlib_symbols
+
         with open("aeonius_stdlib.py", "r") as f:
             stdlib = f.read()
         parsed.snippets=list(filter(lambda x:isinstance(x, Aeonius),parsed.snippets))

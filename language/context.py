@@ -1,8 +1,31 @@
 class Context():
     next_var = 0
 
-    # TODO: Refactor this to be a lot nicer
     stdlib_symbols = {
+        "*": "times",
+        "+": "plus",
+        "++": "plusplus",
+        "-": "minus",
+        "/": "div",
+        "%": "mod",
+        "<": "lt",
+        "=": "eq",
+        "==": "eqeq",
+        "<=": "lteq",
+        ">=": "gteq",
+        ">": "gt",
+        "><": "gtlt",
+        "<>": "ltgt",
+        "$": "dollar",
+        "^": "xor",
+        ".": "dot",
+        "&": "nd",
+        "&&": "ndnd",
+        "||": "ouou",
+        "|": "ou",
+        "!": "excl",
+        "?": "inter",
+        "\\": "bcksl",
         ".": "dot",
         "abs": "abs",
         "ae_filter": "ae_filter",
@@ -26,7 +49,7 @@ class Context():
 
     def __init__(self, function_name="", arg_name="", parent=None):
         self.parent = parent
-        self.symbols = {} if parent is None else parent.symbols
+        self.symbols = {} if parent is None else parent.symbols.copy()
         self.function_name = function_name
         self.arg_name = arg_name
 
