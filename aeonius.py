@@ -120,11 +120,12 @@ def main():
         data = f.read()
     
     if args["g"]:
-        parsed = parse(input)
-        dot = graphviz.Digraph()
-        parsed.append_to_graph(dot)
-        dot.render(args["output"], view=False, format='png')
-        return
+        with open("prelude.py","r") as p:
+            parsed = parse(p.read() + data)
+            dot = graphviz.Digraph()
+            parsed.append_to_graph(dot)
+            dot.render(args["output"], view=False, format='png')
+            return
 
     parsed = transpile(data, args["d"])[0]
 

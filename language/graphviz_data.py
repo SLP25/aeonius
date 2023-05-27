@@ -29,12 +29,12 @@ class GraphVizId():
     def content(graph, nextList, tail=False, type="List"):
         id = GraphVizId.getId()
         s = f"<i>{type}|"
-        for p in range(len(nextList)):
-            s += f"<{p}>|,|"
-        if not tail:
-            s = s[:-3]
-        else:
-            s = s[:-1]
+        if nextList!=[]:
+            for p in range(len(nextList)):
+                s += f"<{p}>|,|"
+            if not tail:
+                s = s[:-2]
+        s = s[:-1]
         graph.node(id, nohtml(s), shape="record")
         for p, i in enumerate(nextList):
             graph.edge(id+f":{p}", i)

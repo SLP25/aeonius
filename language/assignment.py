@@ -123,25 +123,27 @@ class AssignmentOperator(Assignment):
 
     # TODO: Validate exactly two arguments
     def validate(self, context):
-        ident = self.identifier.validate(context)
-        identifier = self.identifier.to_python(context)
+        identifier = clean_identifier(
+            self.identifier) if context.in_global_scope() else context.next_variable()
 
         # Redefinition of existing symbol
         if identifier in context.symbols:
-            this = [ident, (False, [f"Symbol {self.identifier} already defined"])]
+            this = (False, [f"Symbol {self.identifier} already defined"])
         else:
-            this = [ident, (True, [])]
+            this = (True, [])
 
-        context.symbols[identifier] = identifier
+        context.symbols[self.identifier] = identifier
         new_context = Context(identifier, context.next_variable(), context)
 
         return pipe_validate([this, self.functionBody.validate(new_context)])
 
     def to_python(self, context: Context):
-        identifier = self.identifier.to_python(context)
+
+        identifier = clean_identifier(
+            self.identifier) if context.in_global_scope() else context.next_variable()
 
         arg_name = context.next_variable()
-        context.symbols[identifier] = identifier
+        context.symbols[self.identifier] = identifier
         new_context = Context(identifier, arg_name, context)
         return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}\n"
 
@@ -155,7 +157,7 @@ class AssignmentOperator(Assignment):
         id = GraphVizId.getId()
         with graph.subgraph(name="cluster"+id) as c:
             g = GraphVizId.createNode(c, nohtml(
-                f"<0>AssignmentOperator|\\{self.identifier}|<2>functionBody"), shape="record")
+                f"<0>AssignmentOperator|\\{self.identifier.operator}|<2>functionBody"), shape="record")
             c.attr(color="blue")
             c.attr(label="AssignmentOperator")
             c.edge(g+":2", self.functionBody.append_to_graph(c))

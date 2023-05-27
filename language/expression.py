@@ -274,7 +274,7 @@ class OperationExpression(Expression):
 
     def append_to_graph(self, graph):
         id = GraphVizId.createNode(graph, nohtml(
-            f'<f0>Operation|\\{self.identifier}|<f1>Left|<f2> Right'), shape="record")
+            f'<f0>Operation|{clean_identifier(self.identifier)}|<f1>Left|<f2> Right'), shape="record")
         graph.edge(id+":f1", self.left_expression.append_to_graph(graph))
         graph.edge(id+":f2", self.right_expression.append_to_graph(graph))
         return id+":f0"
