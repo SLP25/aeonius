@@ -50,7 +50,11 @@ class FunctionBody(Element):
         self.multiPattern = multiPattern
 
     def validate(self, context):
-        return pipe_validate([self.code.validate(context), self.multiPattern.validate(context)])
+        if self.code:
+            l = [self.code.validate(context), self.multiPattern.validate(context)]
+        else:
+            l = [self.multiPattern.validate(context)]
+        return pipe_validate(l)
 
     def to_python(self, context: Context) -> str:
         return f"{self.code.to_python(context)}\n{self.multiPattern.to_python(context)}"
@@ -123,8 +127,7 @@ class AssignmentOperator(Assignment):
 
     # TODO: Validate exactly two arguments
     def validate(self, context):
-        identifier = clean_identifier(
-            self.identifier) if context.in_global_scope() else context.next_variable()
+        identifier = self.identifier.to_python(context) if context.in_global_scope() else context.next_variable()
 
         # Redefinition of existing symbol
         if identifier in context.symbols:
@@ -132,18 +135,17 @@ class AssignmentOperator(Assignment):
         else:
             this = (True, [])
 
-        context.symbols[self.identifier] = identifier
+        context.symbols[self.identifier.operator] = identifier
         new_context = Context(identifier, context.next_variable(), context)
 
         return pipe_validate([this, self.functionBody.validate(new_context)])
 
     def to_python(self, context: Context):
 
-        identifier = clean_identifier(
-            self.identifier) if context.in_global_scope() else context.next_variable()
+        identifier = self.identifier.to_python(context) if context.in_global_scope() else context.next_variable()
 
         arg_name = context.next_variable()
-        context.symbols[self.identifier] = identifier
+        context.symbols[self.identifier.operator] = identifier
         new_context = Context(identifier, arg_name, context)
         return f"def {identifier}({arg_name}):\n{ident_str(self.functionBody.to_python(new_context))}\n"
 

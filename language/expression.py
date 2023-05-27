@@ -60,6 +60,7 @@ class OperatorApplication(Expression):
         self.operator = operator
 
     def validate(self, context):
+        print(self.operator)
         if self.operator not in context.symbols:
             return (False, [f"Undefined operator symbol {self.operator}"])
         return (True, [])
@@ -433,7 +434,7 @@ class NonEmptyDictExpressionContent(DictExpressionContent):
         self.tail = tail
 
     def validate(self, context):
-        return pipe_validate(list(map(lambda s: s[0].validate(context))) + list(map(lambda s: s[1].validate(context))))
+        return pipe_validate(list(map(lambda s: s[0].validate(context), self.key_value_pairs)) + list(map(lambda s: s[1].validate(context), self.key_value_pairs)))
 
     def to_python(self, context: Context):
         result = ",".join(map(
