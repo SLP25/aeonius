@@ -81,7 +81,7 @@ def transpile(input, debug):
     (valid, reasons) = parsed.validate(context)
 
     if not valid:
-        print("Logic error in code")
+        print("Semantic error in code")
         for reason in reasons:
             print(reason)
         exit(-1)
@@ -163,7 +163,7 @@ def includeAE(module):
         (valid, reasons) = parsed.validate(context)
 
         if not valid:
-            print("Logic error in code")
+            print("Semantic error in code")
             for reason in reasons:
                 print(reason)
             exit(-1)

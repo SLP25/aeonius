@@ -176,7 +176,7 @@ def p_exp_13(v):
 
 def p_exp_14(v):
     "exp : '(' operator ')'"
-    v[0] = OperatorApplication(v[2])
+    v[0] = v[2]
 
 def p_exp_15(v):
     "exp : exp OPIDENT exp"

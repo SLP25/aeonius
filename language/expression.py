@@ -60,7 +60,6 @@ class OperatorApplication(Expression):
         self.operator = operator
 
     def validate(self, context):
-        print(self.operator)
         if self.operator not in context.symbols:
             return (False, [f"Undefined operator symbol {self.operator}"])
         return (True, [])
@@ -177,12 +176,14 @@ class ForLoopExpression(Expression):
 
     def validate(self, context):
         if self.condition is None:
-            return pipe_validate([self.expression.validate(context), self.pattern.validate(context), self.set.validate(context)])
+            return pipe_validate([self.pattern.validate(context), self.expression.validate(context), self.set.validate(context)])
         else:
-            return pipe_validate([self.expression.validate(context), self.pattern.validate(context), self.set.validate(context), self.condition.validate(context)])
+            return pipe_validate([self.pattern.validate(context), self.expression.validate(context),  self.set.validate(context), self.condition.validate(context)])
 
     def to_python(self, context: Context):
-        result = f"[{self.expression.to_python(context)} for {self.pattern.to_python(context)} in {self.set.to_python(context)}"
+        pattern = self.pattern.to_python(context) # Force pattern to be evaluated first so it
+        # is put in symbol table
+        result = f"[{self.expression.to_python(context)} for {pattern} in {self.set.to_python(context)}"
 
         if self.condition is not None:
             result += f" if {self.condition.to_python(context)}"

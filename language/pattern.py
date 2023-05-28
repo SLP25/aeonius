@@ -53,9 +53,7 @@ class IdentifierPatttern(Pattern):
         self.identifier = identifier
 
     def validate(self, context):
-        if self.identifier in context.symbols:
-            print(context.symbols)
-            print(self.to_python(context))      
+        if self.identifier in context.symbols:    
             return (False, [f"Redefinition of symbol {self.identifier}"])
             
 
@@ -67,7 +65,6 @@ class IdentifierPatttern(Pattern):
             context.symbols[self.identifier] = self.identifier
         elif self.identifier not in context.symbols:
             context.symbols[self.identifier] = context.next_variable()
-
 
         return context.symbols[self.identifier]
 
@@ -247,7 +244,10 @@ class NonEmptyDictPatternContent(DictPatternContent):
         self.tail = tail
 
     def validate(self, context):
-        return pipe_validate(list(map(lambda s: s[0].validate(context), self.key_value_pairs)) + list(map(lambda s: s[1].validate(context), self.key_value_pairs)))
+        if self.tail:
+            return pipe_validate(list(map(lambda s: s[0].validate(context), self.key_value_pairs)) + list(map(lambda s: s[1].validate(context), self.key_value_pairs)) + [self.tail.validate(context)])
+        else:
+            return pipe_validate(list(map(lambda s: s[0].validate(context), self.key_value_pairs)) + list(map(lambda s: s[1].validate(context), self.key_value_pairs)))
 
     def to_python(self, context: Context):
         content = map(
