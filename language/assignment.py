@@ -69,9 +69,13 @@ class FunctionBody(Element):
         return self.code == obj.code and self.multiPattern == obj.multiPattern
 
     def append_to_graph(self, graph):
-        id = GraphVizId.createNode(graph, nohtml(
-            "<0>FunctionBody|<CODE>Code|<PATTERNS>Patterns"), shape="record")
-        graph.edge(id+":CODE", self.code.append_to_graph(graph))
+        if self.code:
+            id = GraphVizId.createNode(graph, nohtml(
+                "<0>FunctionBody|<CODE>Code|<PATTERNS>Patterns"), shape="record")
+            graph.edge(id+":CODE", self.code.append_to_graph(graph))
+        else:
+            id = GraphVizId.createNode(graph, nohtml(
+                "<0>FunctionBody|<PATTERNS>Patterns"), shape="record")
         graph.edge(id+":PATTERNS", self.multiPattern.append_to_graph(graph))
         return id+":0"
 
