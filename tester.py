@@ -87,7 +87,6 @@ def run():
         results[k]={"ae":[],"it":[],"rec":[]}
         input = functionArguments[k]
         for function in v:
-            print(function)
             execString=function
             if function.startswith("ae50"):
                 execString+=argsToFunction(input)
