@@ -280,15 +280,15 @@ def p_operator_11(v):
 
 def p_operator_12(v):
     "operator : UNPACKITER"
-    v[0] = v[1]
+    v[0] = OperatorApplication(v[1])
 
 def p_operator_13(v):
     "operator : UNPACKDICT"
-    v[0] = v[1]
+    v[0] = OperatorApplication(v[1])
 
 def p_operator_14(v):
     "operator : '|'"
-    v[0] = v[1]
+    v[0] = OperatorApplication(v[1])
 
 def p_elemexp_1(v):
     "elemexp : exp"

@@ -57,7 +57,10 @@ class FunctionBody(Element):
         return pipe_validate(l)
 
     def to_python(self, context: Context) -> str:
-        return f"{self.code.to_python(context)}\n{self.multiPattern.to_python(context)}"
+        if self.code:
+            return f"{self.code.to_python(context)}\n{self.multiPattern.to_python(context)}"
+        else:
+            return self.multiPattern.to_python(context)
 
     def __eq__(self, obj):
         if not isinstance(obj, FunctionBody):

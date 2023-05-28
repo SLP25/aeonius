@@ -34,7 +34,7 @@ def eqeq(a):
     return lambda x: a == x
 
 
-def ltgt(a):
+def excleq(a):
     return lambda x: a != x
 
 

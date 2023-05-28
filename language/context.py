@@ -3,6 +3,7 @@ class Context():
 
     stdlib_symbols = {
         "*": "times",
+        "**": "timestimes",
         "+": "plus",
         "++": "plusplus",
         "-": "minus",
@@ -15,7 +16,7 @@ class Context():
         ">=": "gteq",
         ">": "gt",
         "><": "gtlt",
-        "<>": "ltgt",
+        "!=": "excleq",
         "$": "dollar",
         "^": "xor",
         ".": "dot",

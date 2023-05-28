@@ -1,3 +1,5 @@
+import aeonius
+
 """aeonius
 #Batata
 """
@@ -20,9 +22,9 @@ h = lambda x: lambda y: x / y
 #lambda y: x / y
 
 def teste:
-    var = 2 + 3
     x -> []  => 2 || 4
          [a,b] | a == 2 => 3
                | => 6
+    var = 2 + 3
 
 """

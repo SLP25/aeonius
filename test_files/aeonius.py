@@ -120,7 +120,7 @@ def nub1:
 #21
 def delete1:
     x -> []     => []
-         [h,*t] => [h] + (delete1 x t) if x <> h else t
+         [h,*t] => [h] + (delete1 x t) if x != h else t
 
 #22
 def deleteAll1:
@@ -292,7 +292,7 @@ def vizinhos1:
 #49
 def mesmaOrdenada1:
     [ (_,y),  (_, y1),*t] => 
-        False if y <> y1 else mesmaOrdenada1 [(0,y1),*t]
+        False if y != y1 else mesmaOrdenada1 [(0,y1),*t]
     _ => True
 
 

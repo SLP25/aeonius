@@ -74,7 +74,7 @@ def parse_args(single_flags, valid_args):
 
 
 def transpile(input, debug):
-    parsed = parse(prelude + input)
+    parsed = parse(input + prelude)
 
     context = Context()
     context.symbols = Context.stdlib_symbols
@@ -142,7 +142,7 @@ def import_main():
     with open(args["input"], "r") as f:
         data = f.read()
 
-    parsed = parse(prelude + data)
+    parsed = parse(data + prelude)
     exec(parsed.to_python(Context()))
 
 
@@ -156,7 +156,7 @@ def include(module):
 def includeAE(module):
     with open(module.__file__, "r") as f:
         data = f.read()
-        parsed = parse(prelude + data)
+        parsed = parse(data + prelude)
         context = Context()
         context.symbols = Context.stdlib_symbols
 
