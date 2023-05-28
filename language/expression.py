@@ -76,7 +76,7 @@ class OperatorApplication(Expression):
         return self.operator == obj.operator
 
     def append_to_graph(self, graph):
-        return GraphVizId.createNode(graph, OperatorApplication.clean_identifier(self.operator))
+        return GraphVizId.createNode(graph, clean_identifier(self.operator))
 
 
 class FunctionApplicationExpression(Expression):

@@ -1,4 +1,4 @@
-from test_files import aeonius as ae50t
+from test_files import aeonius as ae50
 from test_files import it50
 from test_files import rec50
 import aeonius
@@ -15,14 +15,14 @@ sys.setrecursionlimit(10**6)
 
 def run():
     functionNames={}
-    for pythonFile in [ae50t,it50,rec50]:
+    for pythonFile,pythonFileName in [(ae50,"ae50"),(it50,"it50"),(rec50,"rec50")]:
         with open(pythonFile.__file__) as f:
             file=f.read()
             functions=re.findall(r"(#\d+)\n(def (\w+)\(.*\)\:|def (\w+)\:|op \((.*)\)\:|(\w+) =)",file)
             for i in functions:
                 if int(i[0][1:]) not in functionNames:
                     functionNames[int(i[0][1:])]=[]
-                functionNames[int(i[0][1:])].append(pythonFile.__name__[11:]+'.'+i[2]+i[3]+clean_identifier(i[4])+i[5])
+                functionNames[int(i[0][1:])].append(pythonFileName+'.'+i[2]+i[3]+clean_identifier(i[4])+i[5])
     functionArguments={
         1:[1,1024],
         2:[1,7,1024],
@@ -76,9 +76,6 @@ def run():
         50:[[['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['V', 'e', 'r', 'm', 'e', 'l', 'h', 'o'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['V', 'e', 'r', 'm', 'e', 'l', 'h', 'o'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e'],['V', 'e', 'r', 'd', 'e'],['A', 'm', 'a', 'r', 'e', 'l', 'o'],['V', 'e', 'r', 'd', 'e']]]
     }
     results={}
-    
-    ae50 = aeonius.include(ae50t)
-
     def argsToFunction(args):
         s=""
         for i in args:
@@ -90,9 +87,9 @@ def run():
         results[k]={"ae":[],"it":[],"rec":[]}
         input = functionArguments[k]
         for function in v:
+            print(function)
             execString=function
-            if function.startswith("aeonius"):
-                execString="ae50."+function.split('.')[1]
+            if function.startswith("ae50"):
                 execString+=argsToFunction(input)
             else:
                 execString+='('+",".join(map(str,input))+')'
@@ -100,7 +97,7 @@ def run():
                 start = time.time()
                 exec(execString)
                 end = time.time()
-                if function.startswith("aeonius"):
+                if function.startswith("ae50"):
                     results[k]["ae"].append(end-start)
                 elif function.startswith("it50"):
                     results[k]["it"].append(end-start)

@@ -3,302 +3,300 @@ import aeonius
 """aeonius
 
 #1
-def enumFromTo:
+def enumFromTo1:
     x -> y | x > y => []
-           |       => [x] + (enumFromTo (x + 1) y)
+           |       => [x] + (enumFromTo1 (x + 1) y)
 
 
 #2
-def enumFromThenTo:
+def enumFromThenTo1:
     x -> y -> z | x > z => []
-                |       => [x] + (enumFromThenTo y (2 * y - x) z)
+                |       => [x] + (enumFromThenTo1 y (2 * y - x) z)
 
 #3
-op (++):
+op (+++):
     []      -> x => x
-    [h, *t] -> x => [h] + (t ++ x)
+    [h, *t] -> x => [h] + (t +++ x)
 
 #4
-op (!!):
+op (!!!):
     [h,*t] -> 0 => h
-              n => t !! (n - 1)
+              n => t !!! (n - 1)
 
 
 #5
-def reverse:
+def reverse1:
     []      => []
-    [h, *t] => (reverse t) + [h]
+    [h, *t] => (reverse1 t) + [h]
 
 
 #6
-def take:
+def take1:
     n -> []     => []
-         [h,*t] => [h] + take (n - 1) t if n > 0 else []
+         [h,*t] => [h] + take1 (n - 1) t if n > 0 else []
 
 #7
-def drop:
+def drop1:
     n -> []     => []
-         [h,*t] => drop (n - 1) t if n > 0 else [h,*t]
+         [h,*t] => drop1 (n - 1) t if n > 0 else [h,*t]
 
 #8
-def zip:
+def zip1:
     []       -> _        => []
     [h1,*t1] -> []       => []
-                [h2,*t2] => [(h1,h2)] + (zip t1 t2)
+                [h2,*t2] => [(h1,h2)] + (zip1 t1 t2)
 
 #9
-def elem:
+def elem1:
     x -> []               => False
          [h, *t] | h == x => True
-                 |        => elem x t
+                 |        => elem1 x t
 
 #10
-def replicate:
+def replicate1:
     0 -> _ => []
-    n -> a => [a] + (replicate (n - 1) a)
+    n -> a => [a] + (replicate1 (n - 1) a)
 
 #11
-def intersperce:
+def intersperce1:
     x -> []      => []
          [h]     => [h]
-         [h, *t] => [h,x] + (intersperce x t) 
+         [h, *t] => [h,x] + (intersperce1 x t) 
 
 #12
-def group:
+def group1:
     []      => []
     [h]     => [[h]]
     [h, *t] => 
         [[h,h1,*t1],*t2] if h == h1 else [[h],[h1,*t1],*t2]
-        [[h1, *t1],*t2] = group t
+        [[h1, *t1],*t2] = group1 t
 
 
 #13
-def concat:
+def concat1:
     []     => []
-    [h,*t] => h + (concat t)
+    [h,*t] => h + (concat1 t)
 
 #14
-def inits:
+def inits1:
     []     => [[]]
-    [h,*t] => [[]] + (ae_map (lambda y: [h] + y) (inits t))
+    [h,*t] => [[]] + (ae_map (lambda y: [h] + y) (inits1 t))
 
 #15
-def tails:
+def tails1:
     []     => [[]]
-    [h,*t] => [[h,*t]] + (tails t)
+    [h,*t] => [[h,*t]] + (tails1 t)
 
 #16
-def isPrefixOf:
-    p -> l => elem p (inits l)
+def isPrefixOf1:
+    p -> l => elem1 p (inits1 l)
 
 #17
-def isSuffixOf:
-    s -> l => elem s (tails l)
+def isSuffixOf1:
+    s -> l => elem1 s (tails1 l)
 
 #18
-def isSubsequenceOf:
+def isSubsequenceOf1:
     [] -> l => True
     [h,*t] -> [] => False
-              [h1,*t1] | h==h1 => isSubsequenceOf t t1
-                       |       => isSubsequenceOf [h,*t] t1
+              [h1,*t1] | h==h1 => isSubsequenceOf1 t t1
+                       |       => isSubsequenceOf1 [h,*t] t1
 
 #19
-def elemIndices:
+def elemIndices1:
     x -> l => 
-            ae_map snd (ae_filter (lambda y: (fst y) == x) (zip l l1))
+            ae_map snd (ae_filter (lambda y: (fst y) == x) (zip1 l l1))
             n = length l
-            l1 = enumFromTo 0 (n - 1)
+            l1 = enumFromTo1 0 (n - 1)
 
 
 #20
-def nub:
+def nub1:
     []     => []
     [h,*t] => 
-        n if (elem h n) else ([h] + n)
-        n = nub t
+        n if (elem1 h n) else ([h] + n)
+        n = nub1 t
 
 #21
-def delete:
+def delete1:
     x -> []     => []
-         [h,*t] => [h] + (delete x t) if x <> h else t
+         [h,*t] => [h] + (delete1 x t) if x <> h else t
 
 #22
-def deleteAll:
+def deleteAll1:
     [] -> _ => []
     l -> []     => l
-         [h,*t] => deleteAll (delete h l) t
+         [h,*t] => deleteAll1 (delete1 h l) t
 
 #23
-def union:
-    a -> b => a + (ae_filter (negate . ((flip elem) a)) b)
+def union1:
+    a -> b => a + (ae_filter (negate . ((flip elem1) a)) b)
 
 #24
-def intersect:
-    a -> b => ae_filter ((flip elem) b) a
+def intersect1:
+    a -> b => ae_filter ((flip elem1) b) a
 
 #25
-def insert:
+def insert1:
     a -> []              => [a]
          [h, *t] | h > a => [a,h,*t]
-                 |       => [h] + (insert a t)
+                 |       => [h] + (insert1 a t)
 
 #26
-unwords = concat . intersperce [" "]
+unwords1 = concat1 . intersperce1 [" "]
 
 #27
-unlines = concat . intersperce ["\n"]
+unlines1 = concat1 . intersperce1 ["\n"]
 
-def max:
+def max1:
     [h]    => h
     [h,*t] => 
         m1 if m1 > h else h
-        m1 = max t
+        m1 = max1 t
         
 #28
-pMaior = head . (uncurry elemIndices) . (maximum >< id) . dup
+pMaior1 = head . (uncurry elemIndices1) . (maximum >< id) . dup
 
 
 #29
-temRepetidos = lambda x: x == (nub x)
+temRepetidos1 = lambda x: x == (nub1 x)
 
 #30
-algarismos = ae_filter is_number
+algarismos1 = ae_filter is_number
 
 #31
-def posImpares:
-    [h1,h2,*t] => [h2] + posImpares t
+def posImpares1:
+    [h1,h2,*t] => [h2] + posImpares1 t
     _          => []
 
 #32
-def posPares:
+def posPares1:
     []         => []
     [h1]       => [h1]
-    [h1,h2,*t] => [h1] + posPares t
+    [h1,h2,*t] => [h1] + posPares1 t
     _          => []
 
 
 #33
-def iSorted:
-    [h1,h2,*t] => iSorted [h2,*t] if h1 <= h2 else False
+def iSorted1:
+    [h1,h2,*t] => iSorted1 [h2,*t] if h1 <= h2 else False
     _          => True
 
 #34
-def iSort:
+def iSort1:
     []      => []
-    [h, *t] => insert h (iSort t)
+    [h, *t] => insert1 h (iSort1 t)
 
 #35
-def menor:
+def menor1:
     []     -> [] => False
               _  => True
     [h,*t] -> []                                => False
               [h1,*t1] | (ascii h) > (ascii h1) => False
                        | (ascii h) < (ascii h1) => True
-                       |                        => menor t t1
+                       |                        => menor1 t t1
 
 #36
-def elemMSet:
+def elemMSet1:
     a -> []         => False
          [(b,_),*t] | a == b => True
-                    |        => elemMSet a t
-         [_,*t]     => elemMSet a t
+                    |        => elemMSet1 a t
+         [_,*t]     => elemMSet1 a t
 
 #37
-def lengthMSet:
+def lengthMSet1:
     []         => 0
-    [(_,x),*t] => x + (lengthMSet t)
+    [(_,x),*t] => x + (lengthMSet1 t)
 
 
 #38
-def converteMSet:
+def converteMSet1:
     []         => []
-    [(a,x),*t] => (replicate x a) + (converteMSet t)
+    [(a,x),*t] => (replicate1 x a) + (converteMSet1 t)
 
 
 #39
-def insereMSet:
+def insereMSet1:
     a -> []         => [(a,1)]
          [(b,x),*t] | a == b => [(a,x + 1),*t]
-                    |        => [(b,x)] + (insereMSet a t) 
-         [h,*t]     => [h] + insereMSet a t
+                    |        => [(b,x)] + (insereMSet1 a t) 
+         [h,*t]     => [h] + insereMSet1 a t
 
 #40
-def removeMSet:
+def removeMSet1:
     a -> [] => []
          [(b,x),*t] | a == b => t if x == 1 else [(a, x - 1), *t]
-                    |        => [(b,x)] + (removeMSet a t)
-         [h,*t] => [h] + (removeMSet a t)
+                    |        => [(b,x)] + (removeMSet1 a t)
+         [h,*t] => [h] + (removeMSet1 a t)
 
 
 #41
-constroiMSet = ae_map ((head >< length) . dup) . group
+constroiMSet1 = ae_map ((head >< length) . dup) . group1
 
 # Um either é um dicionario: {"1": valor} ou {"2": valor}
 #42
-def partitionEithers:
+def partitionEithers1:
     [] => ([],[])
     [{1: x},*t] => 
         ([x]+a1, b1)
-        (a1,b1) = partitionEithers t
+        (a1,b1) = partitionEithers1 t
     [{2: x},*t] => 
         (a1,[x] +  b1)
-        (a1,b1) = partitionEithers t
+        (a1,b1) = partitionEithers1 t
 
 # Maybe => Valor ou None
 
 #43
-def catMaybes:
+def catMaybes1:
     []         => []
-    [None, *t] => catMaybes t
-    [x, *t]    => [x] + (catMaybes t)
+    [None, *t] => catMaybes1 t
+    [x, *t]    => [x] + (catMaybes1 t)
 
 # Posicoes sao strings
 #44
-def posicao:
+def posicao1:
     (x,y) -> []            => (x,y)
-             ["Norte", *t] => posicao (x, y + 1) t
-             ["Sul", *t]   => posicao (x, y - 1) t
-             ["Oeste", *t] => posicao (x - 1, y) t
-             ["Este", *t]  => posicao (x + 1, y) t
+             ["Norte", *t] => posicao1 (x, y + 1) t
+             ["Sul", *t]   => posicao1 (x, y - 1) t
+             ["Oeste", *t] => posicao1 (x - 1, y) t
+             ["Este", *t]  => posicao1 (x + 1, y) t
 
 #45
-def caminho:
-    (x1,y1) -> (x2, y2) | x1 <= x2 && y1 <= y2 => (replicate (x2 - x1) "Este") + (replicate (y2 - y1) "Norte")
-                        | x1 <= x2 && y1 > y2  => (replicate (x2 - x1) "Este") + (replicate (y1 - y2) "Sul")
-                        | x1 > x2 && y1 <= y2  => (replicate (x1 - x2) "Oeste") + (replicate (y2 - y1) "Norte")
-                        | x1 > x2 && y1 > y2   => (replicate (x1 - x2) "Oeste") + (replicate (y1 - y2) "Sul")
+def caminho1:
+    (x1,y1) -> (x2, y2) | x1 <= x2 && y1 <= y2 => (replicate1 (x2 - x1) "Este") + (replicate1 (y2 - y1) "Norte")
+                        | x1 <= x2 && y1 > y2  => (replicate1 (x2 - x1) "Este") + (replicate1 (y1 - y2) "Sul")
+                        | x1 > x2 && y1 <= y2  => (replicate1 (x1 - x2) "Oeste") + (replicate1 (y2 - y1) "Norte")
+                        | x1 > x2 && y1 > y2   => (replicate1 (x1 - x2) "Oeste") + (replicate1 (y1 - y2) "Sul")
 
 #46
-vertical = lambda l: length (ae_filter (lambda y: elem y (["Oeste", "Este"])) l) == 0
+vertical1 = lambda l: length (ae_filter (lambda y: elem1 y (["Oeste", "Este"])) l) == 0
 
 # Estrutura é um tuplo (x,y)
 #47
-def maisCentral:
+def maisCentral1:
    [h] => h
    [(x,y),*t] =>
        (x,y) if d <= d1 else (x1,y1)
-       (x1,y1) = maisCentral t
+       (x1,y1) = maisCentral1 t
        d1 = (x1 ^ 2) + (y1 ^ 2)
        d = (x ^ 2) + (y ^ 2)
 
 
 #48
-def vizinhos:
+def vizinhos1:
     (x,y) -> [] => []
              [(x1,y1),*t] => 
                  t1 if (abs (x-x1)) + (abs (y-y1)) > 1 else [(x1,y1)] + t1
-                 t1 = vizinhos  (x,y) t
+                 t1 = vizinhos1  (x,y) t
 
 #49
-def mesmaOrdenada:
+def mesmaOrdenada1:
     [ (_,y),  (_, y1),*t] => 
-        False if y <> y1 else mesmaOrdenada [(0,y1),*t]
+        False if y <> y1 else mesmaOrdenada1 [(0,y1),*t]
     _ => True
 
 
 #50
-def interseccaoOk:
+def interseccaoOk1:
     l => length (ae_filter (negate . (lambda s: s == "Vermelho")) l) <= 1
 """
-
-print(enumFromTo(1)(10))

@@ -159,8 +159,9 @@ class AssignmentOperator(Assignment):
         id = GraphVizId.getId()
         with graph.subgraph(name="cluster"+id) as c:
             g = GraphVizId.createNode(c, nohtml(
-                f"<0>AssignmentOperator|\\{self.identifier.operator}|<2>functionBody"), shape="record")
+                f"<0>AssignmentOperator|<1>Operator|<2>functionBody"), shape="record")
             c.attr(color="blue")
             c.attr(label="AssignmentOperator")
+            c.edge(g+":1",self.identifier.append_to_graph(c))
             c.edge(g+":2", self.functionBody.append_to_graph(c))
         return g+":0"
